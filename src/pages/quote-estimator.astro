@@ -23,10 +23,13 @@ import { CTA } from '@data/nav';
  *    freight, installation, groundworks, and subject to survey") is real
  *    and included, just attached to the bill-of-materials estimate instead
  *    of a price it can't responsibly display.
- * 2. A working CRM handoff. There is no Monday.com webhook URL or contact
- *    inbox anywhere in this codebase to send a real submission to (Footer.astro
- *    omits contact details for the identical reason — inventing one would be
- *    worse than not having it). The form below is fully real — proper
+ * 2. A working CRM handoff. There is no Monday.com webhook URL or lead-intake
+ *    inbox anywhere in this codebase to send a real submission to — same
+ *    reasoning as the rest of this project's "no fabrication" rule, just
+ *    applied to infrastructure that doesn't exist rather than a fact that
+ *    isn't known. (Footer.astro's contact details are real now — the
+ *    client's actual export line — but that's a phone number to call, not a
+ *    form-submission endpoint.) The form below is fully real — proper
  *    fields, validation, and structure — and submitting it shows an honest
  *    "here's your estimate" confirmation rather than a fabricated "we've
  *    received your request" promise. Wiring the actual webhook is a pending

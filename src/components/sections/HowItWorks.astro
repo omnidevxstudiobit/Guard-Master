@@ -10,12 +10,15 @@ import { CTA } from '@data/nav';
  * shape is borrowed; the content is not — every step below is a fact already
  * established elsewhere on this site (EstimatorTeaser's live arithmetic,
  * FinishLadder's finish tiers, SystemAssembly's in-house manufacturing claim,
- * SeoFaq's US-shipping and install-support facts), not new specs invented for
- * this section. Notably, the reference's own "in-house crew, never
- * subcontractors" framing does NOT carry over: SeoFaq's own FAQ says
- * installation is "carried out by you or your contractor" — Guard Master
- * manufactures in-house but does not install, so step 5 is written around
- * that real distinction instead of borrowing a claim that would contradict it.
+ * SeoFaq's US-shipping and install facts), not new specs invented for this
+ * section. Step 5 originally avoided the reference's own "in-house crew,
+ * never subcontractors" framing, back when the brief's working assumption
+ * was that Guard Master didn't install at all — confirmed with the client
+ * since then that installation *is* part of the offering (businessguide.md
+ * §"Do they install or repair?" has the correction). Step 5 now says Guard
+ * Master installs, but still doesn't claim "in-house crew, never
+ * subcontractors" specifically — that exact mechanism isn't confirmed, only
+ * that Guard Master installs.
  *
  * Sits between EstimatorTeaser and SeoFaq: the estimator gets you a number,
  * this explains what happens after you act on it.
@@ -68,7 +71,7 @@ const STEPS: Step[] = [
   {
     id: 'install',
     title: 'Installed On Site',
-    body: 'Every system ships with installation guidance. Install it yourself or bring in your own contractor — our team supports them through the build.',
+    body: 'Guard Master installs your system on site. Prefer your own contractor instead? Every system still ships with full installation guidance and our team’s support through the build.',
     why: "You're not left holding a pallet of panels with no one to call once it lands.",
   },
 ];

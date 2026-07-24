@@ -14,15 +14,20 @@ const { title, description = 'Nav bar variants for the Guard Master build.' } = 
  * seoguide.md Appendix B1 — Organization, site-wide. Only fields that are
  * actually known go in: name, legalName and description are established
  * facts used throughout the site; url reuses astro.config.mjs's own
- * (already TODO-flagged) placeholder domain.
+ * (already TODO-flagged) placeholder domain. `telephone` is the client's
+ * real "International / Export Sales" number from their own reference site
+ * (fencing-supplier.com) — see Footer.astro's matching note for why that
+ * number specifically, not one of the South Africa sales lines on the same
+ * page.
  *
- * Deliberately omitted rather than filled with placeholders: `logo` (no
- * exported logo file exists yet — Logo.astro is inline SVG, not a URL),
+ * Still deliberately omitted rather than filled with placeholders: `logo`
+ * (no exported logo file exists yet — Logo.astro is inline SVG, not a URL),
  * `sameAs` (no real social profiles to link), and the whole LocalBusiness
- * block from B1 (no real address or phone — see Footer.astro's matching
- * note). A missing field is silently incomplete; a fabricated one is
- * silently wrong and search engines will index it as fact. Fill these in
- * once the client supplies the real logo file, address and phone.
+ * block from B1 (no real US address — the reference site's only address is
+ * the Benoni, South Africa factory, not relevant here). A missing field is
+ * silently incomplete; a fabricated one is silently wrong and search
+ * engines will index it as fact. Fill these in once the client supplies a
+ * logo file and a US address.
  */
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -31,6 +36,7 @@ const organizationJsonLd = {
   name: 'Guard Master',
   legalName: 'Wire Ventures CC t/a Guard Master Fencing Solutions',
   url: Astro.site?.href ?? Astro.url.origin,
+  telephone: '+1-954-756-5216',
   description:
     'Manufacturer-direct premium clear view 358 anti-climb high-security perimeter fencing.',
 };

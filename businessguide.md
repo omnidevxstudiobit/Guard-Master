@@ -15,12 +15,13 @@
 
 ### Do they install or repair?
 
-**No — neither is part of the offering as briefed.**
+**Yes to install — confirmed corrected.** The original brief assumed installation was excluded, and this doc said so until this correction. The client's real reference site (fencing-supplier.com) advertises "Supply & Install" outright and takes "Installation & Site Survey Request" as a quote-form option; asked directly, the client confirmed installation is part of the offering. Treat everything below as superseding the old "manufacture + supply only" framing wherever it's quoted elsewhere in this file or in code comments.
 
-- The business **manufactures and sells products**; the site is built to be *"the world's most impressive fencing ecommerce store"* (quote-and-buy model — "Add to Quote", plus "Add to Cart" if ecommerce goes live).
-- **Installation is explicitly excluded.** The Quote Estimator price range must carry a disclaimer *"excluding freight, installation, groundworks, and subject to survey."*
-- **Repair is never mentioned** anywhere in the brief — it is not a service line.
-- Net model: **manufacture → supply/ship the product → customer (or their contractor) installs.** Guard Master's job ends at supplying the engineered system, backed by warranty.
+- The business **manufactures, supplies and installs**; the site is still built to be *"the world's most impressive fencing ecommerce store"* (quote-and-buy model — "Add to Quote", plus "Add to Cart" if ecommerce goes live) — installation doesn't change the estimator/lead-gen model, just who ends up doing the physical work.
+- The Quote Estimator's price range still **excludes installation from the instant estimate** — *"excluding freight, installation, groundworks, and subject to survey"* — that disclaimer is about pricing scope (installation is quoted after a site survey, not bundled into the automatic materials estimate), not a statement that Guard Master doesn't install.
+- Customers who'd rather use their own contractor still can — every system ships with installation guidance either way — but Guard Master installing is now the primary offering, not the fallback.
+- **Repair is still never mentioned** anywhere in the brief — remains out of scope as a documented service line.
+- **Not yet confirmed:** the exact installation mechanism (an in-house install crew vs. a coordinated network of installation partners). Don't state either specifically in customer-facing copy until confirmed — "Guard Master installs" is the safe, confirmed claim.
 
 ---
 
@@ -33,7 +34,7 @@
 | **Premium & award-worthy** | Motion-led, design-forward, top visual polish — matching the best in the category (Ameristar is the design bar). |
 | **High-security specialist** | Focused on clear-view 358 anti-climb mesh — depth over breadth, not a catch-all fence catalogue. |
 | **Manufacturer, not middleman** | Direct from the maker → better price, control, bespoke engineering, and credibility. The key differentiator. |
-| **Founder-led & personal** | Named after its founders — **Giuliano** (MD, *"the Guard"*) and **Mike** (*"the Master"* who built and steers the company) — so every product "carries personal weight and intention." |
+| **Founder-led & personal** | Named after its founders — **Giuliano** (MD, *"the Guard"*) and **Fabian** (*"the Master"* who built and steers the company) — so every product "carries personal weight and intention." Corrected from an earlier "Giuliano and Mike" version of this doc: the client's real reference site lists Giuliano and Fabian as the two named sales/principal contacts, not Mike — confirmed directly with the client. Nothing customer-facing has used either name yet, so this was caught before it went live anywhere. |
 | **Bespoke & global** | Custom-engineered systems supplied worldwide. |
 
 **Positioning statement:** *Premium high-security perimeter brand supplying bespoke systems globally.*
@@ -179,4 +180,4 @@
 
 ## 9. One-paragraph summary
 
-Guard Master is a **founder-led, premium South-Africa-based manufacturer of high-security "Clear View" 358 anti-climb mesh perimeter fencing** — it engineers and supplies bespoke fencing *systems* (panels, posts, fixings, accessories, plus gates and toppings) direct from the factory; it does **not** install or repair. It sells **quote-led / made-to-order** ("Add to Quote", price ranges), converting configurator + estimator engagement into **CRM leads (Monday.com)**, with a **finish ladder topped by a 10-year Plascoat warranty** as a key differentiator. It targets **commercial, industrial, utility/solar, government, and high-end residential** security buyers — principally in the **United States** (organic SEO primary, Google Ads/Merchant Center secondary), where its main hurdle is the **foreign-supplier objection**, countered with US shipping messaging, a Buy-American stance, and full US localisation. Its wedge is being the actual manufacturer while offering the category's only genuinely interactive **configurator + instant estimator**. Ambition: the world's most impressive fencing ecommerce store — **US-first, multi-currency/global later.**
+Guard Master is a **founder-led, premium South-Africa-based manufacturer of high-security "Clear View" 358 anti-climb mesh perimeter fencing** — it engineers, supplies and installs bespoke fencing *systems* (panels, posts, fixings, accessories, plus gates and toppings) direct from the factory; it does **not** offer repair as a separate service line. It sells **quote-led / made-to-order** ("Add to Quote", price ranges), converting configurator + estimator engagement into **CRM leads (Monday.com)**, with a **finish ladder topped by a 10-year Plascoat warranty** as a key differentiator. It targets **commercial, industrial, utility/solar, government, and high-end residential** security buyers — principally in the **United States** (organic SEO primary, Google Ads/Merchant Center secondary), where its main hurdle is the **foreign-supplier objection**, countered with US shipping messaging, a Buy-American stance, and full US localisation. Its wedge is being the actual manufacturer while offering the category's only genuinely interactive **configurator + instant estimator**. Ambition: the world's most impressive fencing ecommerce store — **US-first, multi-currency/global later.**

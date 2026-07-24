@@ -9,12 +9,16 @@ import { NAV_ITEMS, CTA } from '@data/nav';
  * items again as real crawlable links, plus the on-page anchors (who we
  * protect, instant estimate, FAQ) and two legal placeholders.
  *
- * Deliberately NOT included: a phone number, street address, email, or
- * social links. None of those exist yet for Wire Ventures CC — inventing
- * plausible-looking ones would be worse than leaving the column CTA-only,
- * both for a visitor who'd try to actually call/email them and for the
- * Organization/LocalBusiness JSON-LD in BaseLayout.astro, which has the same
- * gap flagged for the same reason.
+ * Phone + email are real: the client's own reference site
+ * (fencing-supplier.com) lists +1 (954) 756-5216 / export@fencing-supplier.com
+ * as its actual "International / Export Sales" line — the right one for a
+ * US-market site, as opposed to the South Africa sales numbers on the same
+ * page. Still deliberately NOT included: a street address or social links.
+ * The reference site's only physical address is the Benoni, South Africa
+ * factory — not relevant to present as "the" address on a US site — and no
+ * real social profiles were found. Fabricating either would be worse than
+ * leaving them out; a missing field reads as incomplete, a wrong one reads
+ * as fact once a search engine indexes it.
  *
  * Lives in BaseLayout.astro (rendered on every page), not per-page — same
  * reasoning as the nav.
@@ -52,6 +56,20 @@ const TRUST = ['ISO Certified', '10-Year Warranty', 'In-House Manufacturing', 'U
           Manufacturer-direct clear view 358 anti-climb security fencing — engineered and shipped
           across the continental United States.
         </p>
+        <div class="mt-5 space-y-1.5">
+          <a
+            href="tel:+19547565216"
+            class="tap-target text-gm-grey-300 hover:text-gm-white flex items-center text-sm transition-colors"
+          >
+            +1 (954) 756-5216
+          </a>
+          <a
+            href="mailto:export@fencing-supplier.com"
+            class="tap-target text-gm-grey-300 hover:text-gm-white flex items-center text-sm transition-colors"
+          >
+            export@fencing-supplier.com
+          </a>
+        </div>
       </div>
 
       <nav aria-label="Products">

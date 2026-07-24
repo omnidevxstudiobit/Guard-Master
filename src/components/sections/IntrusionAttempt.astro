@@ -13,12 +13,20 @@ import { CTA } from '@data/nav';
  * the technical version of the same claim right after — show, then tell.
  *
  * Every number in the original mockup's captions (500–650 MPa, 80% weld
- * strength, Ø3.5–5.6 mm wire) doesn't appear anywhere in businessguide.md,
- * designguide.md or seoguide.md — likely placeholders from whatever
- * reference the mockup pulled from, not vetted facts. The captions below are
- * rewritten around what IS verified: the 76.2 × 12.7 mm aperture, the 4.0 mm
- * wire (businessguide §5 / Proof358's own preset data), and spike/razor
- * topping as real optional extras (businessguide §5 "Estimator Extras").
+ * strength, Ø3.5–5.6 mm wire) didn't appear anywhere in businessguide.md,
+ * designguide.md or seoguide.md at the time this section was first built, so
+ * they were treated as unverified placeholders and left out — the captions
+ * were written around only what was verified then: the 76.2 × 12.7 mm
+ * aperture, the 4.0 mm wire (businessguide §5 / Proof358's own preset data),
+ * and spike/razor topping as real optional extras (businessguide §5
+ * "Estimator Extras"). That assumption turned out to be overcautious, not
+ * correct: those exact figures are on Guard Master's own published spec
+ * sheet (confirmed against the client's reference site,
+ * fencing-supplier.com). The weld-strength figure is back in the forceFail
+ * callout below, right where the story is making that exact claim; the full
+ * spec (tensile + weld strength) lives in Proof358, the section built to be
+ * the authoritative technical statement, so it isn't repeated at full length
+ * in both places.
  *
  * Architecture, adapted rather than ported wholesale:
  * - The original redraws its whole scene from scratch every frame on a
@@ -68,7 +76,7 @@ const PHASES: Phase[] = [
     title: 'It Won’t Break.',
     sub: 'There’s no strand to pry apart, no weave to spread — just a welded grid that springs back.',
     stamp: 'WON’T BREAK',
-    callout: '4.0 mm (8ga) wire · welded node-by-node, not woven',
+    callout: '4.0 mm (8ga) wire · every weld holds to 80% of parent-metal strength',
   },
   {
     id: 'climb',

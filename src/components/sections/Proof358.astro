@@ -187,6 +187,31 @@ const ROWS = [
         </table>
       </div>
 
+      <!-- 358-only stats, not a sixth comparison row: Standard Welded and
+           Chain-Link don't have a published Guard Master tensile/weld figure
+           to sit against, so folding these into the table would mean two
+           blank cells next to a real number, reading as if the other two
+           were simply worse rather than unmeasured. Both numbers are real —
+           taken from Guard Master's own published spec sheet (the client's
+           reference site, fencing-supplier.com) — not the placeholder
+           figures IntrusionAttempt.astro's own comment once assumed these
+           were; that assumption predates having the real sheet to check
+           against. -->
+      <div class="mt-8 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/10 pt-6">
+        <div>
+          <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.16em] uppercase">
+            Tensile Strength
+          </p>
+          <p class="text-gm-white mt-1 font-mono text-lg font-bold">500–650 MPa</p>
+        </div>
+        <div>
+          <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.16em] uppercase">
+            Weld Strength
+          </p>
+          <p class="text-gm-white mt-1 font-mono text-lg font-bold">80% of parent material</p>
+        </div>
+      </div>
+
       <div class="mt-9 flex flex-wrap gap-3">
         <a
           href={CTA.href}
