@@ -78,7 +78,7 @@ const FAQS: Faq[] = [
          differently labelled. Every H3/paragraph pair from seoguide.md §1's
          required list is still real, static DOM either way — nothing here
          needs JS to be complete or crawlable. -->
-    <div class="max-w-3xl">
+    <div class="mx-auto max-w-2xl text-center">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
         Clear View Fencing, Explained
       </p>
@@ -184,15 +184,17 @@ const FAQS: Faq[] = [
     </div>
 
     <!-- FAQ -->
-    <div id="faq" class="mt-20 max-w-3xl lg:mt-24">
-      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">FAQ</p>
-      <h2
-        class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
-      >
-        Questions We Get Asked
-      </h2>
+    <div id="faq" class="mt-20 lg:mt-24">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">FAQ</p>
+        <h2
+          class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+        >
+          Questions We Get Asked
+        </h2>
+      </div>
 
-      <div class="border-gm-grey-200 mt-10 border-t">
+      <div class="border-gm-grey-200 mx-auto mt-10 max-w-3xl border-t">
         {
           FAQS.map((f) => (
             <details data-faq-row class="border-gm-grey-200 border-b">

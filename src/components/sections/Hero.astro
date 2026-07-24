@@ -2,14 +2,28 @@
 import { CTA } from '@data/nav';
 
 /**
- * Daylight hero — a pinned two-panel headline swap.
+ * Daylight hero — a pinned headline swap, with the subhead and CTAs
+ * always on screen.
  *
  *   Panel 1  Keyword H1, centred over the clouds.
- *   Panel 2  The hook, plus subhead and CTAs.
+ *   Panel 2  The hook line, swapped in over panel 1.
+ *   Tail     Subhead + both CTAs — static, never hidden, never part of the swap.
  *
  * The swap is *triggered*, not scrubbed: the moment the user scrolls, panel 1
  * leaves and panel 2 arrives at their own pace. Tying it to scroll progress
  * made the two crawl past each other, which read as sluggish.
+ *
+ * Earlier version scoped the swap to the whole lower half of the hero —
+ * hook line, subhead *and* both CTAs all lived inside panel 2, hidden
+ * (opacity 0, translated off-screen) until the visitor scrolled. That meant
+ * a visitor who loaded the page and never scrolled saw the primary "Request
+ * a Quote" CTA disappear the instant JS finished enhancing — first paint
+ * (static HTML/CSS, JS off) showed it; the JS-enhanced resting state hid it.
+ * Real bug, not a design choice: the CTA must not require a scroll gesture
+ * to become visible. The swap is now scoped to just the two headline
+ * variants (H1 ⇄ hook line) — comparable in size, so overlaying them to
+ * slide one out/one in doesn't collide — while the subhead and CTAs sit
+ * outside the swap entirely, always rendered, identical before and after JS.
  *
  * Clouds sit behind the type (z-0) and are the only scroll-scrubbed layer,
  * along with the image parallax — those genuinely should track the scroll.
@@ -20,11 +34,16 @@ import { CTA } from '@data/nav';
  *
  * Two constraints hold throughout:
  *
- * 1. First paint is static HTML + CSS and readable with JS off — both panels
- *    simply stack and flow. GSAP adds `.stage--js` to overlay them, so a
- *    visitor without JS gets the plain hero rather than a hidden one.
+ * 1. First paint is static HTML + CSS and readable with JS off — both
+ *    headline panels simply stack and flow, subhead and CTAs sit below.
+ *    GSAP adds `.headline-stack--js` to overlay just the two headline
+ *    panels, so a visitor without JS gets the plain hero rather than a
+ *    hidden one, and a visitor with JS gets the same content, just with
+ *    the headline able to swap.
  * 2. Nothing animates before LCP; only transform/opacity/filter are animated
- *    (animationguide.md §3).
+ *    (animationguide.md §3). The subhead/CTA entrance is CSS-only for the
+ *    same reason animationguide.md's own kicker row is CSS-only — it must
+ *    render whether or not JS ever loads.
  *
  * Deviation from the brief: §4.1 specifies a dark hero. The daylight treatment
  * is the client's choice, so designguide.md §4's light/dark order shifts with it.
@@ -119,107 +138,117 @@ const P2_MAIN = ['Never', 'Get', 'Through', 'It.'];
     }
   </div>
 
-  <!-- Both panels live in this stage. Without JS they stack and read normally;
-       GSAP adds `stage--js`, which overlays them in a single grid cell. -->
-  <div class="stage absolute inset-0 z-10 px-6" data-stage>
-    <div class="panel" data-panel-1>
-      <h1 class="headline">
-        <span class="headline__lead">
-          {
-            P1_LEAD.map((w, i) => (
-              <>
-                <span class="w">
-                  <span class="w__i" data-w1>
-                    {w}
+  <!-- The stage always stacks: swappable headline, then the static subhead
+       and CTAs below it. Only the inner headline-stack ever becomes a
+       GSAP-driven overlay — the tail never hides, JS or not. -->
+  <div class="stage absolute inset-0 z-10 flex flex-col items-center px-6" data-stage>
+    <!-- Both headline panels live in this stack. Without JS they simply
+         stack and read normally, one above the other; GSAP adds
+         `headline-stack--js`, which overlays them in a single grid cell so
+         panel 1 can slide out as panel 2 slides in. -->
+    <div class="headline-stack" data-headline-stack>
+      <div class="panel" data-panel-1>
+        <h1 class="headline">
+          <span class="headline__lead">
+            {
+              P1_LEAD.map((w, i) => (
+                <>
+                  <span class="w">
+                    <span class="w__i" data-w1>
+                      {w}
+                    </span>
                   </span>
-                </span>
-                {i < P1_LEAD.length - 1 ? ' ' : ''}
-              </>
-            ))
+                  {i < P1_LEAD.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>{
+            /* real space so the two block lines do not concatenate into
+          "…Standard inClear View…" in textContent, which is what a crawler and a
+          screen reader read. It is a block boundary, so it costs nothing visually. */
           }
-        </span>{
-          /* real space so the two block lines do not concatenate into
-        "…Standard inClear View…" in textContent, which is what a crawler and a
-        screen reader read. It is a block boundary, so it costs nothing visually. */
-        }
-        {' '}
-        <span class="headline__main">
-          {
-            P1_MAIN.map((w, i) => (
-              <>
-                <span class="w">
-                  <span class="w__i" data-w1>
-                    {w}
+          {' '}
+          <span class="headline__main">
+            {
+              P1_MAIN.map((w, i) => (
+                <>
+                  <span class="w">
+                    <span class="w__i" data-w1>
+                      {w}
+                    </span>
                   </span>
-                </span>
-                {i < P1_MAIN.length - 1 ? ' ' : ''}
-              </>
-            ))
+                  {i < P1_MAIN.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>
+        </h1>
+      </div>
+
+      <div class="panel" data-panel-2>
+        <p class="headline">
+          <span class="headline__lead">
+            {
+              P2_LEAD.map((w, i) => (
+                <>
+                  <span class="w">
+                    <span class="w__i" data-w2>
+                      {w}
+                    </span>
+                  </span>
+                  {i < P2_LEAD.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>{
+            /* real space so the two block lines do not concatenate into
+          "…Standard inClear View…" in textContent, which is what a crawler and a
+          screen reader read. It is a block boundary, so it costs nothing visually. */
           }
-        </span>
-      </h1>
+          {' '}
+          <span class="headline__main">
+            {
+              P2_MAIN.map((w, i) => (
+                <>
+                  <span class="w">
+                    <span class="w__i" data-w2>
+                      {w}
+                    </span>
+                  </span>
+                  {i < P2_MAIN.length - 1 ? ' ' : ''}
+                </>
+              ))
+            }
+          </span>
+        </p>
+      </div>
     </div>
 
-    <div class="panel" data-panel-2>
-      <p class="headline">
-        <span class="headline__lead">
-          {
-            P2_LEAD.map((w, i) => (
-              <>
-                <span class="w">
-                  <span class="w__i" data-w2>
-                    {w}
-                  </span>
-                </span>
-                {i < P2_LEAD.length - 1 ? ' ' : ''}
-              </>
-            ))
-          }
-        </span>{
-          /* real space so the two block lines do not concatenate into
-        "…Standard inClear View…" in textContent, which is what a crawler and a
-        screen reader read. It is a block boundary, so it costs nothing visually. */
-        }
-        {' '}
-        <span class="headline__main">
-          {
-            P2_MAIN.map((w, i) => (
-              <>
-                <span class="w">
-                  <span class="w__i" data-w2>
-                    {w}
-                  </span>
-                </span>
-                {i < P2_MAIN.length - 1 ? ' ' : ''}
-              </>
-            ))
-          }
-        </span>
-      </p>
+    <!-- Subhead + both CTAs — static content, identical whether JS ever
+         runs or not. Never part of the panel swap, never hidden behind a
+         scroll gesture; the reveal below is a one-shot CSS entrance only. -->
+    <p
+      class="on-photo text-gm-grey-800 mx-auto mt-7 max-w-xl text-[15px] leading-relaxed font-medium sm:text-base"
+      data-hero-tail
+    >
+      {/* Placeholder copy — the real subhead is a content-writer deliverable. */}
+      Manufacturer-direct 358 anti-climb mesh panels, posts and fixings, engineered for commercial,
+      industrial, utility and government perimeters.
+    </p>
 
-      <p
-        class="on-photo text-gm-grey-800 mx-auto mt-7 max-w-xl text-[15px] leading-relaxed font-medium sm:text-base"
-        data-p2-tail
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3" data-hero-tail>
+      <a
+        href={CTA.href}
+        class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[12px] font-bold tracking-[0.12em] uppercase transition-colors hover:bg-[#c50e24]"
       >
-        {/* Placeholder copy — the real subhead is a content-writer deliverable. */}
-        Manufacturer-direct 358 anti-climb mesh panels, posts and fixings, engineered for commercial,
-        industrial, utility and government perimeters.
-      </p>
-
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3" data-p2-tail>
-        <a
-          href={CTA.href}
-          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[12px] font-bold tracking-[0.12em] uppercase transition-colors hover:bg-[#c50e24]"
-        >
-          Request a Quote
-        </a>
-        <a
-          href="/clear-view-fencing-panels"
-          class="tap-target border-gm-black/25 text-gm-black hover:border-gm-black hover:bg-gm-black hover:text-gm-white inline-flex items-center border px-7 text-[12px] font-bold tracking-[0.12em] uppercase transition-colors"
-        >
-          Build Your Fence
-        </a>
-      </div>
+        Request a Quote
+      </a>
+      <a
+        href="/clear-view-fencing-panels"
+        class="tap-target border-gm-black/25 text-gm-black hover:border-gm-black hover:bg-gm-black hover:text-gm-white inline-flex items-center border px-7 text-[12px] font-bold tracking-[0.12em] uppercase transition-colors"
+      >
+        Build Your Fence
+      </a>
     </div>
   </div>
 
@@ -315,24 +344,35 @@ const P2_MAIN = ['Never', 'Get', 'Through', 'It.'];
     opacity: 0.7;
   }
 
-  /* Baseline: panels flow one after another and both read fine with JS off. */
+  /* display/flex-direction/align-items live as Tailwind classes on the
+     element itself — .stage never switches layout mode (only the nested
+     .headline-stack does), so there's nothing conditional left to keep here. */
   .stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    gap: 3rem;
     text-align: center;
   }
 
-  /* GSAP swaps this in and the panels share one grid cell. */
-  .stage--js {
+  /* Baseline: the two headline panels flow one after another and both read
+     fine with JS off. */
+  .headline-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+  }
+
+  /* GSAP swaps this in and the panels share one grid cell, so panel 1 can
+     slide out as panel 2 slides in. Scoped to just the headline — the
+     subhead and CTAs below are siblings of .headline-stack, not inside it,
+     so they're never part of this overlay and never get hidden by it. */
+  .headline-stack--js {
     display: grid;
     place-items: center;
     gap: 0;
   }
 
-  .stage--js .panel {
+  .headline-stack--js .panel {
     grid-area: 1 / 1;
   }
 
@@ -391,9 +431,34 @@ const P2_MAIN = ['Never', 'Get', 'Through', 'It.'];
     will-change: transform;
   }
 
+  /* Subhead + CTAs get one CSS-only entrance beat on load — never JS-gated
+     and never tied to scroll, so it plays identically whether or not JS
+     ever runs. animationguide.md calls for the kicker's own entrance to be
+     CSS-only for the same reason; this extends that same treatment to the
+     content sitting below it, so it arrives instead of just popping in,
+     without ever depending on GSAP to be visible at all. */
+  [data-hero-tail] {
+    animation: hero-tail-in 0.7s 0.4s both cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @keyframes hero-tail-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .w__i {
       transform: none !important;
+    }
+
+    [data-hero-tail] {
+      animation: none;
     }
   }
 </style>
@@ -411,16 +476,17 @@ const P2_MAIN = ['Never', 'Get', 'Through', 'It.'];
     ]);
     gsap.registerPlugin(ScrollTrigger);
 
-    const stage = hero.querySelector<HTMLElement>('[data-stage]');
+    const headlineStack = hero.querySelector<HTMLElement>('[data-headline-stack]');
     const panel2 = hero.querySelector<HTMLElement>('[data-panel-2]');
     const image = hero.querySelector('[data-hero-image]');
     const clouds = gsap.utils.toArray<HTMLElement>('[data-cloud]');
 
-    /* Overlay the panels only now, so the no-JS rendering keeps them stacked
-       and legible. */
-    stage?.classList.add('stage--js');
+    /* Overlay just the two headline panels now, so the no-JS rendering keeps
+       everything stacked and legible. The subhead and CTAs below are never
+       touched here — they're outside headline-stack entirely, so there's
+       nothing to hide and nothing that needs re-revealing later. */
+    headlineStack?.classList.add('headline-stack--js');
     gsap.set('[data-w2]', { yPercent: 115 });
-    gsap.set('[data-p2-tail]', { opacity: 0, y: 20 });
     gsap.set(panel2, { pointerEvents: 'none' });
     gsap.set(image, { scale: 1.1, yPercent: -4 });
 
@@ -431,7 +497,6 @@ const P2_MAIN = ['Never', 'Get', 'Through', 'It.'];
       .timeline({ paused: true, defaults: { ease: 'power3.inOut' } })
       .to('[data-w1]', { yPercent: -115, duration: 0.42, stagger: 0.035 }, 0)
       .to('[data-w2]', { yPercent: 0, duration: 0.5, stagger: 0.04 }, 0.24)
-      .to('[data-p2-tail]', { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 }, 0.5)
       .set(panel2, { pointerEvents: 'auto' });
 
     /* One ScrollTrigger drives everything. Three separate triggers sharing the

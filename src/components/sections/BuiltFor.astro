@@ -23,8 +23,24 @@ import { CTA } from '@data/nav';
  * effect of opening the new one, racing whatever timing the script tries to
  * control, so the script owns exclusivity outright instead of fighting that.
  *
+ * Row styling is adapted from a reference site's "What We Do" list
+ * (oversized numbered rows, hairline dividers, a circular arrow button that
+ * fills solid on interaction, a label that reveals on hover). The shape is
+ * borrowed, not the interaction: that reference list navigates to a separate
+ * page per row, which doesn't fit here — there's no dedicated page per
+ * buyer segment, and the real payoff (which real sites, who actually buys)
+ * lives in the panel these rows already expand to show. So the accordion
+ * itself is untouched; only the resting/hover/open look of each row changed
+ * to match that reference's confidence — grey, oversized numeral-led
+ * headings that go black on interaction, instead of a small icon badge
+ * carrying all the visual weight.
+ *
  * Light section — hero (light) → Proof358 (dark) → SystemAssembly (light) →
  * FinishLadder (dark) → here (light), continuing designguide.md §4's rhythm.
+ * Kept light rather than copying the reference's dark treatment for this
+ * list — FinishLadder directly above is already dark, and going dark here
+ * too would put three dark sections in a row once ProjectsShowcase (also
+ * dark) follows immediately after.
  *
  * Unlike Proof358/SystemAssembly/FinishLadder, nothing here needs GSAP —
  * just the accordion script above and a light IntersectionObserver fade-up
@@ -103,10 +119,18 @@ const SEGMENTS: Segment[] = [
       {
         SEGMENTS.map((s, i) => (
           <details data-row open={i === 0} class="border-gm-grey-200 border-b">
-            <summary class="tap-target flex cursor-pointer list-none items-center gap-5 py-6 marker:content-none [&::-webkit-details-marker]:hidden">
+            <summary class="tap-target flex cursor-pointer list-none items-center gap-5 py-7 marker:content-none sm:gap-6 sm:py-8 [&::-webkit-details-marker]:hidden">
+              <span
+                data-num
+                class="text-gm-grey-300 font-mono text-sm tracking-tight tabular-nums transition-colors duration-300 sm:text-base"
+                aria-hidden="true"
+              >
+                0{i + 1}
+              </span>
+
               <span
                 data-icon
-                class="border-gm-grey-200 bg-gm-white flex h-14 w-14 shrink-0 items-center justify-center rounded-full border transition-colors"
+                class="border-gm-grey-200 bg-gm-white hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 sm:flex sm:h-14 sm:w-14"
               >
                 {s.id === 'commercial' && (
                   <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
@@ -173,32 +197,45 @@ const SEGMENTS: Segment[] = [
                 )}
               </span>
 
-              <span class="font-display text-gm-black flex-1 text-lg font-bold tracking-tight uppercase sm:text-xl">
+              <span
+                data-title
+                class="font-display text-gm-grey-400 flex-1 text-2xl font-black tracking-tight uppercase transition-colors duration-300 sm:text-3xl lg:text-4xl"
+              >
                 {s.name}
               </span>
 
-              <svg
-                data-chevron
-                viewBox="0 0 24 24"
-                class="text-gm-grey-400 h-5 w-5 shrink-0 transition-transform duration-300"
-                fill="none"
+              <span
+                data-explore
+                class="text-gm-red hidden text-[11px] font-bold tracking-[0.16em] uppercase opacity-0 transition-opacity duration-300 sm:inline-block"
                 aria-hidden="true"
               >
-                <path
-                  d="M6 9l6 6 6-6"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+                Sites &amp; Buyers
+              </span>
+
+              <span
+                data-arrow-btn
+                class="border-gm-grey-200 text-gm-grey-400 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors duration-300"
+              >
+                <svg
+                  data-chevron
+                  viewBox="0 0 24 24"
+                  class="h-5 w-5 shrink-0 transition-transform duration-300"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
             </summary>
 
             <div data-panel>
-              <div
-                data-panel-inner
-                class="grid gap-6 pb-8 pl-[4.5rem] sm:grid-cols-2 sm:pl-[4.75rem]"
-              >
+              <div data-panel-inner class="grid gap-6 pb-8 sm:grid-cols-2">
                 <div>
                   <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
                     Real Sites
@@ -246,15 +283,42 @@ const SEGMENTS: Segment[] = [
     content: '';
   }
 
-  /* Active-row highlight — the icon badge picks up the brand red once its
-     row is the open one. */
-  [data-built-for] details[open] > summary [data-icon] {
+  /* Active-row highlight — grey, numeral-led rows go dark/red the moment
+     they're open OR just hovered, so a visitor gets the same "this one's
+     live" feedback whether they've clicked yet or are still scanning.
+     Icon, number, title, the "Sites & Buyers" label and the arrow button
+     all react together rather than one element carrying the whole state
+     change. */
+  [data-built-for] details[open] > summary [data-icon],
+  [data-built-for] summary:hover [data-icon] {
     border-color: var(--color-gm-red);
     background: rgba(228, 17, 42, 0.06);
   }
+
+  [data-built-for] details[open] > summary [data-num],
+  [data-built-for] summary:hover [data-num] {
+    color: var(--color-gm-red);
+  }
+
+  [data-built-for] details[open] > summary [data-title],
+  [data-built-for] summary:hover [data-title] {
+    color: var(--color-gm-black);
+  }
+
+  [data-built-for] details[open] > summary [data-explore],
+  [data-built-for] summary:hover [data-explore] {
+    opacity: 1;
+  }
+
+  [data-built-for] details[open] > summary [data-arrow-btn],
+  [data-built-for] summary:hover [data-arrow-btn] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+
   [data-built-for] details[open] > summary [data-chevron] {
     transform: rotate(180deg);
-    color: var(--color-gm-red);
   }
 
   /* The open/close animation itself: a plain pixel `height` transition.

@@ -231,6 +231,38 @@ const STEPS: Step[] = [
     ]);
     gsap.registerPlugin(ScrollTrigger);
 
+    // Hero also pins itself, on its own independent idle-callback + dynamic
+    // import, and its pin-spacer reserves real scroll-height above this
+    // section. Nothing guarantees that spacer exists yet by the time this
+    // section is ready to measure its own position — whichever section's
+    // idle callback fires first wins the race. If this section measures
+    // first, its start position comes out short by roughly Hero's pin
+    // distance, so it pins ~900px too early: the wrapper locks to the
+    // viewport while EstimatorTeaser is still legitimately scrolling past
+    // above it, and the two render in the same space. A later
+    // ScrollTrigger.refresh() does NOT fix this retroactively (verified —
+    // the trigger's start stays wrong even long after Hero's spacer is
+    // confirmed correct), so the fix is to not measure until the page's
+    // height has actually stopped changing, not just "wait a while and
+    // hope Hero won by then."
+    const waitForStableLayout = async (maxWaitMs = 2500) => {
+      const startedAt = performance.now();
+      let lastHeight = document.documentElement.scrollHeight;
+      let stableTicks = 0;
+      while (performance.now() - startedAt < maxWaitMs) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const height = document.documentElement.scrollHeight;
+        if (height === lastHeight) {
+          stableTicks += 1;
+          if (stableTicks >= 2) return;
+        } else {
+          stableTicks = 0;
+          lastHeight = height;
+        }
+      }
+    };
+    await waitForStableLayout();
+
     // Hand off from native scroll to a GSAP-driven transform — both can't
     // own the track's position at once.
     track.style.overflow = 'visible';
@@ -238,7 +270,12 @@ const STEPS: Step[] = [
     track.scrollLeft = 0;
 
     const dots = gsap.utils.toArray<HTMLElement>('[data-step-dot]', section);
-    const distance = () => Math.max(track.scrollWidth - wrapper.clientWidth, 1);
+    // Measured against the TRACK's own width, not the wrapper's — the track
+    // is capped at max-w-[1400px] and centered, while wrapper spans the
+    // section's full (unconstrained) width. On any viewport wider than
+    // ~1460px those two widths diverge, and using wrapper.clientWidth here
+    // under-scrolls the track, permanently cropping the last card(s).
+    const distance = () => Math.max(track.scrollWidth - track.clientWidth, 1);
 
     // The site header is `position: fixed` and sits on top of everything
     // (NavCenterSplit.astro), not pushed out of the layout — so a pin start
