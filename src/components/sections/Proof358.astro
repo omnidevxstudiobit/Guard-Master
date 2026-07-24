@@ -287,10 +287,13 @@ const ROWS = [
           </svg>
         </div>
 
-        <!-- Config panel: the toggle + live readout -->
-        <div
-          class="absolute inset-x-4 bottom-4 rounded border border-white/12 bg-black/65 p-4 backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-5"
-        >
+        <!-- Config panel: the toggle + live readout. Stacked below the
+             visual, not floated over it — the scanner sweep spans the
+             mesh's full height, and this used to sit `absolute` over the
+             bottom third of it for the whole 8s cycle, permanently hiding
+             that much of the animation no matter when you looked, translucent
+             backdrop or not. -->
+        <div class="border-t border-white/12 p-4 sm:p-5">
           <div class="mb-3 flex items-center justify-between">
             <span class="text-gm-grey-400 font-mono text-[11px] tracking-[0.24em] uppercase"
               >Configure aperture</span

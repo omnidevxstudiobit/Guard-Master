@@ -612,9 +612,21 @@ const RESTING = PHASES[3];
           </p>
         </div>
 
-        <!-- Caption card -->
+        <!-- Caption card. Same collision the stamp/callout comments above
+             already flag for this exact range: the split layout at `lg`
+             (1024px) shrinks the scene enough that a fixed-content card
+             anchored to the bottom edge starts eating into where the thief
+             actually stands and fights during "Force" — measured, not
+             guessed: the card's top edge sat *above* the thief's ground
+             anchor at 1024px, so the whole attack was rendered behind it
+             for the entire phase, not just clipped at the edges. The sub
+             copy is real information (same facts live in the stamp/callout
+             and in Proof358 right after this section), so dropping it only
+             in this one cramped range — rather than shrinking type until it
+             fits and still isn't enough — is the same trade already made
+             for the callout below. -->
         <div
-          class="absolute inset-x-3 bottom-3 z-[3] overflow-hidden rounded border border-white/12 bg-black/70 p-3 backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-5"
+          class="absolute inset-x-3 bottom-3 z-[3] overflow-hidden rounded border border-white/12 bg-black/70 p-3 backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-5 lg:p-3 xl:p-5"
         >
           <div data-phase-bar class="bg-gm-red absolute top-0 left-0 h-[2px]" style="width: 100%;">
           </div>
@@ -632,7 +644,10 @@ const RESTING = PHASES[3];
           >
             {RESTING.title}
           </p>
-          <p data-phase-sub class="text-gm-grey-300 mt-2 text-[13px] leading-relaxed">
+          <p
+            data-phase-sub
+            class="text-gm-grey-300 mt-2 text-[13px] leading-relaxed lg:hidden xl:mt-2 xl:block"
+          >
             {RESTING.sub}
           </p>
         </div>

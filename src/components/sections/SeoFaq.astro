@@ -89,6 +89,110 @@ const FAQS: Faq[] = [
       </h2>
     </div>
 
+    <!-- Technical cutaway — this block was the flattest thing on the page:
+         five facts as plain text with no visual anchor, while every sibling
+         section (Proof358's aperture configurator, SystemAssembly's
+         connected-parts diagram, FinishLadder's staircase) earns its place
+         with something to actually look at. This draws the same 76.2 × 12.7
+         mm aperture and welded node that fact 02's copy already states in
+         words — same real numbers, same `patternUnits` technique Proof358
+         uses for its own mesh grid (a tile sized to the true mm dimensions,
+         not a stylised approximation) — so the diagram and the copy can't
+         drift out of sync with each other. Geometry only in the SVG; the
+         three labels are real HTML text absolutely positioned over it, so
+         they stay legible instead of scaling down with the artwork. Hidden
+         below `lg`: at that width the wide aspect ratio compresses enough
+         that the labels would start crowding their own leader lines, and
+         the text grid below already carries the full content on its own. -->
+    <div
+      class="relative mx-auto mt-12 hidden aspect-[620/280] w-full max-w-3xl lg:mt-14 lg:block"
+    >
+      <svg
+        viewBox="0 0 620 280"
+        class="h-full w-full"
+        role="img"
+        aria-label="Cutaway of a post and 358 mesh panel, with one aperture dimensioned at 76.2 by 12.7 millimetres and a welded node called out"
+      >
+        <defs>
+          <pattern id="explainer-mesh" patternUnits="userSpaceOnUse" width="76.2" height="12.7">
+            <line x1="0" y1="0" x2="0" y2="12.7" stroke="#bababa" stroke-width="1.6"></line>
+            <line x1="0" y1="0" x2="76.2" y2="0" stroke="#bababa" stroke-width="1.6"></line>
+            <circle cx="0" cy="0" r="2" fill="#e4112a"></circle>
+          </pattern>
+        </defs>
+
+        <!-- post + cap -->
+        <rect x="20" y="20" width="48" height="16" rx="2" fill="#f7f7f7" stroke="#161616" stroke-width="2"
+        ></rect>
+        <rect x="34" y="36" width="20" height="200" fill="#f7f7f7" stroke="#161616" stroke-width="2"
+        ></rect>
+
+        <!-- panel: 5 columns × 10 rows of the real 76.2×12.7mm tile -->
+        <rect x="90" y="60" width="381" height="127" fill="url(#explainer-mesh)" stroke="#d6d6d6" stroke-width="1.5"
+        ></rect>
+
+        <!-- one aperture, called out -->
+        <rect x="242.4" y="110.8" width="76.2" height="12.7" fill="rgba(228,17,42,0.07)" stroke="#e4112a" stroke-width="2"
+        ></rect>
+
+        <!-- weld-node leader -->
+        <path d="M242.4 110.8 L 190 78" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+        <circle cx="242.4" cy="110.8" r="3" fill="#e4112a"></circle>
+
+        <!-- width dimension (76.2mm) -->
+        <path
+          d="M242.4 123.5 V 210 M318.6 123.5 V 210"
+          fill="none"
+          stroke="#c9c9c9"
+          stroke-width="1"
+          stroke-dasharray="3 3"
+        ></path>
+        <path
+          d="M242.4 202 V 210 H 318.6 V 202"
+          fill="none"
+          stroke="#6e6e6e"
+          stroke-width="1.4"
+        ></path>
+
+        <!-- height dimension (12.7mm) -->
+        <path
+          d="M318.6 110.8 H 400 M318.6 123.5 H 400"
+          fill="none"
+          stroke="#c9c9c9"
+          stroke-width="1"
+          stroke-dasharray="3 3"
+        ></path>
+        <path
+          d="M392 110.8 H 400 V 123.5 H 392"
+          fill="none"
+          stroke="#6e6e6e"
+          stroke-width="1.4"
+        ></path>
+      </svg>
+
+      <p
+        class="text-gm-grey-600 font-mono absolute text-[10px] tracking-[0.16em] uppercase"
+        style="left: 15%; top: 20%;"
+        aria-hidden="true"
+      >
+        Welded node
+      </p>
+      <p
+        class="text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+        style="left: 45%; top: 79%; transform: translateX(-50%);"
+        aria-hidden="true"
+      >
+        76.2 mm
+      </p>
+      <p
+        class="text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+        style="left: 66%; top: 41%;"
+        aria-hidden="true"
+      >
+        12.7 mm
+      </p>
+    </div>
+
     <div
       data-explainer
       class="border-gm-grey-200 mt-10 grid gap-x-10 gap-y-10 border-t pt-10 sm:mt-12 sm:grid-cols-2 sm:gap-x-14 sm:gap-y-12 sm:pt-12"
