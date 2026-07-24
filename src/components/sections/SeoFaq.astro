@@ -13,8 +13,13 @@
  * below and used for both the rendered <details> answers and the JSON-LD via
  * JSON.stringify, so the two can't drift out of sync. Two of the six
  * questions ("What is 358 mesh fencing?" / "Do you ship across the United
- * States?") are seoguide.md Appendix B3's own example Q&As, reused verbatim
- * rather than reworded — they're already the canonical answers.
+ * States?") are seoguide.md Appendix B3's own example queries, kept as the
+ * target questions — but their answers are deliberately NOT the appendix's
+ * example wording verbatim, because that wording just re-derives facts the
+ * explainer block above already states (aperture size, "direct from the
+ * manufacturer"). Answering the same literal query from a different angle
+ * (welded-vs-chain-link, no-reseller/no-customs-wait) keeps the FAQ from
+ * reading as the explainer restated in accordion form.
  *
  * FAQ accordion: unlike BuiltFor's exclusive one-at-a-time (matching how
  * five *alternative* buyer segments should behave — picking one deselects
@@ -31,11 +36,12 @@ const FAQS: Faq[] = [
   {
     question: 'What is 358 mesh fencing?',
     answer:
-      '358 mesh is a welded steel mesh with 76 × 12.7 mm (3" × 0.5") apertures — too small for fingers or tools, making it anti-climb and anti-cut.',
+      "358 mesh is Guard Master's flagship security panel — a rigid steel grid welded at every intersection rather than woven like chain-link, which is what makes it something you can see through but not climb or cut through.",
   },
   {
     question: 'Do you ship across the United States?',
-    answer: 'Yes — we ship nationwide across the continental US, direct from the manufacturer.',
+    answer:
+      "Yes — every system ships direct from the manufacturer to your site across the continental US. There's no reseller markup and no overseas import sitting in a customs queue in between.",
   },
   {
     question: 'How long is the warranty?',
@@ -43,9 +49,9 @@ const FAQS: Faq[] = [
       'Warranty length depends on finish. Our Plascoat finish — the top of the finish ladder — carries a 10-year warranty; Hot-Dip Galvanised and Powder Coated finishes are covered too, at shorter terms. Full coverage details are on the warranties page.',
   },
   {
-    question: 'Can a fingertip fit through 358 mesh?',
+    question: 'Can I add gates or security toppings to my order?',
     answer:
-      "No. The 358 aperture is 76.2 × 12.7 mm — tighter than a fingertip, a toe-hold or a bolt-cutter's jaw, which is what makes it anti-climb and anti-cut rather than just a visual deterrent.",
+      'Yes — gates, razor and spike toppings, and solar post caps are all configurable extras in the instant estimator, priced alongside your core panel-and-post system.',
   },
   {
     question: 'Do you install the fencing, or just supply it?',
@@ -62,7 +68,16 @@ const FAQS: Faq[] = [
 
 <section data-seo-faq class="bg-gm-white text-gm-black relative overflow-hidden py-20 sm:py-28">
   <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-    <!-- SEO content block -->
+    <!-- SEO content block — deliberately NOT another bordered divider-row
+         list: the FAQ sits right below this in the same section, and giving
+         both the same "header + top rule + stacked bordered rows" shape
+         read as the same component twice in a row. This is a 2-column grid
+         of numbered spec entries instead — a different silhouette (grid,
+         no rules, number-over-heading-over-copy per cell) so the two halves
+         of this section stay visually distinct from each other, not just
+         differently labelled. Every H3/paragraph pair from seoguide.md §1's
+         required list is still real, static DOM either way — nothing here
+         needs JS to be complete or crawlable. -->
     <div class="max-w-3xl">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
         Clear View Fencing, Explained
@@ -72,61 +87,99 @@ const FAQS: Faq[] = [
       >
         What Guard Master Actually Builds
       </h2>
+    </div>
 
-      <div class="mt-8 grid gap-8 sm:grid-cols-2">
-        <div>
-          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
-            What Is Clear View Fencing?
-          </h3>
-          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
-            Clear view fencing is a welded mesh perimeter you can see straight through — unlike a
-            solid privacy fence, it keeps sightlines open for cameras, lighting and security
-            patrols, while the mesh itself stops anyone from climbing or cutting through it.
-          </p>
-        </div>
-        <div>
-          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
-            358 Mesh Explained
-          </h3>
-          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
-            358 mesh takes its name from its dimensions — a welded steel grid with a 76.2 × 12.7 mm
-            aperture, 4 mm wire and a welded node at every intersection, engineered so a fingertip,
-            a foothold or a bolt-cutter's jaw simply doesn't fit.
-          </p>
-        </div>
-        <div>
-          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
-            Where It's Used
-          </h3>
-          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
-            Commercial and industrial sites, utility and solar assets, government and institutional
-            perimeters, and high-security residential properties — see
-            <a href="#built-for" class="text-gm-red underline underline-offset-2">who we protect</a>
-            for the full breakdown by sector.
-          </p>
-        </div>
-        <div>
-          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
-            Finishes Available
-          </h3>
-          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
-            Plain Galvanised, Hot-Dip Galvanised, Powder Coated and Plascoat/PVC — a
-            good/better/best ladder, with the top tier carrying our
-            <a href="/warranties-and-guarantees" class="text-gm-red underline underline-offset-2"
-              >10-year warranty</a
-            >.
-          </p>
-        </div>
-        <div class="sm:col-span-2">
-          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
-            Shipping Across the US
-          </h3>
-          <p class="text-gm-grey-600 mt-2 max-w-2xl text-sm leading-relaxed">
-            Guard Master manufactures and ships direct across the continental United States —
-            imperial units, US specs, US support, not an overseas order dropped at your door with no
-            one to call.
-          </p>
-        </div>
+    <div
+      data-explainer
+      class="border-gm-grey-200 mt-10 grid gap-x-10 gap-y-10 border-t pt-10 sm:mt-12 sm:grid-cols-2 sm:gap-x-14 sm:gap-y-12 sm:pt-12"
+    >
+      <div data-explainer-row class="group">
+        <span
+          class="text-gm-grey-300 group-hover:text-gm-red font-mono text-3xl font-black transition-colors duration-300 sm:text-4xl"
+          aria-hidden="true">01</span
+        >
+        <h3
+          class="font-display text-gm-black mt-3 text-lg font-bold tracking-tight uppercase sm:text-xl"
+        >
+          What Is Clear View Fencing?
+        </h3>
+        <p class="text-gm-grey-600 mt-2.5 text-sm leading-relaxed sm:text-base">
+          Clear view fencing is a welded mesh perimeter you can see straight through — unlike a
+          solid privacy fence, it keeps sightlines open for cameras, lighting and security patrols,
+          while the mesh itself stops anyone from climbing or cutting through it.
+        </p>
+      </div>
+
+      <div data-explainer-row class="group">
+        <span
+          class="text-gm-grey-300 group-hover:text-gm-red font-mono text-3xl font-black transition-colors duration-300 sm:text-4xl"
+          aria-hidden="true">02</span
+        >
+        <h3
+          class="font-display text-gm-black mt-3 text-lg font-bold tracking-tight uppercase sm:text-xl"
+        >
+          358 Mesh Explained
+        </h3>
+        <p class="text-gm-grey-600 mt-2.5 text-sm leading-relaxed sm:text-base">
+          358 mesh takes its name from its dimensions — a welded steel grid with a 76.2 × 12.7 mm
+          aperture, 4 mm wire and a welded node at every intersection, engineered so a fingertip, a
+          foothold or a bolt-cutter's jaw simply doesn't fit.
+        </p>
+      </div>
+
+      <div data-explainer-row class="group">
+        <span
+          class="text-gm-grey-300 group-hover:text-gm-red font-mono text-3xl font-black transition-colors duration-300 sm:text-4xl"
+          aria-hidden="true">03</span
+        >
+        <h3
+          class="font-display text-gm-black mt-3 text-lg font-bold tracking-tight uppercase sm:text-xl"
+        >
+          Where It's Used
+        </h3>
+        <p class="text-gm-grey-600 mt-2.5 text-sm leading-relaxed sm:text-base">
+          Commercial and industrial sites, utility and solar assets, government and institutional
+          perimeters, and high-security residential properties — see{' '}
+          <a href="#built-for" class="text-gm-red underline underline-offset-2">who we protect</a>{
+            ' '
+          }for the full breakdown by sector.
+        </p>
+      </div>
+
+      <div data-explainer-row class="group">
+        <span
+          class="text-gm-grey-300 group-hover:text-gm-red font-mono text-3xl font-black transition-colors duration-300 sm:text-4xl"
+          aria-hidden="true">04</span
+        >
+        <h3
+          class="font-display text-gm-black mt-3 text-lg font-bold tracking-tight uppercase sm:text-xl"
+        >
+          Finishes Available
+        </h3>
+        <p class="text-gm-grey-600 mt-2.5 text-sm leading-relaxed sm:text-base">
+          Plain Galvanised, Hot-Dip Galvanised, Powder Coated and Plascoat/PVC — a good/better/best
+          ladder, with the top tier carrying our{' '}
+          <a href="/warranties-and-guarantees" class="text-gm-red underline underline-offset-2"
+            >10-year warranty</a
+          >.
+        </p>
+      </div>
+
+      <div data-explainer-row class="group sm:col-span-2">
+        <span
+          class="text-gm-grey-300 group-hover:text-gm-red font-mono text-3xl font-black transition-colors duration-300 sm:text-4xl"
+          aria-hidden="true">05</span
+        >
+        <h3
+          class="font-display text-gm-black mt-3 text-lg font-bold tracking-tight uppercase sm:text-xl"
+        >
+          Shipping Across the US
+        </h3>
+        <p class="text-gm-grey-600 mt-2.5 max-w-2xl text-sm leading-relaxed sm:text-base">
+          Guard Master manufactures and ships direct across the continental United States — imperial
+          units, US specs, US support, not an overseas order dropped at your door with no one to
+          call.
+        </p>
       </div>
     </div>
 
@@ -220,11 +273,61 @@ const FAQS: Faq[] = [
       transition: none;
     }
   }
+
+  /* Explainer ledger — a one-shot fade-up stagger on scroll-in, same
+     technique as BuiltFor's row reveal: not a scroll-scrub, since these five
+     rows are parallel facts rather than a sequence with real order/hierarchy
+     between them. */
+  [data-seo-faq].is-armed [data-explainer-row] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row]:nth-of-type(1) {
+    transition-delay: 0s;
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row]:nth-of-type(2) {
+    transition-delay: 0.06s;
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row]:nth-of-type(3) {
+    transition-delay: 0.12s;
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row]:nth-of-type(4) {
+    transition-delay: 0.18s;
+  }
+  [data-seo-faq].is-armed.explainer-in [data-explainer-row]:nth-of-type(5) {
+    transition-delay: 0.24s;
+  }
 </style>
 
 <script>
   const section = document.querySelector<HTMLElement>('[data-seo-faq]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (section && !reduce) {
+    section.classList.add('is-armed');
+    const explainer = section.querySelector<HTMLElement>('[data-explainer]');
+    if (explainer) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              section.classList.add('explainer-in');
+              io.disconnect();
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      io.observe(explainer);
+    }
+  }
 
   if (section && !reduce) {
     /* Independent accordion — several answers can stay open at once, unlike

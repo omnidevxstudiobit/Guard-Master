@@ -13,6 +13,19 @@ import { CTA } from '@data/nav';
  *
  * Dark — closing into the footer on the brand's black, not fading out on
  * white.
+ *
+ * Background photo: coiled razor wire in silhouette against a dusk sky with
+ * blurred city lights (N1CE, Unsplash License — free commercial use, no
+ * attribution required). Razor topping is a real, already-established option
+ * in this site's own content (HowItWorks step 2), so this isn't an invented
+ * product claim — but it's shot abstract/silhouetted rather than as a literal
+ * product photo, so it doesn't misrepresent a specific Guard Master
+ * installation that doesn't exist. Deliberately NOT a chain-link or
+ * welded-mesh close-up: stock libraries have no real coverage of welded
+ * anti-climb mesh (a niche B2B product), and a chain-link shot would
+ * contradict this site's own "chain-link gets cut, ours doesn't" claim
+ * (Proof358). The dusk-blue tone also sits naturally against this section's
+ * near-black background instead of needing to be crushed dark to match it.
  */
 ---
 
@@ -21,13 +34,19 @@ import { CTA } from '@data/nav';
   class="bg-gm-black text-gm-white relative overflow-hidden py-24 text-center sm:py-32"
 >
   <div
-    class="pointer-events-none absolute inset-0 -z-10"
-    style="background: radial-gradient(70% 90% at 50% 100%, rgba(228,17,42,0.14), transparent 60%);"
+    class="absolute inset-0 z-0 bg-cover bg-center"
+    style="background-image: url('/images/razor-wire-dusk.jpg');"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-0 z-0"
+    style="background: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.55) 45%, #0a0a0a 100%), radial-gradient(70% 90% at 50% 100%, rgba(228,17,42,0.2), transparent 60%);"
     aria-hidden="true"
   >
   </div>
 
-  <div class="mx-auto max-w-3xl px-6">
+  <div class="relative z-10 mx-auto max-w-3xl px-6">
     <p data-line class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
       Manufacturer-Direct · US-Wide
     </p>

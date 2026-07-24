@@ -90,6 +90,7 @@ const ROWS = [
 ---
 
 <section
+  id="the-proof"
   data-proof358
   data-probe-state="blocked"
   class="bg-gm-black text-gm-white relative isolate overflow-hidden py-20 sm:py-28"
@@ -103,13 +104,18 @@ const ROWS = [
   </div>
 
   <div
-    class="mx-auto grid max-w-[1400px] items-center gap-14 px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:px-8"
+    class="mx-auto grid max-w-[1400px] items-center gap-14 px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:px-8"
   >
-    <!-- LEFT — the argument (all static DOM).
-         min-w-0 lets this grid item shrink below the comparison table's
-         min-width; without it a grid item's `min-width:auto` inherits the
-         420px table and the copy blows past a phone's viewport. -->
-    <div data-copy class="min-w-0">
+    {
+      /* Reading/DOM order keeps the copy (and its H2) first, for SEO and for
+        visitors without CSS — only the visual *placement* flips to the left
+        at `lg`, via `order`, not the markup itself. This is the middle of
+        three split sections down the page (IntrusionAttempt, this, then
+        EstimatorTeaser) — alternating which side the visual sits on breaks
+        up what would otherwise be the same copy-left/visual-right read
+        three times in a row. */
+    }
+    <div data-copy class="min-w-0 lg:order-2">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">358 Anti-Climb Mesh</p>
 
       <h2
@@ -197,8 +203,8 @@ const ROWS = [
       </div>
     </div>
 
-    <!-- RIGHT — the interactive proof -->
-    <figure data-visual class="m-0">
+    <!-- Visually left at `lg` (see the order note above) — the interactive proof -->
+    <figure data-visual class="m-0 lg:order-1">
       <div class="relative overflow-hidden rounded-md border border-white/10 bg-[#08080a]">
         <div data-mesh-stage class="relative">
           <svg

@@ -69,7 +69,10 @@ const TIERS: Tier[] = [
 ];
 ---
 
-<section data-ladder class="bg-gm-black text-gm-white relative overflow-hidden py-20 sm:py-28">
+<section
+  data-ladder
+  class="bg-gm-black text-gm-white relative isolate overflow-hidden py-20 sm:py-28"
+>
   <div
     class="pointer-events-none absolute inset-0 -z-10"
     style="background: radial-gradient(85% 110% at 15% 100%, rgba(228,17,42,0.10), transparent 55%);"
@@ -78,14 +81,14 @@ const TIERS: Tier[] = [
   </div>
 
   <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-    <div class="max-w-2xl">
+    <div class="mx-auto max-w-2xl text-center">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">The Finish Ladder</p>
       <h2
         class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
       >
         Pick Your Finish. We'll Warranty It For <span class="text-gm-red">10 Years.</span>
       </h2>
-      <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+      <p class="text-gm-grey-300 mx-auto mt-6 max-w-xl text-base leading-relaxed">
         Every panel starts as plain galvanised steel, then is finished in-house to your site's spec.
         Only the top tier — Plascoat — earns our 10-year warranty, because it's the only finish we
         trust that far. ISO-certified manufacturing, shipped from the continental US — not an
@@ -142,7 +145,7 @@ const TIERS: Tier[] = [
       }
     </div>
 
-    <div class="mt-16 flex flex-wrap gap-3 lg:mt-20">
+    <div class="mt-16 flex flex-wrap justify-center gap-3 lg:mt-20">
       <a
         href={CTA.href}
         class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"

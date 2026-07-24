@@ -145,7 +145,10 @@ const SITES: Site[] = [
 ];
 ---
 
-<section data-projects class="bg-gm-black text-gm-white relative overflow-hidden py-20 sm:py-28">
+<section
+  data-projects
+  class="bg-gm-black text-gm-white relative isolate overflow-hidden py-20 sm:py-28"
+>
   <div
     class="pointer-events-none absolute inset-0 -z-10"
     style="background: radial-gradient(85% 110% at 85% 0%, rgba(228,17,42,0.10), transparent 55%);"
@@ -154,14 +157,14 @@ const SITES: Site[] = [
   </div>
 
   <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-    <div class="max-w-2xl">
+    <div class="mx-auto max-w-2xl text-center">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Proof in the Field</p>
       <h2
         class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
       >
         From 900 Feet to 6,000. <span class="text-gm-red">Same Standard, Every Time.</span>
       </h2>
-      <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+      <p class="text-gm-grey-300 mx-auto mt-6 max-w-xl text-base leading-relaxed">
         Every perimeter is engineered to the site — length, terrain, access points and finish
         specified from scratch, not picked off a shelf. Here's the kind of scope each sector
         typically runs.
@@ -302,7 +305,7 @@ const SITES: Site[] = [
   </div>
 
   <div class="mx-auto mt-14 max-w-[1400px] px-6 lg:px-8">
-    <div class="flex flex-wrap gap-3">
+    <div class="flex flex-wrap justify-center gap-3">
       <a
         href={CTA.href}
         class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"

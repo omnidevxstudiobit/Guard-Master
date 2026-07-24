@@ -1,0 +1,728 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { CTA } from '@data/nav';
+
+/**
+ * /quote-estimator — the full configurator + instant estimator.
+ *
+ * businessguide.md §7: "no US competitor offers a genuinely interactive
+ * configurator plus an instant estimator" is the stated market wedge, and
+ * "every completed estimate is a lead" pushed to a Monday.com CRM via
+ * webhook. This page is the real, full version of what EstimatorTeaser
+ * previews on the homepage — same constants (MIN_LF/MAX_LF/DEFAULT_LF/
+ * PANEL_WIDTH_FT), same panel/post/gate arithmetic, same segments as
+ * BuiltFor and same finish tiers as FinishLadder, reused rather than
+ * reinvented so the numbers agree everywhere they appear.
+ *
+ * Two things this page deliberately does NOT fabricate:
+ *
+ * 1. A dollar price range. §7 is explicit that pricing is always a range,
+ *    never fixed, and "lives in a CMS-editable config this build doesn't
+ *    have access to" — the same reasoning EstimatorTeaser documents for
+ *    omitting a $ figure. The required disclaimer language ("excluding
+ *    freight, installation, groundworks, and subject to survey") is real
+ *    and included, just attached to the bill-of-materials estimate instead
+ *    of a price it can't responsibly display.
+ * 2. A working CRM handoff. There is no Monday.com webhook URL or contact
+ *    inbox anywhere in this codebase to send a real submission to (Footer.astro
+ *    omits contact details for the identical reason — inventing one would be
+ *    worse than not having it). The form below is fully real — proper
+ *    fields, validation, and structure — and submitting it shows an honest
+ *    "here's your estimate" confirmation rather than a fabricated "we've
+ *    received your request" promise. Wiring the actual webhook is a pending
+ *    backend integration task once the client supplies real CRM credentials.
+ *
+ * Static-first: every field below is a real, native form control, and
+ * without JS all five steps simply render stacked as one long form — nothing
+ * is hidden behind script. Where JS is available, it turns the stack into a
+ * step-by-step wizard (progress bar, Back/Next) and live-updates the summary
+ * sidebar on every change; reduced-motion only affects the step-swap
+ * transition, never the functionality.
+ */
+
+const MIN_LF = 100;
+const MAX_LF = 6000;
+const DEFAULT_LF = 500;
+const PANEL_WIDTH_FT = 10; // businessguide.md §5: panel size runs 10'×6' → 10'×10'
+
+type Segment = { id: string; name: string };
+const SEGMENTS: Segment[] = [
+  { id: 'commercial', name: 'Commercial' },
+  { id: 'industrial', name: 'Industrial' },
+  { id: 'utility-solar', name: 'Utility & Solar' },
+  { id: 'government', name: 'Government & Institutional' },
+  { id: 'residential', name: 'Residential' },
+];
+
+type Finish = { id: string; name: string; tier: string; warranty?: string };
+const FINISHES: Finish[] = [
+  { id: 'plain', name: 'Plain Galvanised', tier: 'Entry' },
+  { id: 'hdg', name: 'Hot-Dip Galvanised', tier: 'Mid' },
+  { id: 'powder', name: 'Powder Coated', tier: 'Mid-Premium' },
+  { id: 'plascoat', name: 'Plascoat / PVC', tier: 'Premium', warranty: '10-Year Warranty' },
+];
+---
+
+<BaseLayout
+  title="Instant Quote Estimator | Guard Master"
+  description="Configure your clear view 358 fence — perimeter, finish, gates and toppings — for an instant bill of materials. Manufacturer-direct, US shipping, 10-year warranty."
+>
+  <section class="bg-gm-black text-gm-white relative overflow-hidden py-16 sm:py-20">
+    <div
+      class="pointer-events-none absolute inset-0 -z-10"
+      style="background: radial-gradient(85% 110% at 85% 0%, rgba(228,17,42,0.10), transparent 55%);"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Quote Estimator</p>
+      <h1
+        class="font-display text-gm-white mt-5 max-w-3xl text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        Configure Your Fence. <span class="text-gm-red">Get Your Estimate.</span>
+      </h1>
+      <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+        Five steps, no obligation. Set your perimeter, finish and toppings for a real bill of
+        materials — the same arithmetic our team uses to confirm a firm quote.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-gm-white text-gm-black relative overflow-hidden py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div data-qw-grid class="grid items-start gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
+        <form data-qw-form novalidate>
+          <!-- Progress bar + step label — inserted visually by JS only; with
+               no JS every step below is simply visible at once, so a "Step 1
+               of 5" label pointing at hidden content would be misleading. -->
+          <div data-qw-progress-wrap class="hidden">
+            <div class="bg-gm-grey-100 h-1 overflow-hidden rounded-full">
+              <div
+                data-qw-progress-bar
+                class="bg-gm-red h-full transition-[width] duration-300 ease-out"
+                style="width: 20%;"
+              >
+              </div>
+            </div>
+            <p
+              data-qw-progress-label
+              class="text-gm-grey-500 mt-3 font-mono text-[11px] tracking-[0.18em] uppercase"
+            >
+              Step 1 of 5
+            </p>
+          </div>
+
+          <!-- Step 1 — segment -->
+          <fieldset data-qw-step data-qw-step-index="0" class="mt-8 first:mt-0">
+            <legend class="font-display text-2xl font-black tracking-tight uppercase">
+              What Are You Protecting?
+            </legend>
+            <p class="text-gm-grey-500 mt-2 text-sm leading-relaxed">
+              Helps us route your estimate to the right team — it doesn't change the numbers below.
+            </p>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+              {
+                SEGMENTS.map((s, i) => (
+                  <label class="qw-card border-gm-grey-200 has-checked:border-gm-red has-checked:bg-gm-red/5 flex cursor-pointer items-center gap-3 rounded-md border p-4 transition-colors">
+                    <input
+                      type="radio"
+                      name="segment"
+                      value={s.id}
+                      checked={i === 0}
+                      class="accent-gm-red h-4 w-4 shrink-0"
+                    />
+                    <span data-name class="text-[15px] font-semibold">
+                      {s.name}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+            <div class="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                data-qw-next
+                class="tap-target bg-gm-red text-gm-white hidden items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Next →
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Step 2 — perimeter -->
+          <fieldset data-qw-step data-qw-step-index="1" class="mt-8 first:mt-0">
+            <legend class="font-display text-2xl font-black tracking-tight uppercase">
+              Your Perimeter
+            </legend>
+            <p class="text-gm-grey-500 mt-2 text-sm leading-relaxed">
+              Drag the slider or type an exact length — the panel and post count update live.
+            </p>
+
+            <div class="mt-6 flex items-baseline justify-between gap-3">
+              <label
+                for="qw-lf-number"
+                class="text-gm-grey-500 font-mono text-[11px] tracking-[0.24em] uppercase"
+              >
+                Perimeter length
+              </label>
+              <span class="flex items-baseline gap-2">
+                <input
+                  id="qw-lf-number"
+                  data-qw-lf-number
+                  type="number"
+                  inputmode="numeric"
+                  min={MIN_LF}
+                  max={MAX_LF}
+                  step="10"
+                  value={DEFAULT_LF}
+                  class="border-gm-grey-200 w-24 rounded-sm border px-2 py-1 text-right font-mono text-lg font-bold"
+                />
+                <span class="font-mono text-lg font-bold">ft</span>
+              </span>
+            </div>
+            <input
+              data-qw-lf-slider
+              type="range"
+              min={MIN_LF}
+              max={MAX_LF}
+              step="10"
+              value={DEFAULT_LF}
+              aria-label="Perimeter length in linear feet"
+              class="tap-target accent-gm-red mt-4 w-full"
+            />
+            <div
+              class="text-gm-grey-400 flex justify-between font-mono text-[10px] tracking-wide uppercase"
+            >
+              <span>{MIN_LF.toLocaleString()} ft</span>
+              <span>{MAX_LF.toLocaleString()} ft</span>
+            </div>
+
+            <div class="border-gm-grey-200 mt-6 grid grid-cols-3 gap-4 border-t pt-6">
+              <div>
+                <p class="font-mono text-2xl font-black" data-qw-panels>
+                  {Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT)}
+                </p>
+                <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+                  Panels
+                </p>
+              </div>
+              <div>
+                <p class="font-mono text-2xl font-black" data-qw-posts>
+                  {Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT) + 1}
+                </p>
+                <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+                  Posts
+                </p>
+              </div>
+              <div>
+                <p class="font-mono text-2xl font-black" data-qw-gates-suggested>
+                  {Math.max(1, Math.round(DEFAULT_LF / 800))}
+                </p>
+                <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+                  Est. Gates
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                data-qw-back
+                class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black hidden items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                data-qw-next
+                class="tap-target bg-gm-red text-gm-white hidden items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Next →
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Step 3 — finish -->
+          <fieldset data-qw-step data-qw-step-index="2" class="mt-8 first:mt-0">
+            <legend class="font-display text-2xl font-black tracking-tight uppercase">
+              Pick Your Finish
+            </legend>
+            <p class="text-gm-grey-500 mt-2 text-sm leading-relaxed">
+              Every panel starts plain galvanised, then is finished in-house to your spec.
+            </p>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+              {
+                FINISHES.map((f, i) => (
+                  <label class="qw-card border-gm-grey-200 has-checked:border-gm-red has-checked:bg-gm-red/5 flex cursor-pointer items-start gap-3 rounded-md border p-4 transition-colors">
+                    <input
+                      type="radio"
+                      name="finish"
+                      value={f.id}
+                      checked={i === FINISHES.length - 1}
+                      class="accent-gm-red mt-1 h-4 w-4 shrink-0"
+                    />
+                    <span>
+                      <span class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase">
+                        {f.tier}
+                      </span>
+                      <span data-name class="block text-[15px] font-semibold">
+                        {f.name}
+                      </span>
+                      {f.warranty && (
+                        <span class="bg-gm-red text-gm-white mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-[0.06em] uppercase">
+                          {f.warranty}
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+            <div class="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                data-qw-back
+                class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black hidden items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                data-qw-next
+                class="tap-target bg-gm-red text-gm-white hidden items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Next →
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Step 4 — extras. businessguide.md §5's own named list: gates,
+               razor topping, spike topping, solar caps. -->
+          <fieldset data-qw-step data-qw-step-index="3" class="mt-8 first:mt-0">
+            <legend class="font-display text-2xl font-black tracking-tight uppercase">
+              Extras
+            </legend>
+            <p class="text-gm-grey-500 mt-2 text-sm leading-relaxed">
+              Incremental options on top of the core system — adjust the gate count or add toppings.
+            </p>
+
+            <label
+              for="qw-gates"
+              class="text-gm-grey-500 mt-6 block font-mono text-[11px] tracking-[0.24em] uppercase"
+            >
+              Gate count
+            </label>
+            <input
+              id="qw-gates"
+              data-qw-gates
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="1"
+              value={Math.max(1, Math.round(DEFAULT_LF / 800))}
+              class="border-gm-grey-200 mt-2 w-24 rounded-sm border px-2 py-1 text-right font-mono text-lg font-bold"
+            />
+            <p class="text-gm-grey-400 mt-1.5 text-[11px] leading-relaxed">
+              Pre-filled from your perimeter — edit if you know your access points.
+            </p>
+
+            <div class="border-gm-grey-200 mt-6 space-y-3 border-t pt-6">
+              <label
+                class="qw-card border-gm-grey-200 has-checked:border-gm-red has-checked:bg-gm-red/5 flex cursor-pointer items-center gap-3 rounded-md border p-4 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  name="extras"
+                  value="spike"
+                  class="accent-gm-red h-4 w-4 shrink-0"
+                />
+                <span>
+                  <span data-name class="block text-[15px] font-semibold">Spike Topping</span>
+                  <span class="text-gm-grey-500 text-[13px]"
+                    >Anti-climb spike topping along the top rail.</span
+                  >
+                </span>
+              </label>
+              <label
+                class="qw-card border-gm-grey-200 has-checked:border-gm-red has-checked:bg-gm-red/5 flex cursor-pointer items-center gap-3 rounded-md border p-4 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  name="extras"
+                  value="razor"
+                  class="accent-gm-red h-4 w-4 shrink-0"
+                />
+                <span>
+                  <span data-name class="block text-[15px] font-semibold">Razor Topping</span>
+                  <span class="text-gm-grey-500 text-[13px]"
+                    >Razor wire topping for maximum-security sites.</span
+                  >
+                </span>
+              </label>
+              <label
+                class="qw-card border-gm-grey-200 has-checked:border-gm-red has-checked:bg-gm-red/5 flex cursor-pointer items-center gap-3 rounded-md border p-4 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  name="extras"
+                  value="solar"
+                  class="accent-gm-red h-4 w-4 shrink-0"
+                />
+                <span>
+                  <span data-name class="block text-[15px] font-semibold">Solar Caps</span>
+                  <span class="text-gm-grey-500 text-[13px]">Solar-powered post cap lighting.</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                data-qw-back
+                class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black hidden items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                data-qw-next
+                class="tap-target bg-gm-red text-gm-white hidden items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Next →
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Step 5 — contact -->
+          <fieldset data-qw-step data-qw-step-index="4" class="mt-8 first:mt-0">
+            <legend class="font-display text-2xl font-black tracking-tight uppercase">
+              Your Details
+            </legend>
+            <p class="text-gm-grey-500 mt-2 text-sm leading-relaxed">
+              We'll route this to the right person — often a specifier or contractor is buying on
+              the owner's behalf, so a company name helps.
+            </p>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label
+                  for="qw-name"
+                  class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase"
+                  >Full name *</label
+                >
+                <input
+                  id="qw-name"
+                  name="name"
+                  type="text"
+                  required
+                  autocomplete="name"
+                  class="border-gm-grey-200 mt-1.5 w-full rounded-sm border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label
+                  for="qw-email"
+                  class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase"
+                  >Email *</label
+                >
+                <input
+                  id="qw-email"
+                  name="email"
+                  type="email"
+                  required
+                  autocomplete="email"
+                  class="border-gm-grey-200 mt-1.5 w-full rounded-sm border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label
+                  for="qw-phone"
+                  class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase"
+                  >Phone</label
+                >
+                <input
+                  id="qw-phone"
+                  name="phone"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  class="border-gm-grey-200 mt-1.5 w-full rounded-sm border px-3 py-2 text-sm"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <label
+                  for="qw-company"
+                  class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase"
+                  >Company / organization</label
+                >
+                <input
+                  id="qw-company"
+                  name="company"
+                  type="text"
+                  autocomplete="organization"
+                  class="border-gm-grey-200 mt-1.5 w-full rounded-sm border px-3 py-2 text-sm"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <label
+                  for="qw-notes"
+                  class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase"
+                  >Project notes</label
+                >
+                <textarea
+                  id="qw-notes"
+                  name="notes"
+                  rows="3"
+                  class="border-gm-grey-200 mt-1.5 w-full rounded-sm border px-3 py-2 text-sm"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                data-qw-back
+                class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black hidden items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                ← Back
+              </button>
+              <button
+                type="submit"
+                class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Get My Estimate
+              </button>
+            </div>
+          </fieldset>
+        </form>
+
+        <!-- Live summary — same numbers as the form, mirrored for review. -->
+        <aside
+          data-qw-summary
+          class="border-gm-grey-200 bg-gm-grey-50 sticky top-24 rounded-md border p-6 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+        >
+          <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.24em] uppercase">
+            Your Estimate
+          </p>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-gm-grey-500">Protecting</dt>
+              <dd data-qw-summary-segment class="text-right font-semibold">Commercial</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-gm-grey-500">Perimeter</dt>
+              <dd data-qw-summary-lf class="text-right font-semibold">
+                {DEFAULT_LF.toLocaleString()} ft
+              </dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-gm-grey-500">Panels · Posts</dt>
+              <dd data-qw-summary-parts class="text-right font-semibold">
+                {Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT)} · {
+                  Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT) + 1
+                }
+              </dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-gm-grey-500">Gates</dt>
+              <dd data-qw-summary-gates class="text-right font-semibold">
+                {Math.max(1, Math.round(DEFAULT_LF / 800))}
+              </dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-gm-grey-500">Finish</dt>
+              <dd data-qw-summary-finish class="text-right font-semibold">Plascoat / PVC</dd>
+            </div>
+            <div class="flex items-start justify-between gap-3">
+              <dt class="text-gm-grey-500">Toppings</dt>
+              <dd data-qw-summary-extras class="max-w-[60%] text-right font-semibold">
+                None selected
+              </dd>
+            </div>
+          </dl>
+          <p
+            class="text-gm-grey-400 border-gm-grey-200 mt-5 border-t pt-4 text-[11px] leading-relaxed"
+          >
+            Illustrative bill of materials — excludes freight, installation and groundworks; final
+            scope is confirmed on survey.
+          </p>
+        </aside>
+      </div>
+
+      <!-- Confirmation — swapped in for the form + summary on submit; the
+           form is never actually wired to a CRM (see the doc comment above),
+           so this states only what's true: the estimate is ready, not that
+           a request was received somewhere. -->
+      <div data-qw-confirm class="hidden">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Estimate Ready</p>
+        <h2 class="font-display mt-4 text-3xl font-black tracking-tight uppercase sm:text-4xl">
+          Here's Your Bill Of Materials.
+        </h2>
+        <p class="text-gm-grey-600 mt-4 max-w-2xl text-base leading-relaxed">
+          Save this summary — a completed estimate is the first step toward a firm, surveyed quote.
+        </p>
+        <div
+          data-qw-confirm-summary
+          class="border-gm-grey-200 bg-gm-grey-50 mt-8 max-w-xl rounded-md border p-6 text-sm"
+        >
+        </div>
+        <a
+          href={CTA.href}
+          class="tap-target bg-gm-red text-gm-white mt-8 inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          Start A New Estimate
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ MIN_LF, MAX_LF, DEFAULT_LF, PANEL_WIDTH_FT, TOTAL_STEPS: 5 }}>
+  const form = document.querySelector('[data-qw-form]');
+  if (form) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const steps = Array.from(form.querySelectorAll('[data-qw-step]'));
+    const progressWrap = form.querySelector('[data-qw-progress-wrap]');
+    const progressBar = form.querySelector('[data-qw-progress-bar]');
+    const progressLabel = form.querySelector('[data-qw-progress-label]');
+    const nextButtons = Array.from(form.querySelectorAll('[data-qw-next]'));
+    const backButtons = Array.from(form.querySelectorAll('[data-qw-back]'));
+
+    const lfSlider = form.querySelector('[data-qw-lf-slider]');
+    const lfNumber = form.querySelector('[data-qw-lf-number]');
+    const panelsEl = form.querySelector('[data-qw-panels]');
+    const postsEl = form.querySelector('[data-qw-posts]');
+    const gatesSuggestedEl = form.querySelector('[data-qw-gates-suggested]');
+    const gatesInput = form.querySelector('[data-qw-gates]');
+
+    let gatesTouched = false;
+    gatesInput?.addEventListener('input', () => {
+      gatesTouched = true;
+    });
+
+    const renderLf = (lf) => {
+      const panels = Math.ceil(lf / PANEL_WIDTH_FT);
+      const posts = panels + 1;
+      const suggestedGates = Math.max(1, Math.round(lf / 800));
+      if (panelsEl) panelsEl.textContent = String(panels);
+      if (postsEl) postsEl.textContent = String(posts);
+      if (gatesSuggestedEl) gatesSuggestedEl.textContent = String(suggestedGates);
+      if (gatesInput && !gatesTouched) gatesInput.value = String(suggestedGates);
+    };
+
+    lfSlider?.addEventListener('input', () => {
+      if (lfNumber) lfNumber.value = lfSlider.value;
+      renderLf(Number(lfSlider.value));
+      updateSummary();
+    });
+    lfNumber?.addEventListener('input', () => {
+      const clamped = Math.min(MAX_LF, Math.max(MIN_LF, Number(lfNumber.value) || MIN_LF));
+      if (lfSlider) lfSlider.value = String(clamped);
+      renderLf(clamped);
+      updateSummary();
+    });
+
+    // Live summary — mirrors whatever's currently selected in the form.
+    const summarySegment = document.querySelector('[data-qw-summary-segment]');
+    const summaryLf = document.querySelector('[data-qw-summary-lf]');
+    const summaryParts = document.querySelector('[data-qw-summary-parts]');
+    const summaryGates = document.querySelector('[data-qw-summary-gates]');
+    const summaryFinish = document.querySelector('[data-qw-summary-finish]');
+    const summaryExtras = document.querySelector('[data-qw-summary-extras]');
+
+    function updateSummary() {
+      const segment = form.querySelector('input[name="segment"]:checked');
+      const finish = form.querySelector('input[name="finish"]:checked');
+      const extras = Array.from(form.querySelectorAll('input[name="extras"]:checked')).map(
+        (el) => el.closest('label')?.querySelector('[data-name]')?.textContent?.trim() ?? el.value,
+      );
+      const lf = Number(lfNumber?.value || DEFAULT_LF);
+      const panels = Math.ceil(lf / PANEL_WIDTH_FT);
+      const posts = panels + 1;
+      const gates = Number(gatesInput?.value || Math.max(1, Math.round(lf / 800)));
+
+      if (summarySegment) {
+        summarySegment.textContent =
+          segment?.closest('label')?.querySelector('[data-name]')?.textContent?.trim() ?? '—';
+      }
+      if (summaryLf) summaryLf.textContent = `${lf.toLocaleString()} ft`;
+      if (summaryParts) summaryParts.textContent = `${panels} · ${posts}`;
+      if (summaryGates) summaryGates.textContent = String(gates);
+      if (summaryFinish) {
+        summaryFinish.textContent =
+          finish?.closest('label')?.querySelector('[data-name]')?.textContent?.trim() ?? '—';
+      }
+      if (summaryExtras)
+        summaryExtras.textContent = extras.length ? extras.join(', ') : 'None selected';
+    }
+
+    form.addEventListener('change', updateSummary);
+    updateSummary();
+
+    // Step-wizard enhancement — without this, every fieldset above is just
+    // visible at once (a normal, if long, stacked form).
+    let active = 0;
+    const showStep = (i) => {
+      active = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach((s, idx) => s.classList.toggle('is-active', idx === active));
+      if (progressBar) progressBar.style.width = ((active + 1) / TOTAL_STEPS) * 100 + '%';
+      if (progressLabel) progressLabel.textContent = `Step ${active + 1} of ${TOTAL_STEPS}`;
+      if (!reduce) form.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    };
+
+    steps.forEach((step) => step.classList.add('qw-step'));
+    progressWrap?.classList.remove('hidden');
+    [...nextButtons, ...backButtons].forEach((b) => {
+      b.classList.remove('hidden');
+      b.classList.add('inline-flex');
+    });
+    showStep(0);
+
+    nextButtons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const step = btn.closest('[data-qw-step]');
+        const requiredEls = step ? Array.from(step.querySelectorAll('[required]')) : [];
+        if (requiredEls.some((el) => !el.checkValidity())) {
+          requiredEls.forEach((el) => el.reportValidity());
+          return;
+        }
+        showStep(active + 1);
+      }),
+    );
+    backButtons.forEach((btn) => btn.addEventListener('click', () => showStep(active - 1)));
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      updateSummary();
+
+      const grid = document.querySelector('[data-qw-grid]');
+      const confirm = document.querySelector('[data-qw-confirm]');
+      const confirmSummary = document.querySelector('[data-qw-confirm-summary]');
+      if (confirmSummary) {
+        confirmSummary.innerHTML = document.querySelector('[data-qw-summary]')?.innerHTML ?? '';
+      }
+      grid?.classList.add('hidden');
+      confirm?.classList.remove('hidden');
+      if (!reduce) confirm?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+</script>
+
+<style is:global>
+  [data-qw-step] {
+    display: block;
+  }
+  .qw-step:not(.is-active) {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-qw-progress-bar] {
+      transition: none;
+    }
+  }
+</style>
