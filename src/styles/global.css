@@ -1,5 +1,21 @@
 @import 'tailwindcss';
 
+/* Archivo — self-hosted variable WOFF2 (weight 100–900 in one file, latin
+   subset only; this site has no italic anywhere and is US-market English,
+   so neither is worth the extra request). Still a placeholder, not the
+   client's actual brand font (designguide.md §1's real self-hosted WOFF2
+   is still TBD) — but a heavy-weight geometric grotesk with a genuine 900
+   cut is a much closer stand-in for "heavy geometric sans, tight tracking,
+   uppercase headings" (brief §2) than the bare system-font stack it
+   replaces, and it swaps out the same way once the real font arrives. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/archivo-variable.woff2') format('woff2');
+}
+
 /* ---------------------------------------------------------------------------
    Guard Master design tokens — see designguide.md §2.
    Red is the single hex taken from the supplied brand reference; black and
@@ -23,10 +39,11 @@
   --color-gm-grey-900: #161616;
 
   /* Brief §2: heavy geometric sans, tight tracking, uppercase headings.
-     The real self-hosted variable WOFF2 is still TBD (designguide.md §1) —
-     this stack stands in until the brand font is supplied. */
+     Archivo (self-hosted above) is the interim stand-in; the system stack
+     stays on as the fallback chain in case the woff2 fails to load. */
   --font-display:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
 }
 
 @layer base {
