@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Clear view 358 anti-climb mesh fencing panel">
+  <!--
+    PLACEHOLDER hero poster. The real asset is a photographed installation,
+    exported to AVIF/WebP at multiple widths (brief §4.1 — this element is the
+    LCP). The pattern below approximates 358 mesh: narrow 12.7 mm apertures
+    between closely spaced vertical wires, with horizontal wires every 76 mm.
+  -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b1b1f" />
+      <stop offset="100%" stop-color="#0a0a0a" />
+    </linearGradient>
+    <pattern id="mesh358" width="14" height="80" patternUnits="userSpaceOnUse">
+      <rect width="14" height="80" fill="none" />
+      <rect x="0" y="0" width="2" height="80" fill="#3a3a3a" />
+      <rect x="0" y="0" width="14" height="2" fill="#4a4a4a" />
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0a0a0a" stop-opacity="1" />
+      <stop offset="55%" stop-color="#0a0a0a" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)" />
+  <rect width="1600" height="900" fill="url(#mesh358)" opacity="0.55" />
+
+  <!-- Posts every ~400px, matching a panel run -->
+  <g fill="#2b2b2b">
+    <rect x="180" y="60" width="16" height="840" />
+    <rect x="620" y="60" width="16" height="840" />
+    <rect x="1060" y="60" width="16" height="840" />
+    <rect x="1500" y="60" width="16" height="840" />
+  </g>
+
+  <rect width="1600" height="900" fill="url(#fade)" />
+</svg>

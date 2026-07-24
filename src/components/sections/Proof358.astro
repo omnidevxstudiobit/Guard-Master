@@ -1,0 +1,672 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 2 — "The 358 Proof".
+ *
+ * The hero makes the promise ("See Through It. Never Get Through It."); this
+ * section proves it. A split layout: the argument on the left, an interactive
+ * aperture demonstration on the right. Toggling between 358, standard welded
+ * and chain-link mesh swaps the pattern the fence is drawn with and drops a
+ * scale-accurate fingertip against it — on 358 the 12.7 mm gap blocks it, on
+ * the looser meshes it passes straight through.
+ *
+ * Three rules shape every choice here (animationguide.md §0):
+ *
+ * 1. Static-first / SEO. The copy and the full comparison table are real DOM —
+ *    a crawler and a screen reader read the proof even with the canvas idea
+ *    dropped. The default 358 mesh renders server-side as an SVG <pattern>, so
+ *    the visual is there with JS off; script only adds the toggle + reveal.
+ * 2. No perpetual motion. The mesh is a tiled <pattern>, swapped on click — a
+ *    crisp change, not a rAF loop draining a phone battery. The only timed
+ *    animation is a short count-up on the pitch readout, gated to when the
+ *    section is on screen and skipped under reduced-motion.
+ * 3. Deliberate dark. The hero is a light daylight scene; this "spec-lab" panel
+ *    is near-black on purpose, for rhythm and a technical read (designguide §4).
+ *
+ * Vanilla enhancement, matching the hero/nav pattern — no framework ships for a
+ * three-button toggle; Preact is held back for the heavier quote configurator.
+ */
+
+type Preset = {
+  id: string;
+  name: string;
+  aperture: string;
+  gap: string; // the min gap in mm, the "can a finger fit" number
+  wire: string;
+  finger: string;
+  toe: string;
+  cut: string;
+  note: string;
+  probe: 'blocked' | 'passes';
+};
+
+const PRESETS: Preset[] = [
+  {
+    id: '358',
+    name: '358 Anti-Climb',
+    aperture: '76.2 × 12.7 mm',
+    gap: '12.7',
+    wire: '4.0 mm (8ga)',
+    finger: 'No',
+    toe: 'No',
+    cut: 'None',
+    note: 'minimum gap — a fingertip won’t fit',
+    probe: 'blocked',
+  },
+  {
+    id: 'standard',
+    name: 'Standard Welded',
+    aperture: '50 × 50 mm',
+    gap: '50',
+    wire: '3.0 mm',
+    finger: 'Yes',
+    toe: 'Yes',
+    cut: 'Some',
+    note: 'minimum gap — a toe-hold fits',
+    probe: 'passes',
+  },
+  {
+    id: 'chain',
+    name: 'Chain-Link',
+    aperture: '50 mm diamond',
+    gap: '50',
+    wire: '2.5 mm',
+    finger: 'Yes',
+    toe: 'Yes',
+    cut: 'Easy',
+    note: 'one strand cut and it unravels',
+    probe: 'passes',
+  },
+];
+
+const ROWS = [
+  { label: 'Aperture', key: 'aperture' as const },
+  { label: 'Wire Ø', key: 'wire' as const },
+  { label: 'Finger access', key: 'finger' as const },
+  { label: 'Toe-hold', key: 'toe' as const },
+  { label: 'Cut line', key: 'cut' as const },
+];
+---
+
+<section
+  data-proof358
+  data-probe-state="blocked"
+  class="bg-gm-black text-gm-white relative isolate overflow-hidden py-20 sm:py-28"
+>
+  {/* Faint depth wash so the flat black gets some form, no image cost. */}
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(90% 120% at 78% 12%, rgba(228,17,42,0.10), transparent 55%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div
+    class="mx-auto grid max-w-[1400px] items-center gap-14 px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:px-8"
+  >
+    <!-- LEFT — the argument (all static DOM).
+         min-w-0 lets this grid item shrink below the comparison table's
+         min-width; without it a grid item's `min-width:auto` inherits the
+         420px table and the copy blows past a phone's viewport. -->
+    <div data-copy class="min-w-0">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">358 Anti-Climb Mesh</p>
+
+      <h2
+        class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        Chain-link gets cut.<br /><span class="text-gm-red">Ours doesn’t.</span>
+      </h2>
+
+      <p class="text-gm-grey-300 mt-6 max-w-md text-base leading-relaxed">
+        Guard Master’s welded 358 mesh runs apertures of just <strong
+          class="text-gm-white font-semibold">76.2 × 12.7 mm</strong
+        > — too tight for a fingertip, a toe-hold, or a bolt-cutter’s jaw. The same clear-view security
+        fencing you can see straight through, engineered so no one gets through.
+      </p>
+
+      <!-- Real comparison table: the proof a crawler and screen reader can read. -->
+      <div class="mt-9 overflow-x-auto">
+        <table class="w-full min-w-[420px] border-collapse text-left text-sm">
+          <caption class="sr-only">
+            358 anti-climb mesh compared with standard welded mesh and chain-link
+          </caption>
+          <thead>
+            <tr class="border-b border-white/12">
+              <th
+                scope="col"
+                class="text-gm-grey-500 py-3 pr-3 font-mono text-[11px] font-medium tracking-[0.16em] uppercase"
+              ></th>
+              {
+                PRESETS.map((p) => (
+                  <th
+                    scope="col"
+                    data-col={p.id}
+                    class:list={[
+                      'px-3 py-3 text-[13px] font-bold tracking-tight whitespace-nowrap transition-colors',
+                      p.id === '358' ? 'is-active' : '',
+                    ]}
+                  >
+                    {p.name}
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              ROWS.map((r) => (
+                <tr class="border-b border-white/8">
+                  <th
+                    scope="row"
+                    class="text-gm-grey-500 py-3 pr-3 font-mono text-[11px] font-medium tracking-[0.14em] uppercase"
+                  >
+                    {r.label}
+                  </th>
+                  {PRESETS.map((p) => (
+                    <td
+                      data-col={p.id}
+                      class:list={[
+                        'text-gm-grey-300 px-3 py-3 transition-colors',
+                        p.id === '358' ? 'is-active' : '',
+                      ]}
+                    >
+                      {p[r.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a
+          href={CTA.href}
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          {CTA.label}
+        </a>
+        <a
+          href="/clear-view-fencing-panels"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          View the Specs
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT — the interactive proof -->
+    <figure data-visual class="m-0">
+      <div class="relative overflow-hidden rounded-md border border-white/10 bg-[#08080a]">
+        <div data-mesh-stage class="relative">
+          <svg
+            data-mesh-svg
+            viewBox="0 0 381 254"
+            class="block h-auto w-full"
+            role="img"
+            aria-label="Fence mesh aperture, drawn to scale, with a 16 mm fingertip shown against it"
+          >
+            <defs>
+              <!-- 358 — verticals every 76.2 mm, horizontals every 12.7 mm, welded nodes -->
+              <pattern id="mesh-358" patternUnits="userSpaceOnUse" width="76.2" height="12.7">
+                <line x1="0" y1="0" x2="0" y2="12.7" stroke="#b8b8bd" stroke-width="3"></line>
+                <line x1="0" y1="0" x2="76.2" y2="0" stroke="#b8b8bd" stroke-width="3"></line>
+                <circle cx="0" cy="0" r="2.2" fill="#e4112a"></circle>
+              </pattern>
+              <!-- standard welded — 50 mm square, wide enough for a hand -->
+              <pattern id="mesh-standard" patternUnits="userSpaceOnUse" width="50" height="50">
+                <line x1="0" y1="0" x2="0" y2="50" stroke="#9a9aa0" stroke-width="2.6"></line>
+                <line x1="0" y1="0" x2="50" y2="0" stroke="#9a9aa0" stroke-width="2.6"></line>
+              </pattern>
+              <!-- chain-link — diagonal strands forming a diamond lattice -->
+              <pattern id="mesh-chain" patternUnits="userSpaceOnUse" width="60" height="60">
+                <line x1="0" y1="0" x2="60" y2="60" stroke="#8f8f95" stroke-width="2.4"></line>
+                <line x1="60" y1="0" x2="0" y2="60" stroke="#8f8f95" stroke-width="2.4"></line>
+              </pattern>
+            </defs>
+
+            {/* Default 358 mesh, rendered server-side so it shows with JS off. */}
+            <rect data-mesh-fill x="0" y="0" width="381" height="254" fill="url(#mesh-358)"></rect>
+          </svg>
+
+          {
+            /* Red "hot" copy of the mesh, revealed only inside the sweeping band —
+            the scanner lighting up the fence wire-by-wire as the beam passes.
+            Same viewBox as the base, so the lit wires sit exactly on the grey
+            ones. The weld sparks live here too, so the same band reveals each as
+            the beam reaches it. */
+          }
+          <svg class="mesh-hot" viewBox="0 0 381 254" aria-hidden="true">
+            <defs>
+              <pattern id="mesh-358-hot" patternUnits="userSpaceOnUse" width="76.2" height="12.7">
+                <line x1="0" y1="0" x2="0" y2="12.7" stroke="#ff4257" stroke-width="3"></line>
+                <line x1="0" y1="0" x2="76.2" y2="0" stroke="#ff4257" stroke-width="3"></line>
+                <circle cx="0" cy="0" r="2.4" fill="#ffd7dc"></circle>
+              </pattern>
+              <pattern id="mesh-standard-hot" patternUnits="userSpaceOnUse" width="50" height="50">
+                <line x1="0" y1="0" x2="0" y2="50" stroke="#ff4257" stroke-width="2.6"></line>
+                <line x1="0" y1="0" x2="50" y2="0" stroke="#ff4257" stroke-width="2.6"></line>
+              </pattern>
+              <pattern id="mesh-chain-hot" patternUnits="userSpaceOnUse" width="60" height="60">
+                <line x1="0" y1="0" x2="60" y2="60" stroke="#ff4257" stroke-width="2.4"></line>
+                <line x1="60" y1="0" x2="0" y2="60" stroke="#ff4257" stroke-width="2.4"></line>
+              </pattern>
+            </defs>
+            <rect data-mesh-hot x="0" y="0" width="381" height="254" fill="url(#mesh-358-hot)"
+            ></rect>
+            <g class="hot-sparks">
+              <circle cx="66" cy="42" r="2.4"></circle>
+              <circle cx="150" cy="150" r="2"></circle>
+              <circle cx="212" cy="80" r="2.6"></circle>
+              <circle cx="120" cy="206" r="2"></circle>
+              <circle cx="286" cy="178" r="2.4"></circle>
+              <circle cx="330" cy="58" r="2"></circle>
+            </g>
+          </svg>
+
+          {
+            /* Fingertip probe, above the mesh: scale-accurate Ø16 mm > the 358 gap,
+            so it's blocked; on looser meshes it drops through. */
+          }
+          <svg class="probe-layer" viewBox="0 0 381 254" aria-hidden="true">
+            <g data-probe transform="translate(190 130)">
+              <circle r="8" fill="rgba(228,17,42,0.16)" stroke="#e4112a" stroke-width="2"></circle>
+              <circle r="1.6" fill="#e4112a"></circle>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Config panel: the toggle + live readout -->
+        <div
+          class="absolute inset-x-4 bottom-4 rounded border border-white/12 bg-black/65 p-4 backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-5"
+        >
+          <div class="mb-3 flex items-center justify-between">
+            <span class="text-gm-grey-400 font-mono text-[11px] tracking-[0.24em] uppercase"
+              >Configure aperture</span
+            >
+            <span class="text-gm-red font-mono text-[11px]">
+              <span data-readout-num>12.7</span> mm gap
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2" role="group" aria-label="Choose a mesh type">
+            {
+              PRESETS.map((p, i) => (
+                <button
+                  type="button"
+                  data-preset={p.id}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                  class="preset-btn tap-target rounded-sm border px-2 text-[12px] font-bold tracking-tight uppercase transition-colors"
+                >
+                  {p.name}
+                </button>
+              ))
+            }
+          </div>
+
+          <p
+            data-readout-note
+            class="text-gm-grey-400 mt-3 font-mono text-[11px] tracking-[0.02em]"
+          >
+            minimum gap — a fingertip won’t fit
+          </p>
+        </div>
+      </div>
+
+      <figcaption
+        class="text-gm-grey-500 mt-3 flex items-center gap-2 font-mono text-[11px] tracking-[0.06em] uppercase"
+      >
+        <span aria-hidden="true">Ø16 mm fingertip</span>
+        <span
+          data-pill="blocked"
+          class="bg-gm-red/15 text-gm-red inline-flex items-center gap-1 rounded-full px-2 py-0.5"
+        >
+          Blocked
+        </span>
+        <span
+          data-pill="passes"
+          class="text-gm-grey-300 inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5"
+        >
+          Passes through
+        </span>
+      </figcaption>
+    </figure>
+  </div>
+
+  {
+    /* Preset data for the toggle — kept out of the module so the numbers live
+      once, beside the markup that renders them. */
+  }
+  <script is:inline type="application/json" data-presets set:html={JSON.stringify(PRESETS)} />
+</section>
+
+<style>
+  /* Active column in the comparison table. */
+  [data-proof358] th[data-col].is-active,
+  [data-proof358] td[data-col].is-active {
+    color: var(--color-gm-white);
+    background: rgba(228, 17, 42, 0.08);
+  }
+  [data-proof358] th[data-col].is-active {
+    color: var(--color-gm-red);
+  }
+
+  /* Toggle buttons — resting vs pressed. Colours live here rather than in
+     Tailwind classes so the JS only has to flip aria-pressed. */
+  [data-proof358] .preset-btn {
+    border-color: #35353d;
+    background: transparent;
+    color: var(--color-gm-grey-300);
+    line-height: 1.1;
+  }
+  [data-proof358] .preset-btn[aria-pressed='true'] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+
+  /* Fingertip probe: sits on the mesh when blocked, drops through when the
+     aperture is wide enough. A state change, transitioned — no looping. */
+  [data-proof358] [data-probe] {
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      opacity 0.4s ease;
+  }
+  /* Both states are CSS-driven so the drop transitions smoothly on the first
+     toggle too; the SVG `transform` attribute is the matching no-JS resting
+     position. */
+  [data-proof358][data-probe-state='blocked'] [data-probe] {
+    transform: translate(190px, 130px);
+  }
+  [data-proof358][data-probe-state='passes'] [data-probe] {
+    transform: translate(190px, 176px);
+    opacity: 0.32;
+  }
+
+  /* One knob paces the scanner sweep (the lit-mesh band + its sparks); raise it
+     to calm the motion further. */
+  [data-proof358] {
+    --scan-dur: 8s;
+  }
+
+  /* The scanner. A red "hot" copy of the mesh, revealed only inside a band that
+     sweeps across, so the fence lights up wire-by-wire as the beam passes —
+     the reference's effect, but one masked layer instead of a canvas particle
+     loop. Both overlays scale with the base svg, so the lit wires land exactly
+     on the grey ones. Paced by --scan-dur, gated to on-screen, off under
+     reduced motion. */
+  [data-proof358] .mesh-hot,
+  [data-proof358] .probe-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  [data-proof358] .mesh-hot {
+    /* A soft bloom around the lit wires — the glow comes from here, not from a
+       separate beam wash. */
+    filter: drop-shadow(0 0 3px rgba(255, 70, 90, 0.55));
+    /* The reveal band: a soft-edged slice of the width, swept across by
+       animating its position. */
+    -webkit-mask-image: linear-gradient(100deg, #0000 12%, #000 50%, #0000 88%);
+    mask-image: linear-gradient(100deg, #0000 12%, #000 50%, #0000 88%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 36% 100%;
+    mask-size: 36% 100%;
+    -webkit-mask-position: -60% 0;
+    mask-position: -60% 0;
+    animation: gm-hotsweep var(--scan-dur) linear infinite;
+    animation-play-state: paused;
+  }
+  [data-proof358].in-view .mesh-hot {
+    animation-play-state: running;
+  }
+  @keyframes gm-hotsweep {
+    from {
+      -webkit-mask-position: -60% 0;
+      mask-position: -60% 0;
+    }
+    to {
+      -webkit-mask-position: 160% 0;
+      mask-position: 160% 0;
+    }
+  }
+
+  /* Weld sparks — amber flecks on the mesh that twinkle. They live in the hot
+     layer, so the same sweeping band reveals each as the beam reaches it. */
+  [data-proof358] .hot-sparks circle {
+    fill: #ffcf6a;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    filter: drop-shadow(0 0 2px rgba(255, 180, 80, 0.9));
+    animation: gm-twinkle 1.1s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  [data-proof358].in-view .hot-sparks circle {
+    animation-play-state: running;
+  }
+  [data-proof358] .hot-sparks circle:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  [data-proof358] .hot-sparks circle:nth-child(3) {
+    animation-delay: 0.45s;
+  }
+  [data-proof358] .hot-sparks circle:nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  [data-proof358] .hot-sparks circle:nth-child(5) {
+    animation-delay: 0.6s;
+  }
+  [data-proof358] .hot-sparks circle:nth-child(6) {
+    animation-delay: 0.32s;
+  }
+  @keyframes gm-twinkle {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    45% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    75% {
+      opacity: 0.3;
+      transform: scale(0.7);
+    }
+  }
+
+  /* Redraw pulse — on a toggle the mesh dips and zooms as it reconfigures to
+     the new aperture. Bounded, and only on a user toggle. */
+  [data-proof358] [data-mesh-stage] {
+    transform-origin: center;
+    transition:
+      opacity 0.24s ease,
+      transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-proof358] [data-mesh-stage].is-redrawing {
+    opacity: 0.3;
+    transform: scale(1.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* No scanner at all — just the static grey mesh. */
+    [data-proof358] .mesh-hot {
+      display: none;
+    }
+    [data-proof358] [data-mesh-stage] {
+      transition: none;
+    }
+  }
+
+  /* Only one status pill shows at a time. */
+  [data-proof358] [data-pill] {
+    display: none;
+  }
+  [data-proof358][data-probe-state='blocked'] [data-pill='blocked'],
+  [data-proof358][data-probe-state='passes'] [data-pill='passes'] {
+    display: inline-flex;
+  }
+
+  /* Scroll-in reveal. The section arms itself only once JS runs and motion is
+     allowed; until then everything is at its resting, visible state, so no-JS
+     and reduced-motion visitors see the full section (and it's below the hero,
+     so arming never flashes on screen). */
+  [data-proof358].is-armed [data-copy] > *,
+  [data-proof358].is-armed [data-visual] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-proof358].is-armed [data-visual] {
+    transform: translateY(18px) scale(1.02);
+  }
+  [data-proof358].is-armed.is-in [data-copy] > *,
+  [data-proof358].is-armed.is-in [data-visual] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-proof358].is-armed.is-in [data-copy] > *:nth-child(2) {
+    transition-delay: 0.06s;
+  }
+  [data-proof358].is-armed.is-in [data-copy] > *:nth-child(3) {
+    transition-delay: 0.12s;
+  }
+  [data-proof358].is-armed.is-in [data-copy] > *:nth-child(4) {
+    transition-delay: 0.18s;
+  }
+  [data-proof358].is-armed.is-in [data-copy] > *:nth-child(5) {
+    transition-delay: 0.24s;
+  }
+  [data-proof358].is-armed.is-in [data-visual] {
+    transition-delay: 0.1s;
+  }
+</style>
+
+<script>
+  type Preset = {
+    id: string;
+    gap: string;
+    note: string;
+    probe: 'blocked' | 'passes';
+  };
+
+  const section = document.querySelector<HTMLElement>('[data-proof358]');
+  const dataEl = section?.querySelector<HTMLScriptElement>('[data-presets]');
+
+  if (section && dataEl) {
+    const presets = JSON.parse(dataEl.textContent || '[]') as Preset[];
+    const byId = new Map(presets.map((p) => [p.id, p]));
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fill = section.querySelector<SVGRectElement>('[data-mesh-fill]');
+    const hotFill = section.querySelector<SVGRectElement>('[data-mesh-hot]');
+    const stage = section.querySelector<HTMLElement>('[data-mesh-stage]');
+    const num = section.querySelector<HTMLElement>('[data-readout-num]');
+    const note = section.querySelector<HTMLElement>('[data-readout-note]');
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-preset]'));
+    const cols = Array.from(section.querySelectorAll<HTMLElement>('[data-col]'));
+
+    /* Count the readout up (or down) to a new gap value. Skipped under
+       reduced-motion, where it just snaps. */
+    let raf = 0;
+    let snap = 0;
+    const countTo = (target: number, animate: boolean) => {
+      if (!num) return;
+      cancelAnimationFrame(raf);
+      clearTimeout(snap);
+      const from = parseFloat(num.textContent || '0') || 0;
+      if (!animate || reduce) {
+        num.textContent = String(target);
+        return;
+      }
+      const start = performance.now();
+      const dur = 420;
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = from + (target - from) * eased;
+        num.textContent = (Math.round(val * 10) / 10).toString();
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      /* Safety net: rAF can be throttled or paused (a backgrounded tab mid-
+         click), which would freeze the readout on a half-way value. Land it on
+         the exact target once the duration has passed regardless. */
+      snap = window.setTimeout(() => {
+        cancelAnimationFrame(raf);
+        if (num) num.textContent = String(target);
+      }, dur + 90);
+    };
+
+    /* Swap the mesh pattern. On a user toggle, dip-and-zoom the mesh so it
+       reads as redrawing to the new aperture; otherwise (init / reduced motion)
+       swap straight away. */
+    let redrawTimer = 0;
+    const paint = (id: string) => {
+      fill?.setAttribute('fill', `url(#mesh-${id})`);
+      hotFill?.setAttribute('fill', `url(#mesh-${id}-hot)`);
+    };
+    const swapMesh = (id: string, animate: boolean) => {
+      if (!fill) return;
+      if (!animate || reduce || !stage) {
+        paint(id);
+        return;
+      }
+      clearTimeout(redrawTimer);
+      stage.classList.add('is-redrawing');
+      redrawTimer = window.setTimeout(() => {
+        paint(id);
+        stage.classList.remove('is-redrawing');
+      }, 150);
+    };
+
+    const setActive = (id: string, animate: boolean) => {
+      const p = byId.get(id);
+      if (!p) return;
+
+      swapMesh(id, animate);
+      section.setAttribute('data-probe-state', p.probe);
+      if (note) note.textContent = p.note;
+      countTo(parseFloat(p.gap), animate);
+
+      buttons.forEach((b) =>
+        b.setAttribute('aria-pressed', b.dataset.preset === id ? 'true' : 'false'),
+      );
+      cols.forEach((c) => c.classList.toggle('is-active', c.dataset.col === id));
+    };
+
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => b.dataset.preset && setActive(b.dataset.preset, true)),
+    );
+
+    // Wire the default state without animating (it already renders as 358).
+    setActive('358', false);
+
+    /* Reveal on scroll + gate the ambient scan. The reveal latches on once
+       (is-in is never removed, so it can't reverse); in-view toggles with the
+       section, so the scan animates only while it's on screen. Under reduced
+       motion the section stays un-armed — visible, no reveal — and the scan is
+       hidden in CSS, so the observer is harmless there. */
+    if (!reduce) section.classList.add('is-armed');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            section.classList.add('is-in');
+            section.classList.add('in-view');
+          } else {
+            section.classList.remove('in-view');
+          }
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    io.observe(section);
+  }
+</script>

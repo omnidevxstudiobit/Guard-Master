@@ -1,0 +1,245 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 4 — "The Finish Ladder".
+ *
+ * businessguide.md §8 names the site's central positioning battle: Guard
+ * Master is a South-Africa-based manufacturer entering the US market, and the
+ * #1 buyer objection is doubt about a foreign supplier — shipping, lead-time,
+ * availability. The counter isn't a badge, it's proof: manufacturer-direct,
+ * ISO-certified, shipped from the continental US, and a finish system with a
+ * warranty a fly-by-night importer couldn't stand behind (§6). This section
+ * makes that literal — an ascending staircase of the four finishes, each
+ * tier taller than the last, the top one carrying the 10-year warranty.
+ *
+ * Same reasoning as Proof358 and SystemAssembly: animationguide.md §0 rules
+ * out generic card/grid layouts, so this is a chart with real hierarchy
+ * (heights encode "better"), not four equal-weight tiles.
+ *
+ * Dark section — hero (light) → Proof358 (dark) → SystemAssembly (light) →
+ * here (dark), continuing the rhythm from designguide.md §4.
+ *
+ * All copy and tier data are static DOM; the section is complete with no JS.
+ * Where JS is available and motion is allowed, each bar grows scroll-scrubbed
+ * (transform: scaleY, not the `height` property, so nothing here triggers
+ * layout) — same GSAP ScrollTrigger pattern as SystemAssembly, tied directly
+ * to scroll position rather than firing once on a timer.
+ */
+
+type Tier = {
+  id: string;
+  name: string;
+  tier: string;
+  note: string;
+  heightPx: number;
+  warranty?: string;
+};
+
+const TIERS: Tier[] = [
+  {
+    id: 'plain',
+    name: 'Plain Galvanised',
+    tier: 'Entry',
+    note: 'Base corrosion protection',
+    heightPx: 96,
+  },
+  {
+    id: 'hdg',
+    name: 'Hot-Dip Galvanised',
+    tier: 'Mid',
+    note: "Heavier galv · posts' default",
+    heightPx: 136,
+  },
+  {
+    id: 'powder',
+    name: 'Powder Coated',
+    tier: 'Mid-Premium',
+    note: 'Colour + protection',
+    heightPx: 176,
+  },
+  {
+    id: 'plascoat',
+    name: 'Plascoat / PVC',
+    tier: 'Premium',
+    note: 'Our most weather-resistant finish',
+    heightPx: 220,
+    warranty: '10-Year Warranty',
+  },
+];
+---
+
+<section data-ladder class="bg-gm-black text-gm-white relative overflow-hidden py-20 sm:py-28">
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(85% 110% at 15% 100%, rgba(228,17,42,0.10), transparent 55%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-2xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">The Finish Ladder</p>
+      <h2
+        class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        Pick Your Finish. We'll Warranty It For <span class="text-gm-red">10 Years.</span>
+      </h2>
+      <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+        Every panel starts as plain galvanised steel, then is finished in-house to your site's spec.
+        Only the top tier — Plascoat — earns our 10-year warranty, because it's the only finish we
+        trust that far. ISO-certified manufacturing, shipped from the continental US — not an
+        overseas import dropped at your door.
+      </p>
+    </div>
+
+    <!-- The staircase — four finishes, ascending. Height itself is the
+         argument: each bar is taller than the last, so "better" reads before
+         a single word of copy does.
+         Four columns squeezed into one row read fine on desktop but crush to
+         ~70px each on a phone — illegible labels, a clipped badge. Below lg
+         this switches to a 2×2 grid instead: each pair keeps its own ground
+         line, and align-items:end (which grid honours the same as flex)
+         keeps every bar sitting on it regardless of layout mode. -->
+    <div
+      data-stairs
+      class="mt-20 grid grid-cols-2 items-end gap-x-5 gap-y-12 lg:mt-24 lg:flex lg:flex-row lg:gap-10 lg:border-b lg:border-white/12"
+    >
+      {
+        TIERS.map((t) => (
+          <div
+            data-step
+            data-id={t.id}
+            class="flex min-w-0 flex-1 flex-col items-center border-b border-white/12 pb-5 lg:border-b-0 lg:pb-0"
+          >
+            {t.warranty && (
+              <span
+                data-badge
+                class="tap-target bg-gm-red text-gm-white mb-3 inline-flex items-center justify-center rounded-full px-2 py-1.5 text-center text-[9px] leading-tight font-bold tracking-[0.06em] uppercase sm:px-3 sm:text-[11px] sm:tracking-[0.08em]"
+              >
+                {t.warranty}
+              </span>
+            )}
+            <div
+              data-bar
+              class:list={[
+                'w-full max-w-[92px] rounded-t-sm sm:max-w-[110px]',
+                t.warranty ? 'bg-gm-red' : 'bg-gm-grey-700',
+              ]}
+              style={`height:${t.heightPx}px`}
+            />
+            <div class="mt-4 text-center">
+              <p class="text-gm-grey-500 font-mono text-[10px] tracking-[0.18em] uppercase">
+                {t.tier}
+              </p>
+              <h3 class="font-display text-gm-white mt-1.5 text-[13px] leading-tight font-bold uppercase sm:text-sm">
+                {t.name}
+              </h3>
+              <p class="text-gm-grey-500 mt-1.5 max-w-[10rem] text-[12px] leading-snug">{t.note}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-16 flex flex-wrap gap-3 lg:mt-20">
+      <a
+        href={CTA.href}
+        class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+      >
+        Configure Your System
+      </a>
+      <a
+        href="/warranties-and-guarantees"
+        class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+      >
+        See the Full Warranty
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Bars grow from the ground up — transform only (scaleY from a bottom
+     origin), never the `height` property, so this never triggers layout.
+     --growth is what the script scrubs from 0 to 1; the fallback of 1 is
+     what renders with no JS or under reduced motion, so a bar is always its
+     full height unless the script is actively driving it. */
+  [data-ladder] [data-bar] {
+    transform: scaleY(var(--growth, 1));
+    transform-origin: bottom;
+  }
+
+  /* The warranty badge on the top step pops in after that bar finishes
+     growing — same "arrives after its neighbour completes" idea as
+     SystemAssembly's weld-joint dot. --badge-scale defaults to 1 (visible)
+     for the same no-JS / reduced-motion reasons. */
+  [data-ladder] [data-badge] {
+    transform: scale(var(--badge-scale, 1));
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-ladder]');
+
+  const enhance = async () => {
+    if (!section) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]);
+    gsap.registerPlugin(ScrollTrigger);
+
+    const steps = gsap.utils.toArray<HTMLElement>('[data-step]', section);
+
+    /* Not pinned — the staircase builds as the section scrolls past, tied to
+       how far the user has scrolled through it. Each bar grows in turn,
+       left to right, like climbing the ladder as you scroll down the page. */
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 85%',
+        end: 'top 25%',
+        scrub: 0.5,
+      },
+    });
+
+    steps.forEach((step, i) => {
+      const bar = step.querySelector<HTMLElement>('[data-bar]');
+      const badge = step.querySelector<HTMLElement>('[data-badge]');
+      const label = step.querySelector<HTMLElement>('div.mt-4');
+      const pos = i * 0.85; // one beat per step
+
+      if (bar)
+        tl.fromTo(
+          bar,
+          { '--growth': 0 },
+          { '--growth': 1, duration: 0.9, ease: 'power3.out' },
+          pos,
+        );
+      if (label)
+        tl.fromTo(
+          label,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+          pos + 0.3,
+        );
+      if (badge) {
+        tl.fromTo(
+          badge,
+          { '--badge-scale': 0 },
+          { '--badge-scale': 1, duration: 0.45, ease: 'back.out(2.4)' },
+          pos + 0.75,
+        );
+      }
+    });
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => void enhance(), { timeout: 2000 });
+  } else {
+    setTimeout(() => void enhance(), 200);
+  }
+</script>

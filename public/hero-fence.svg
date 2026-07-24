@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Clear view 358 anti-climb mesh fencing panels with galvanized posts">
+  <!--
+    PLACEHOLDER hero image. Replace with the photographed installation exported
+    to AVIF/WebP at multiple widths — this element is the LCP (brief §4.1).
+
+    Background is intentionally transparent so the daylight sky behind it shows
+    through the apertures: the mesh reads as see-through, which is the whole
+    product proposition. Aperture proportions approximate 358 mesh — narrow
+    12.7 mm gaps between vertical wires, horizontal wires every 76 mm.
+  -->
+  <defs>
+    <linearGradient id="wire" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9ccd2" />
+      <stop offset="55%" stop-color="#9aa0a8" />
+      <stop offset="100%" stop-color="#6f757d" />
+    </linearGradient>
+    <linearGradient id="post" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6f757d" />
+      <stop offset="35%" stop-color="#cfd3d9" />
+      <stop offset="100%" stop-color="#7e848c" />
+    </linearGradient>
+
+    <!-- One mesh cell: vertical wires close together, horizontals far apart -->
+    <pattern id="mesh358" width="15" height="88" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="2.6" height="88" fill="url(#wire)" />
+      <rect x="0" y="0" width="15" height="2.6" fill="url(#wire)" />
+    </pattern>
+  </defs>
+
+  <!-- Panel run: mesh from the ground up, sky visible through every aperture -->
+  <rect x="0" y="230" width="1600" height="600" fill="url(#mesh358)" />
+
+  <!-- Panel edge rails -->
+  <g fill="url(#wire)">
+    <rect x="0" y="230" width="1600" height="6" />
+    <rect x="0" y="824" width="1600" height="6" />
+  </g>
+
+  <!-- Posts at panel joints -->
+  <g fill="url(#post)">
+    <rect x="150" y="180" width="26" height="680" rx="3" />
+    <rect x="590" y="180" width="26" height="680" rx="3" />
+    <rect x="1030" y="180" width="26" height="680" rx="3" />
+    <rect x="1470" y="180" width="26" height="680" rx="3" />
+  </g>
+
+  <!-- Post caps -->
+  <g fill="#dfe3e8">
+    <rect x="146" y="172" width="34" height="10" rx="3" />
+    <rect x="586" y="172" width="34" height="10" rx="3" />
+    <rect x="1026" y="172" width="34" height="10" rx="3" />
+    <rect x="1466" y="172" width="34" height="10" rx="3" />
+  </g>
+
+  <!-- Ground haze so the panels sit in the scene rather than float -->
+  <rect x="0" y="820" width="1600" height="80" fill="#8f9298" opacity="0.35" />
+</svg>

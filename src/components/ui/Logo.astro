@@ -1,0 +1,74 @@
+---
+/**
+ * Placeholder brand lockups. designguide.md §5 requires the four supplied SVG
+ * variants (with <title> for accessibility) and forbids raster logos — these
+ * inline SVGs stand in with the correct structure until the real files land.
+ *
+ * `sub`  = Sub Main Logo (icon + text) — the header default.
+ * `icon` = Icon Logo ("G" mark) — mobile bar, favicon, watermark.
+ */
+interface Props {
+  variant?: 'sub' | 'icon';
+  class?: string;
+}
+
+const { variant = 'sub', class: className = '' } = Astro.props;
+---
+
+{
+  variant === 'icon' ? (
+    <svg
+      class={className}
+      viewBox="0 0 40 40"
+      role="img"
+      aria-labelledby="gm-icon-title"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="gm-icon-title">Guard Master</title>
+      <rect width="40" height="40" rx="8" fill="var(--color-gm-red)" />
+      <path
+        d="M27.5 14.2A8.8 8.8 0 0 0 20 10a10 10 0 1 0 0 20 9.4 9.4 0 0 0 8-4.2V19h-8.6v3.4h5.1a5.7 5.7 0 0 1-4.5 2.2 6.6 6.6 0 1 1 0-13.2 5.6 5.6 0 0 1 4.2 1.9Z"
+        fill="#fff"
+      />
+    </svg>
+  ) : (
+    <svg
+      class={className}
+      viewBox="0 0 208 40"
+      role="img"
+      aria-labelledby="gm-sub-title"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="gm-sub-title">Guard Master — high-security perimeter fencing</title>
+      <rect width="40" height="40" rx="8" fill="var(--color-gm-red)" />
+      <path
+        d="M27.5 14.2A8.8 8.8 0 0 0 20 10a10 10 0 1 0 0 20 9.4 9.4 0 0 0 8-4.2V19h-8.6v3.4h5.1a5.7 5.7 0 0 1-4.5 2.2 6.6 6.6 0 1 1 0-13.2 5.6 5.6 0 0 1 4.2 1.9Z"
+        fill="#fff"
+      />
+      <text
+        x="52"
+        y="19"
+        fill="currentColor"
+        font-family="var(--font-display)"
+        font-size="15"
+        font-weight="800"
+        letter-spacing="0.02em"
+      >
+        GUARD
+      </text>
+      <text
+        x="52"
+        y="34"
+        fill="currentColor"
+        font-family="var(--font-display)"
+        font-size="15"
+        font-weight="500"
+        letter-spacing="0.18em"
+      >
+        MASTER
+      </text>
+    </svg>
+  )
+}

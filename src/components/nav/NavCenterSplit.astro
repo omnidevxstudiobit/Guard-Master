@@ -1,0 +1,232 @@
+---
+import Logo from '@components/ui/Logo.astro';
+import { NAV_ITEMS, CTA } from '@data/nav';
+
+/**
+ * Variant A — centre logo, nav split left/right.
+ *
+ * Renders as plain server HTML and stays usable with JS off: real <a> links,
+ * and the mobile overlay opens from a checkbox + label rather than script.
+ * GSAP is never on the critical path — it is imported on idle and only layers
+ * decoration on top (animationguide.md §2–§4).
+ *
+ * Structure note: the overlay panel is a SIBLING of <header>. The bar takes
+ * `backdrop-filter` once scrolled, and that establishes a containing block for
+ * fixed-position descendants — a panel nested inside it stops resolving
+ * against the viewport and collapses to the bar's box.
+ */
+const left = NAV_ITEMS.slice(0, 3);
+const right = NAV_ITEMS.slice(3);
+---
+
+<input id="nav-toggle" type="checkbox" class="peer sr-only" aria-label="Toggle menu" />
+
+<header data-nav class="fixed inset-x-0 top-0 z-50">
+  {
+    /* Translucent blur only appears once scrolled — brief §4.1. Driven by a data
+      attribute so the transition is pure CSS and costs nothing on first paint. */
+  }
+  <div
+    class="data-[scrolled]:bg-gm-black/70 border-b border-transparent transition-[background-color,backdrop-filter,border-color] duration-300 data-[scrolled]:border-white/10 data-[scrolled]:backdrop-blur-xl"
+    data-nav-bar
+  >
+    <div class="mx-auto max-w-[1400px] px-5 lg:px-8">
+      <div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 lg:h-20">
+        <!-- LEFT — desktop links / mobile menu trigger -->
+        <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
+          {
+            left.map((item) => (
+              <a
+                href={item.href}
+                data-nav-item
+                class="group text-gm-grey-200 hover:text-gm-white relative text-[13px] font-semibold tracking-[0.14em] uppercase transition-colors"
+              >
+                {item.label}
+                <span class="bg-gm-red absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+              </a>
+            ))
+          }
+        </nav>
+
+        <label
+          for="nav-toggle"
+          class="tap-target text-gm-white flex cursor-pointer items-center justify-start lg:hidden"
+        >
+          <span class="sr-only">Open menu</span>
+          <span class="flex flex-col gap-[5px]" aria-hidden="true">
+            <span class="block h-0.5 w-6 bg-current"></span>
+            <span class="block h-0.5 w-6 bg-current"></span>
+            <span class="block h-0.5 w-4 bg-current"></span>
+          </span>
+        </label>
+
+        <!-- CENTRE — Sub Main Logo on desktop, Icon mark on mobile (brief §2, §4.8) -->
+        <a
+          href="/"
+          class="text-gm-white justify-self-center"
+          data-nav-logo
+          aria-label="Guard Master — home"
+        >
+          <Logo variant="sub" class="hidden h-8 w-auto lg:block" />
+          <Logo variant="icon" class="h-9 w-9 lg:hidden" />
+        </a>
+
+        <!-- RIGHT — desktop links + CTA. On mobile the brief keeps the bar to
+             just the icon logo, so the CTA lives inside the overlay. -->
+        <div class="flex items-center justify-end gap-7">
+          <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
+            {
+              right.map((item) => (
+                <a
+                  href={item.href}
+                  data-nav-item
+                  class="group text-gm-grey-200 hover:text-gm-white relative text-[13px] font-semibold tracking-[0.14em] uppercase transition-colors"
+                >
+                  {item.label}
+                  <span class="bg-gm-red absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+                </a>
+              ))
+            }
+          </nav>
+          <a
+            href={CTA.href}
+            data-nav-item
+            data-nav-cta
+            class="tap-target bg-gm-red text-gm-white hidden items-center px-5 text-[12px] font-bold tracking-[0.12em] uppercase transition-colors hover:bg-[#c50e24] lg:inline-flex"
+          >
+            {CTA.label}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Full-screen overlay (brief §4.8), sibling of <header> so `fixed` resolves
+     against the viewport even once the bar is blurred. -->
+<div
+  data-menu-panel
+  class="bg-gm-black fixed inset-0 z-40 hidden flex-col px-6 pt-24 pb-10 peer-checked:flex lg:!hidden"
+>
+  <label
+    for="nav-toggle"
+    class="tap-target text-gm-white absolute top-4 right-5 flex cursor-pointer items-center justify-center"
+  >
+    <span class="sr-only">Close menu</span>
+    <svg
+      viewBox="0 0 24 24"
+      class="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path d="M5 5l14 14M19 5L5 19"></path>
+    </svg>
+  </label>
+
+  <nav class="flex flex-col" aria-label="Mobile">
+    {
+      NAV_ITEMS.map((item) => (
+        <a
+          href={item.href}
+          data-menu-link
+          class="tap-target font-display text-gm-white flex items-center border-b border-white/10 py-4 text-2xl font-bold tracking-tight uppercase"
+        >
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+  <a
+    href={CTA.href}
+    data-menu-link
+    class="tap-target bg-gm-red text-gm-white mt-8 flex items-center justify-center px-6 text-sm font-bold tracking-[0.12em] uppercase"
+  >
+    {CTA.label}
+  </a>
+</div>
+
+<style>
+  /* The hero is a daylight scene, so the un-scrolled bar sits over a light sky
+     and needs dark type. Once the dark translucent bar fades in on scroll the
+     type flips back to light. The red CTA keeps its own colours throughout. */
+  /* The palette flips on the bar itself and the children just inherit it, so
+     each element is coloured by exactly one rule. Swapping colours per element
+     instead needs a second, more specific rule per element, and those did not
+     reliably win here — one variable avoids the contest entirely. */
+  [data-nav-bar] {
+    --nav-fg: var(--color-gm-grey-600);
+    --nav-fg-strong: var(--color-gm-black);
+  }
+
+  [data-nav-bar][data-scrolled] {
+    --nav-fg: var(--color-gm-grey-200);
+    --nav-fg-strong: var(--color-gm-white);
+  }
+
+  [data-nav-bar] [data-nav-item]:not([data-nav-cta]) {
+    color: var(--nav-fg);
+  }
+
+  [data-nav-bar] [data-nav-item]:not([data-nav-cta]):hover,
+  [data-nav-bar] [data-nav-logo],
+  [data-nav-bar] label[for='nav-toggle'] {
+    color: var(--nav-fg-strong);
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-nav-bar]');
+  const toggle = document.querySelector<HTMLInputElement>('#nav-toggle');
+
+  if (bar) {
+    /* Scroll state is functional, not decorative, so it runs without GSAP —
+       one passive listener flipping a single attribute; CSS does the rest. */
+    const onScroll = () => {
+      if (window.scrollY > 8) bar.setAttribute('data-scrolled', '');
+      else bar.removeAttribute('data-scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* Opening/closing is pure CSS; JS only stops the page scrolling behind the
+     open overlay. */
+  toggle?.addEventListener('change', () => {
+    document.body.style.overflow = toggle.checked ? 'hidden' : '';
+  });
+
+  /* Decorative motion only, loaded after idle so GSAP never touches LCP/FCP —
+     animationguide.md §0 rule 3 and §2. */
+  const enhance = async () => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const { gsap } = await import('gsap');
+
+    gsap.from('[data-nav-item], [data-nav-logo]', {
+      y: -10,
+      opacity: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      stagger: 0.04,
+    });
+
+    toggle?.addEventListener('change', () => {
+      if (!toggle.checked) return;
+      gsap.from('[data-menu-link]', {
+        y: 18,
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.out',
+        stagger: 0.05,
+      });
+    });
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => void enhance(), { timeout: 2000 });
+  } else {
+    setTimeout(() => void enhance(), 200);
+  }
+</script>
