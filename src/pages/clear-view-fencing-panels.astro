@@ -1,0 +1,581 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import { CTA } from '@data/nav';
+
+/**
+ * /clear-view-fencing-panels — the Panels product page.
+ *
+ * Title/meta description are seoguide.md Appendix A's own ready-to-use
+ * strings for this exact page, reused verbatim rather than reworded.
+ *
+ * Every spec below is a fact already established elsewhere in this codebase
+ * (businessguide.md §5, Proof358's preset data, the client's verified spec
+ * sheet used in Proof358/IntrusionAttempt/SystemAssembly this session) — not
+ * new numbers invented for this page. Product JSON-LD (Appendix B2) omits
+ * `image` and `offers`: no product photo file exists, and pricing is a
+ * range that "lives in a CMS-editable config this build doesn't have access
+ * to" (§7) — the same reasoning EstimatorTeaser and quote-estimator.astro
+ * document for withholding a $ figure. Fabricating either would be worse
+ * than a Product schema with fewer fields.
+ */
+
+const productJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Clear View Panels (358 Mesh)',
+  sku: 'CVP-358',
+  description:
+    'High-security anti-climb 358 mesh fence panels — 76.2 × 12.7 mm aperture, galvanized to Plascoat finishes, 10-year warranty.',
+  brand: { '@type': 'Brand', name: 'Guard Master' },
+};
+
+type Aperture = { id: string; size: string; label: string; note: string };
+const APERTURES: Aperture[] = [
+  {
+    id: 'a',
+    size: '76 × 12.7 mm',
+    label: '358 Standard',
+    note: 'The 358 standard — a fingertip, toe-hold or bolt-cutter jaw doesn’t fit.',
+  },
+  {
+    id: 'b',
+    size: '76 × 25 mm',
+    label: 'Wide Sightline',
+    note: 'Wider sightline where the tightest aperture isn’t the deciding factor.',
+  },
+  {
+    id: 'c',
+    size: '76 × 50 mm',
+    label: 'Open Weave',
+    note: 'The most open weave in the range, for lower-risk perimeters.',
+  },
+];
+
+const PANEL_SIZES = [
+  { label: 'Height range', us: "6 ft – 10 ft", metric: '1.8 m – 3.0 m' },
+  { label: 'Width', us: '10 ft', metric: '3.0 m' },
+];
+
+const WIRE_OPTIONS = ['3 × 4 mm', '4 × 4 mm'];
+
+const SPEC_ROWS = [
+  { label: 'Aperture (358 standard)', value: '76.2 × 12.7 mm ± 1.0 mm' },
+  { label: 'Wire diameter', value: 'Ø 3.5 mm – Ø 5.6 mm ± 0.10 mm' },
+  { label: 'Weld strength', value: '80% of parent material, every intersection' },
+  { label: 'Tensile strength', value: '500 – 650 MPa' },
+  { label: 'Coating options', value: 'Powder coating, Plascoat (anti-corrosion)' },
+];
+---
+
+<BaseLayout
+  title="Clear View 358 Mesh Security Fence Panels | Guard Master"
+  description="Configure clear view 358 mesh fence panels — aperture, panel size, wire gauge & finish. Anti-climb, galvanized to Plascoat, 10-yr warranty. Add to quote."
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(productJsonLd)} />
+
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Panels', href: '/clear-view-fencing-panels' },
+    ]}
+  />
+
+  <!-- Header -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Clear View Panels</p>
+        <h1
+          class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+        >
+          358 Mesh Security <span class="text-gm-red">Fence Panels</span>
+        </h1>
+        <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
+          The flagship product: a welded steel mesh panel you can see straight through, engineered
+          so nobody climbs or cuts through it. Manufacturer-direct, ISO-certified, shipped across
+          the continental United States.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href={CTA.href}
+            class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+          >
+            {CTA.label}
+          </a>
+          <a
+            href="/quote-estimator"
+            class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+          >
+            Configure This Panel
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive aperture diagram — the page's centerpiece. Three real
+       aperture options, each drawn at its own true mm pitch (not a shared
+       grid with a resized highlight — that would imply the three options
+       share one weld tooling and just skip wires, a manufacturing detail
+       this build has never confirmed). Three complete pattern/detail pairs
+       are predefined and swapped by id on toggle, the same technique
+       Proof358 uses for its own mesh-type switcher, just applied to this
+       page's own configurable spec instead of reusing that section. -->
+  <section
+    data-aperture-tool
+    data-active="a"
+    class="bg-gm-black text-gm-white py-16 sm:py-20"
+  >
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Configure Aperture</p>
+      <h2
+        class="font-display text-gm-white mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Three Apertures. One Panel.
+      </h2>
+      <p class="text-gm-grey-400 mt-6 max-w-2xl text-base leading-relaxed">
+        Every option is drawn here at its real millimetre pitch — pick one to see it dimensioned on
+        the panel itself, not just listed in a table.
+      </p>
+
+      <div class="mt-12 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-14">
+        <div class="relative aspect-[620/320] w-full">
+          <svg
+            viewBox="0 0 620 320"
+            class="h-full w-full"
+            role="img"
+            aria-label="Cutaway of a post and 358 mesh panel with the selected aperture dimensioned"
+          >
+            <defs>
+              <pattern id="ap-a" patternUnits="userSpaceOnUse" width="76" height="12.7">
+                <line x1="0" y1="0" x2="0" y2="12.7" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <line x1="0" y1="0" x2="76" y2="0" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <circle cx="0" cy="0" r="1.6" fill="#e4112a"></circle>
+              </pattern>
+              <pattern id="ap-b" patternUnits="userSpaceOnUse" width="76" height="25">
+                <line x1="0" y1="0" x2="0" y2="25" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <line x1="0" y1="0" x2="76" y2="0" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <circle cx="0" cy="0" r="1.6" fill="#e4112a"></circle>
+              </pattern>
+              <pattern id="ap-c" patternUnits="userSpaceOnUse" width="76" height="50">
+                <line x1="0" y1="0" x2="0" y2="50" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <line x1="0" y1="0" x2="76" y2="0" stroke="#3a3a3a" stroke-width="1.6"></line>
+                <circle cx="0" cy="0" r="1.6" fill="#e4112a"></circle>
+              </pattern>
+            </defs>
+
+            <!-- post + cap -->
+            <rect x="20" y="20" width="48" height="16" rx="2" fill="#0c0c0e" stroke="#4a4a4a" stroke-width="2"
+            ></rect>
+            <rect x="34" y="36" width="20" height="232" fill="#0c0c0e" stroke="#4a4a4a" stroke-width="2"
+            ></rect>
+
+            <!-- panel — fill swapped on toggle -->
+            <rect
+              data-panel-fill
+              x="100"
+              y="40"
+              width="380"
+              height="228"
+              fill="url(#ap-a)"
+              stroke="#3a3a3a"
+              stroke-width="1.5"
+            ></rect>
+
+            <!-- Aperture A detail: 76 × 12.7mm -->
+            <g data-aperture="a" class="ap-detail">
+              <rect x="252" y="141.6" width="76" height="12.7" fill="rgba(228,17,42,0.1)" stroke="#e4112a" stroke-width="2"></rect>
+              <path d="M252 141.6 L190 95" fill="none" stroke="#8a8a8a" stroke-width="1.4"></path>
+              <circle cx="252" cy="141.6" r="3" fill="#e4112a"></circle>
+              <path d="M252 154.3 V210 M328 154.3 V210" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M252 202 V210 H328 V202" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+              <path d="M328 141.6 H400 M328 154.3 H400" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M392 141.6 H400 V154.3 H392" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+            </g>
+
+            <!-- Aperture B detail: 76 × 25mm -->
+            <g data-aperture="b" class="ap-detail hidden">
+              <rect x="252" y="140" width="76" height="25" fill="rgba(228,17,42,0.1)" stroke="#e4112a" stroke-width="2"></rect>
+              <path d="M252 140 L190 95" fill="none" stroke="#8a8a8a" stroke-width="1.4"></path>
+              <circle cx="252" cy="140" r="3" fill="#e4112a"></circle>
+              <path d="M252 165 V210 M328 165 V210" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M252 202 V210 H328 V202" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+              <path d="M328 140 H400 M328 165 H400" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M392 140 H400 V165 H392" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+            </g>
+
+            <!-- Aperture C detail: 76 × 50mm -->
+            <g data-aperture="c" class="ap-detail hidden">
+              <rect x="252" y="140" width="76" height="50" fill="rgba(228,17,42,0.1)" stroke="#e4112a" stroke-width="2"></rect>
+              <path d="M252 140 L190 95" fill="none" stroke="#8a8a8a" stroke-width="1.4"></path>
+              <circle cx="252" cy="140" r="3" fill="#e4112a"></circle>
+              <path d="M252 190 V210 M328 190 V210" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M252 202 V210 H328 V202" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+              <path d="M328 140 H400 M328 190 H400" fill="none" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 3"></path>
+              <path d="M392 140 H400 V190 H392" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+            </g>
+          </svg>
+
+          <p
+            class="text-gm-grey-400 font-mono absolute text-[10px] tracking-[0.16em] uppercase"
+            style="left: 28%; top: 27%;"
+            aria-hidden="true"
+          >
+            Welded node
+          </p>
+          <p
+            class="text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+            style="left: 47%; top: 69%; transform: translateX(-50%);"
+            aria-hidden="true"
+          >
+            76 mm
+          </p>
+          <p
+            data-height-label="a"
+            class="ap-label text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+            style="left: 65%; top: 46%;"
+            aria-hidden="true"
+          >
+            12.7 mm
+          </p>
+          <p
+            data-height-label="b"
+            class="ap-label text-gm-red font-mono absolute hidden text-[10px] font-bold tracking-[0.1em] uppercase"
+            style="left: 65%; top: 48%;"
+            aria-hidden="true"
+          >
+            25 mm
+          </p>
+          <p
+            data-height-label="c"
+            class="ap-label text-gm-red font-mono absolute hidden text-[10px] font-bold tracking-[0.1em] uppercase"
+            style="left: 65%; top: 52%;"
+            aria-hidden="true"
+          >
+            50 mm
+          </p>
+        </div>
+
+        <div class="border-t border-white/12 pt-6 lg:pt-0 lg:pl-2 lg:border-t-0">
+          <div class="grid grid-cols-3 gap-2" role="group" aria-label="Choose an aperture size">
+            {
+              APERTURES.map((a, i) => (
+                <button
+                  type="button"
+                  data-aperture-btn={a.id}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                  class="ap-btn tap-target rounded-sm border px-2 py-2.5 text-[12px] font-bold tracking-tight uppercase transition-colors"
+                >
+                  {a.label}
+                </button>
+              ))
+            }
+          </div>
+
+          <p class="text-gm-white mt-5 font-mono text-sm font-bold">
+            <span data-aperture-size>{APERTURES[0].size}</span>
+          </p>
+          <p data-aperture-note class="text-gm-grey-400 mt-2 text-sm leading-relaxed">
+            {APERTURES[0].note}
+          </p>
+        </div>
+      </div>
+    </div>
+    <script is:inline type="application/json" data-apertures set:html={JSON.stringify(APERTURES)} />
+  </section>
+
+  <!-- Spec table -->
+  <section class="bg-gm-black text-gm-white py-16 sm:py-20 border-t border-white/10">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Full Specification</p>
+      <h2
+        class="font-display text-gm-white mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Every Number, From The Spec Sheet
+      </h2>
+
+      <div class="border-gm-grey-800 mt-10 max-w-2xl border-t">
+        {
+          SPEC_ROWS.map((row) => (
+            <div class="border-gm-grey-800 flex items-baseline justify-between gap-6 border-b py-4">
+              <span class="text-gm-grey-400 font-mono text-[11px] tracking-[0.14em] uppercase">
+                {row.label}
+              </span>
+              <span class="text-gm-white text-right text-sm font-bold">{row.value}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-12 grid gap-x-14 gap-y-8 sm:grid-cols-2">
+        <div>
+          <p class="text-gm-grey-400 font-mono text-[11px] tracking-[0.18em] uppercase">
+            Panel Size
+          </p>
+          <div class="mt-3 space-y-2">
+            {
+              PANEL_SIZES.map((s) => (
+                <p class="text-gm-grey-300 text-sm">
+                  <span class="text-gm-white font-bold">{s.label}:</span> {s.us} ({s.metric})
+                </p>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <p class="text-gm-grey-400 font-mono text-[11px] tracking-[0.18em] uppercase">
+            Wire Gauge
+          </p>
+          <p class="text-gm-grey-300 mt-3 text-sm">{WIRE_OPTIONS.join(' · ')}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Long-form copy -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div class="grid gap-14 lg:grid-cols-[1.05fr_1fr]">
+        <div class="max-w-2xl">
+          <h2
+            class="font-display text-gm-black text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+          >
+            What Makes A 358 Panel Different
+          </h2>
+          <div class="text-gm-grey-700 mt-6 space-y-5 text-base leading-relaxed">
+            <p>
+              Clear view fencing is a welded mesh perimeter you can see straight through — unlike a
+              solid privacy fence, it keeps sightlines open for cameras, lighting and security
+              patrols, while the mesh itself stops anyone from climbing or cutting through it. The
+              "358" name comes from its dimensions: a welded steel grid with a 76.2 × 12.7 mm
+              aperture, engineered so a fingertip, a foothold or a bolt-cutter's jaw simply doesn't
+              fit.
+            </p>
+            <p>
+              Every wire is welded at each intersection — not woven, like chain-link — to a weld
+              strength of 80% of the parent material, with a tensile strength of 500–650 MPa.
+              There's no strand to pry apart and no weave to spread; a welded grid springs back
+              under force instead of flexing open.
+            </p>
+            <p>
+              Panels ship in your choice of finish, from base galvanized protection up to our
+              Plascoat/PVC top tier — the only finish that carries Guard Master's 10-year warranty.
+              Every panel starts life as plain galvanized steel, then is finished in-house to your
+              site's spec, so the coating and the substrate underneath it come from the same
+              manufacturer, not stitched together from a reseller's mixed-mill parts.
+            </p>
+            <p>
+              Panels are manufactured and shipped direct from the factory across the continental
+              United States — imperial units, US specs, US support, not an overseas order dropped
+              at your door with no one to call.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
+            Finish Ladder
+          </p>
+          <div class="border-gm-grey-200 mt-4 border-t">
+            {
+              [
+                { name: 'Plain Galvanised', tier: 'Entry', note: 'Base corrosion protection' },
+                {
+                  name: 'Hot-Dip Galvanised',
+                  tier: 'Mid',
+                  note: "Heavier galv · posts' default",
+                },
+                { name: 'Powder Coated', tier: 'Mid-Premium', note: 'Colour + protection' },
+                {
+                  name: 'Plascoat / PVC',
+                  tier: 'Premium',
+                  note: 'Our most weather-resistant finish · 10-year warranty',
+                },
+              ].map((f) => (
+                <div class="border-gm-grey-200 border-b py-4">
+                  <div class="flex items-baseline justify-between gap-4">
+                    <span class="text-gm-black text-sm font-bold uppercase">{f.name}</span>
+                    <span class="text-gm-grey-500 font-mono text-[10px] tracking-[0.14em] uppercase">
+                      {f.tier}
+                    </span>
+                  </div>
+                  <p class="text-gm-grey-600 mt-1 text-[13px] leading-relaxed">{f.note}</p>
+                </div>
+              ))
+            }
+          </div>
+          <a
+            href="/warranties-and-guarantees"
+            class="text-gm-red mt-4 inline-flex items-center text-[13px] font-bold uppercase underline underline-offset-4"
+          >
+            See the full warranty terms
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete the system -->
+  <section class="bg-gm-grey-50 text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Complete The System</p>
+      <h2
+        class="font-display text-gm-black mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        A Panel Is Only Part Of The System
+      </h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        {
+          [
+            {
+              name: 'Clear View Posts',
+              href: '/clear-view-fencing-posts',
+              note: '6 lengths, 6–12 ft · HDG, powder or Plascoat finish',
+            },
+            {
+              name: 'Fixtures & Screws',
+              href: '/fixtures-and-screws',
+              note: 'Flat or Spider clamp · HDG / powder / PVC',
+            },
+            {
+              name: 'Accessories & Toppings',
+              href: '/accessories',
+              note: 'Caps, gates, razor & spike topping',
+            },
+          ].map((p) => (
+            <a
+              href={p.href}
+              class="tap-target group border-gm-grey-200 hover:border-gm-black block border bg-white p-6 transition-colors"
+            >
+              <span class="font-display text-gm-black text-lg font-bold tracking-tight uppercase">
+                {p.name}
+              </span>
+              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{p.note}</p>
+              <span class="text-gm-red mt-4 inline-flex items-center text-[12px] font-bold tracking-[0.08em] uppercase">
+                See Options →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="bg-gm-black text-gm-white py-20 text-center sm:py-24">
+    <div class="mx-auto max-w-2xl px-6">
+      <h2
+        class="font-display text-gm-white text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Configure Your Panels In <span class="text-gm-red">Minutes</span>
+      </h2>
+      <p class="text-gm-grey-300 mx-auto mt-5 max-w-lg text-base leading-relaxed">
+        Set your length, aperture and finish in the instant estimator for a real bill of materials
+        and price range.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/quote-estimator"
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          Start Your Estimate
+        </a>
+        <a
+          href="/projects"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          See Real Applications
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Toggle buttons — same resting/pressed colour split as Proof358's
+     preset-btn, scoped separately here since this is a different page. */
+  [data-aperture-tool] .ap-btn {
+    border-color: #35353d;
+    background: transparent;
+    color: var(--color-gm-grey-300);
+    line-height: 1.2;
+  }
+  [data-aperture-tool] .ap-btn[aria-pressed='true'] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+
+  /* Redraw pulse on toggle — same dip-and-zoom used in Proof358, so both
+     pages' configurators feel like the same system. */
+  [data-aperture-tool] [data-panel-fill] {
+    transform-origin: center;
+    transition:
+      opacity 0.24s ease,
+      transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-aperture-tool].is-redrawing [data-panel-fill] {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-aperture-tool] [data-panel-fill] {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-aperture-tool]');
+
+  if (section) {
+    const dataEl = document.querySelector<HTMLScriptElement>('[data-apertures]');
+    const apertures = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+    const byId = new Map(apertures.map((a: { id: string }) => [a.id, a]));
+
+    const panelFill = section.querySelector<SVGRectElement>('[data-panel-fill]');
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-aperture-btn]'));
+    const details = Array.from(section.querySelectorAll<SVGGElement>('.ap-detail'));
+    const heightLabels = Array.from(section.querySelectorAll<HTMLElement>('.ap-label'));
+    const sizeOut = section.querySelector<HTMLElement>('[data-aperture-size]');
+    const noteOut = section.querySelector<HTMLElement>('[data-aperture-note]');
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let redrawTimer = 0;
+
+    const paint = (id: string) => {
+      panelFill?.setAttribute('fill', `url(#ap-${id})`);
+      details.forEach((g) => g.classList.toggle('hidden', g.dataset.aperture !== id));
+      heightLabels.forEach((l) => l.classList.toggle('hidden', l.dataset.heightLabel !== id));
+    };
+
+    const setActive = (id: string, animate: boolean) => {
+      const a = byId.get(id) as { size: string; note: string } | undefined;
+      if (!a) return;
+
+      if (!animate || reduce) {
+        paint(id);
+      } else {
+        clearTimeout(redrawTimer);
+        section.classList.add('is-redrawing');
+        redrawTimer = window.setTimeout(() => {
+          paint(id);
+          section.classList.remove('is-redrawing');
+        }, 150);
+      }
+
+      section.dataset.active = id;
+      if (sizeOut) sizeOut.textContent = a.size;
+      if (noteOut) noteOut.textContent = a.note;
+      buttons.forEach((b) =>
+        b.setAttribute('aria-pressed', b.dataset.apertureBtn === id ? 'true' : 'false'),
+      );
+    };
+
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => b.dataset.apertureBtn && setActive(b.dataset.apertureBtn, true)),
+    );
+  }
+</script>

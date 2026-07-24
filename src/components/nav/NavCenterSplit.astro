@@ -14,7 +14,25 @@ import { NAV_ITEMS, CTA } from '@data/nav';
  * `backdrop-filter` once scrolled, and that establishes a containing block for
  * fixed-position descendants — a panel nested inside it stops resolving
  * against the viewport and collapses to the bar's box.
+ *
+ * `assumeDarkBg`: the unscrolled palette below (`--nav-fg`/`--nav-fg-strong`
+ * defaulting to dark greys/black) exists specifically for the homepage,
+ * where the bar starts transparent over Hero's light daylight sky and needs
+ * dark type to read. `<main>`'s own background on every other page is
+ * `--color-gm-black` (BaseLayout.astro's `pt-16`/`lg:pt-20` header-clearance
+ * padding sits directly on the black `<body>`), so that same "unscrolled"
+ * dark-on-transparent state renders the logo wordmark at a 1:1 (invisible)
+ * contrast ratio and nav links at 2.5:1 — both fail against a black backdrop
+ * that was never accounted for. BaseLayout passes `assumeDarkBg={true}` for
+ * every page except the homepage, which renders `data-scrolled` on the bar
+ * from first paint (no flash while JS loads) and skips the scroll listener
+ * that would otherwise toggle it off near the top of the page.
  */
+interface Props {
+  assumeDarkBg?: boolean;
+}
+const { assumeDarkBg = false } = Astro.props;
+
 const left = NAV_ITEMS.slice(0, 3);
 const right = NAV_ITEMS.slice(3);
 ---
@@ -29,6 +47,8 @@ const right = NAV_ITEMS.slice(3);
   <div
     class="data-[scrolled]:bg-gm-black/70 border-b border-transparent transition-[background-color,backdrop-filter,border-color] duration-300 data-[scrolled]:border-white/10 data-[scrolled]:backdrop-blur-xl"
     data-nav-bar
+    data-scrolled={assumeDarkBg ? '' : undefined}
+    data-force-dark={assumeDarkBg ? '' : undefined}
   >
     <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
       <div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 lg:h-20">
@@ -180,7 +200,12 @@ const right = NAV_ITEMS.slice(3);
   const bar = document.querySelector<HTMLElement>('[data-nav-bar]');
   const toggle = document.querySelector<HTMLInputElement>('#nav-toggle');
 
-  if (bar) {
+  // `data-force-dark` pages (every page but the homepage — see this
+  // component's own doc comment) render `data-scrolled` from SSR and stay
+  // that way regardless of scroll position; there's no light hero for the
+  // "unscrolled" palette to accommodate, so nothing here should ever remove
+  // it.
+  if (bar && !bar.hasAttribute('data-force-dark')) {
     /* Scroll state is functional, not decorative, so it runs without GSAP —
        one passive listener flipping a single attribute; CSS does the rest. */
     const onScroll = () => {

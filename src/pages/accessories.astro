@@ -1,0 +1,345 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import { CTA } from '@data/nav';
+
+/**
+ * /accessories — caps + the estimator's "Extras" upsell line.
+ *
+ * businessguide.md §5: Accessories = post caps, solar post caps ("+ range
+ * to be supplied" — the client hasn't given us the rest of the catalogue
+ * yet, so this page covers only what's confirmed). Estimator Extras = gates,
+ * razor topping, spike topping, solar caps — incremental revenue surfaced in
+ * the configurator, described here rather than re-priced (pricing lives in
+ * the estimator's CMS-editable config, not in static copy).
+ */
+
+const CAPS = [
+  {
+    name: 'Post Cap',
+    note: 'A standard weathertight cap, finished to match the post.',
+  },
+  {
+    name: 'Solar Post Cap',
+    note: 'The same cap with front and back lights built in — power-free perimeter marking after dark, standard on the post feature set shown in the system overview.',
+  },
+];
+
+const EXTRAS = [
+  {
+    name: 'Gates',
+    note: 'Pedestrian and vehicle gates, engineered to the same 358 mesh specification as the fence line either side of them.',
+  },
+  {
+    name: 'Razor Topping',
+    note: 'An additional deterrent layer along the top of the run, for sites that need it above the mesh alone.',
+  },
+  {
+    name: 'Spike Topping',
+    note: 'A lower-profile top-of-fence deterrent option, sized to the same post spacing as the rest of the system.',
+  },
+];
+---
+
+<BaseLayout
+  title="Fence Accessories & Toppings | Guard Master"
+  description="Guard Master accessories: solar and standard post caps, plus gates, razor topping and spike topping — configured alongside your panels and posts."
+>
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Accessories', href: '/accessories' },
+    ]}
+  />
+
+  <!-- Header -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Accessories</p>
+        <h1
+          class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+        >
+          Cap It, <span class="text-gm-red">Gate It, Top It</span>
+        </h1>
+        <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
+          The finishing pieces of a Clear View system — caps that close off the post, gates that
+          match the mesh spec either side of them, and topping options for sites that need a
+          deterrent layer above the fence line.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href={CTA.href}
+            class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+          >
+            {CTA.label}
+          </a>
+          <a
+            href="/quote-estimator"
+            class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+          >
+            Configure Your System
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Caps — a day/night scene replaces the plain two-card grid, since the
+       one thing that actually distinguishes a Solar Post Cap is that its
+       lights do something after dark. The lights themselves use the site's
+       existing red accent colour rather than inventing a new "light" colour,
+       and no new spec is asserted here beyond what CAPS already states
+       (front and back lights) — this just shows what "lights" means. -->
+  <section data-solar-scene data-time="day" class="bg-gm-black text-gm-white py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Post Caps</p>
+      <h2
+        class="font-display text-gm-white mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Standard Or Solar
+      </h2>
+
+      <div class="mt-12 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-14">
+        <div class="overflow-hidden rounded-md border border-white/10">
+          <svg viewBox="0 0 500 300" class="block h-auto w-full" role="img" aria-label="Solar post cap shown by day and by night, lights off in daylight and lit at night">
+            <defs>
+              <linearGradient id="sky-day" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#9fcdf0"></stop>
+                <stop offset="100%" stop-color="#e9f4fb"></stop>
+              </linearGradient>
+              <linearGradient id="sky-night" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#03050c"></stop>
+                <stop offset="100%" stop-color="#151c30"></stop>
+              </linearGradient>
+            </defs>
+
+            <rect data-sky-day width="500" height="220" fill="url(#sky-day)"></rect>
+            <rect data-sky-night width="500" height="220" fill="url(#sky-night)" opacity="0"></rect>
+
+            <!-- stars, night only -->
+            <g data-stars opacity="0">
+              {
+                [
+                  [60, 40], [110, 80], [170, 35], [320, 30], [380, 70], [440, 45], [90, 130], [430, 130],
+                ].map(([x, y]) => <circle cx={x} cy={y} r="1.3" fill="#f4f4f4" />)
+              }
+            </g>
+
+            <!-- sun / moon -->
+            <circle data-sun cx="410" cy="58" r="26" fill="#ffd76a"></circle>
+            <g data-moon opacity="0">
+              <circle cx="410" cy="58" r="22" fill="#e8e8ea"></circle>
+              <circle cx="401" cy="50" r="4" fill="#c9c9cf"></circle>
+              <circle cx="418" cy="64" r="3" fill="#c9c9cf"></circle>
+            </g>
+
+            <rect x="0" y="220" width="500" height="80" fill="#111111"></rect>
+
+            <!-- post + solar cap -->
+            <rect x="235" y="110" width="30" height="112" fill="#161616"></rect>
+            <rect x="223" y="88" width="54" height="24" rx="3" fill="#161616"></rect>
+            <circle data-light="1" cx="238" cy="100" r="4" fill="#4a4a4a"></circle>
+            <circle data-light="2" cx="262" cy="100" r="4" fill="#4a4a4a"></circle>
+          </svg>
+        </div>
+
+        <div>
+          <div class="grid grid-cols-2 gap-2" role="group" aria-label="Toggle day or night">
+            <button type="button" data-time-btn="day" aria-pressed="true" class="time-btn tap-target rounded-sm border px-3 py-2.5 text-[12px] font-bold tracking-tight uppercase transition-colors">
+              Day
+            </button>
+            <button type="button" data-time-btn="night" aria-pressed="false" class="time-btn tap-target rounded-sm border px-3 py-2.5 text-[12px] font-bold tracking-tight uppercase transition-colors">
+              Night
+            </button>
+          </div>
+
+          <div class="mt-8 grid gap-8">
+            {
+              CAPS.map((c) => (
+                <div class="border-gm-grey-800 border-t pt-6">
+                  <h3 class="font-display text-gm-white text-xl font-bold tracking-tight uppercase">
+                    {c.name}
+                  </h3>
+                  <p class="text-gm-grey-400 mt-3 text-sm leading-relaxed">{c.note}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Extras -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Extras</p>
+        <h2
+          class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+        >
+          Beyond The Base System
+        </h2>
+        <p class="text-gm-grey-600 mx-auto mt-6 max-w-xl text-base leading-relaxed">
+          Add these directly in the estimator alongside your panels, posts and fixtures — priced
+          together, not as an afterthought quote.
+        </p>
+      </div>
+
+      <div class="border-gm-grey-200 mt-12 grid gap-x-10 gap-y-10 border-t pt-10 sm:grid-cols-3">
+        {
+          EXTRAS.map((e) => (
+            <div>
+              <h3 class="font-display text-gm-black text-base font-bold tracking-tight uppercase">
+                {e.name}
+              </h3>
+              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{e.note}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete the system -->
+  <section class="bg-gm-grey-50 text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Complete The System</p>
+      <h2
+        class="font-display text-gm-black mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Start With The Panel
+      </h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        {
+          [
+            {
+              name: 'Clear View Panels',
+              href: '/clear-view-fencing-panels',
+              note: '358 mesh · 3 apertures · sized to your run',
+            },
+            {
+              name: 'Clear View Posts',
+              href: '/clear-view-fencing-posts',
+              note: '6 lengths · reinforced profile',
+            },
+            {
+              name: 'Fixtures & Screws',
+              href: '/fixtures-and-screws',
+              note: 'Flat or Spider clamp · HDG / powder / PVC',
+            },
+          ].map((p) => (
+            <a
+              href={p.href}
+              class="tap-target group border-gm-grey-200 hover:border-gm-black block border bg-white p-6 transition-colors"
+            >
+              <span class="font-display text-gm-black text-lg font-bold tracking-tight uppercase">
+                {p.name}
+              </span>
+              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{p.note}</p>
+              <span class="text-gm-red mt-4 inline-flex items-center text-[12px] font-bold tracking-[0.08em] uppercase">
+                See Options →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="bg-gm-black text-gm-white py-20 text-center sm:py-24">
+    <div class="mx-auto max-w-2xl px-6">
+      <h2
+        class="font-display text-gm-white text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Add Extras <span class="text-gm-red">Without A Second Quote</span>
+      </h2>
+      <p class="text-gm-grey-300 mx-auto mt-5 max-w-lg text-base leading-relaxed">
+        Gates, toppings and caps configure alongside the base system in one estimate.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/quote-estimator"
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          Start Your Estimate
+        </a>
+        <a
+          href="/projects"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          See Real Projects
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  [data-solar-scene] .time-btn {
+    border-color: #35353d;
+    background: transparent;
+    color: var(--color-gm-grey-300);
+    line-height: 1.2;
+  }
+  [data-solar-scene] .time-btn[aria-pressed='true'] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+
+  [data-solar-scene] [data-sky-night],
+  [data-solar-scene] [data-stars],
+  [data-solar-scene] [data-moon],
+  [data-solar-scene] [data-sun] {
+    transition: opacity 0.6s ease;
+  }
+
+  /* Off by default (grey, no glow); lit is applied via JS only in the
+     night state, so a cap never looks "on" against a daylight sky. */
+  [data-solar-scene] [data-light] {
+    transition:
+      fill 0.4s ease,
+      filter 0.4s ease;
+  }
+  [data-solar-scene][data-time='night'] [data-light] {
+    fill: var(--color-gm-red);
+    filter: drop-shadow(0 0 5px rgba(228, 17, 42, 0.9)) drop-shadow(0 0 10px rgba(228, 17, 42, 0.5));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-solar-scene] [data-sky-night],
+    [data-solar-scene] [data-stars],
+    [data-solar-scene] [data-moon],
+    [data-solar-scene] [data-sun],
+    [data-solar-scene] [data-light] {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-solar-scene]');
+
+  if (section) {
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-time-btn]'));
+    const skyNight = section.querySelector<SVGElement>('[data-sky-night]');
+    const stars = section.querySelector<SVGElement>('[data-stars]');
+    const sun = section.querySelector<SVGElement>('[data-sun]');
+    const moon = section.querySelector<SVGElement>('[data-moon]');
+
+    const setTime = (time: string) => {
+      const night = time === 'night';
+      section.dataset.time = time;
+      skyNight?.setAttribute('opacity', night ? '1' : '0');
+      stars?.setAttribute('opacity', night ? '1' : '0');
+      sun?.setAttribute('opacity', night ? '0' : '1');
+      moon?.setAttribute('opacity', night ? '1' : '0');
+      buttons.forEach((b) => b.setAttribute('aria-pressed', b.dataset.timeBtn === time ? 'true' : 'false'));
+    };
+
+    buttons.forEach((b) => b.addEventListener('click', () => b.dataset.timeBtn && setTime(b.dataset.timeBtn)));
+  }
+</script>

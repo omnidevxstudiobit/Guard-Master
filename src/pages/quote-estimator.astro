@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
 import { CTA } from '@data/nav';
 
 /**
@@ -70,6 +71,13 @@ const FINISHES: Finish[] = [
   title="Instant Quote Estimator | Guard Master"
   description="Configure your clear view 358 fence — perimeter, finish, gates and toppings — for an instant bill of materials. Manufacturer-direct, US shipping, 10-year warranty."
 >
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Quote Estimator', href: '/quote-estimator' },
+    ]}
+  />
+
   <section class="bg-gm-black text-gm-white relative overflow-hidden py-16 sm:py-20">
     <div
       class="pointer-events-none absolute inset-0 -z-10"
@@ -665,12 +673,22 @@ const FINISHES: Finish[] = [
     // Step-wizard enhancement — without this, every fieldset above is just
     // visible at once (a normal, if long, stacked form).
     let active = 0;
-    const showStep = (i) => {
+    // `scroll` defaults true for the Next/Back navigation this is actually
+    // built for. The initial showStep(0) below passes false: nothing has
+    // scrolled the page yet at that point, so auto-scrolling the moment the
+    // wizard mounts would yank a visitor's position on every page load for
+    // no reason they asked for — and browsers do the smooth variant of
+    // scrollIntoView slightly differently from an instant jump, so on some
+    // scroll-margin-top setups (this page's own [data-qw-form] rule)
+    // "smooth" now settles a few pixels short of the resting position an
+    // instant jump reaches. Skipping the scroll on mount sidesteps needing
+    // to reconcile that at all.
+    const showStep = (i, scroll = true) => {
       active = Math.max(0, Math.min(steps.length - 1, i));
       steps.forEach((s, idx) => s.classList.toggle('is-active', idx === active));
       if (progressBar) progressBar.style.width = ((active + 1) / TOTAL_STEPS) * 100 + '%';
       if (progressLabel) progressLabel.textContent = `Step ${active + 1} of ${TOTAL_STEPS}`;
-      if (!reduce) form.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      if (scroll && !reduce) form.scrollIntoView({ block: 'start', behavior: 'smooth' });
     };
 
     steps.forEach((step) => step.classList.add('qw-step'));
@@ -679,7 +697,7 @@ const FINISHES: Finish[] = [
       b.classList.remove('hidden');
       b.classList.add('inline-flex');
     });
-    showStep(0);
+    showStep(0, false);
 
     nextButtons.forEach((btn) =>
       btn.addEventListener('click', () => {
@@ -721,6 +739,25 @@ const FINISHES: Finish[] = [
   }
   .qw-step:not(.is-active) {
     display: none;
+  }
+
+  /* showStep()/the submit handler call scrollIntoView({ block: 'start' }) on
+     [data-qw-form]/[data-qw-confirm] on every step change — without this,
+     that aligns their top edge flush with the viewport top, sliding the
+     "Step X of 5" label (and the confirmation heading) under the fixed
+     header, same bug BaseLayout.astro's fullBleedHero/pt-16/lg:pt-20 fixes
+     for the page's own static layout but can't reach here since this is a
+     runtime scroll, not initial paint. scroll-margin-top makes
+     scrollIntoView itself stop short by the header's height instead. */
+  [data-qw-form],
+  [data-qw-confirm] {
+    scroll-margin-top: 4rem;
+  }
+  @media (min-width: 1024px) {
+    [data-qw-form],
+    [data-qw-confirm] {
+      scroll-margin-top: 5rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

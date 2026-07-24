@@ -6,9 +6,24 @@ import Footer from '@components/layout/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  /** Default false: `<main>` gets top padding matching the fixed header's
+   * own height (h-16/lg:h-20 in NavCenterSplit.astro), so a page's first
+   * section starts clear of it instead of sliding underneath — the header
+   * is `position: fixed`, so it doesn't push layout down on its own. Pass
+   * true only for a page whose first section is deliberately designed to
+   * render full-bleed behind the (initially translucent) header, the way
+   * Hero.astro is on the homepage. Every inner page — including
+   * quote-estimator.astro, which had this exact bug (its "Step 1 of 5"
+   * label was rendering partly behind the header) until this prop existed —
+   * should leave this false. */
+  fullBleedHero?: boolean;
 }
 
-const { title, description = 'Nav bar variants for the Guard Master build.' } = Astro.props;
+const {
+  title,
+  description = 'Nav bar variants for the Guard Master build.',
+  fullBleedHero = false,
+} = Astro.props;
 
 /**
  * seoguide.md Appendix B1 — Organization, site-wide. Only fields that are
@@ -53,8 +68,8 @@ const organizationJsonLd = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
   </head>
   <body>
-    <NavCenterSplit />
-    <main>
+    <NavCenterSplit assumeDarkBg={!fullBleedHero} />
+    <main class:list={[{ 'pt-16 lg:pt-20': !fullBleedHero }]}>
       <slot />
     </main>
     <Footer />
