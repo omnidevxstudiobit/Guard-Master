@@ -1,5 +1,7 @@
 ---
 import '@styles/global.css';
+import NavCenterSplit from '@components/nav/NavCenterSplit.astro';
+import Footer from '@components/layout/Footer.astro';
 
 interface Props {
   title: string;
@@ -7,6 +9,31 @@ interface Props {
 }
 
 const { title, description = 'Nav bar variants for the Guard Master build.' } = Astro.props;
+
+/**
+ * seoguide.md Appendix B1 — Organization, site-wide. Only fields that are
+ * actually known go in: name, legalName and description are established
+ * facts used throughout the site; url reuses astro.config.mjs's own
+ * (already TODO-flagged) placeholder domain.
+ *
+ * Deliberately omitted rather than filled with placeholders: `logo` (no
+ * exported logo file exists yet — Logo.astro is inline SVG, not a URL),
+ * `sameAs` (no real social profiles to link), and the whole LocalBusiness
+ * block from B1 (no real address or phone — see Footer.astro's matching
+ * note). A missing field is silently incomplete; a fabricated one is
+ * silently wrong and search engines will index it as fact. Fill these in
+ * once the client supplies the real logo file, address and phone.
+ */
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${Astro.site ?? new URL(Astro.url.origin)}#org`,
+  name: 'Guard Master',
+  legalName: 'Wire Ventures CC t/a Guard Master Fencing Solutions',
+  url: Astro.site?.href ?? Astro.url.origin,
+  description:
+    'Manufacturer-direct premium clear view 358 anti-climb high-security perimeter fencing.',
+};
 ---
 
 <!doctype html>
@@ -17,8 +44,13 @@ const { title, description = 'Nav bar variants for the Guard Master build.' } = 
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={Astro.url.href} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
   </head>
   <body>
-    <slot />
+    <NavCenterSplit />
+    <main>
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>

@@ -1,0 +1,279 @@
+---
+/**
+ * Section 8 — SEO content block + FAQ.
+ *
+ * seoguide.md §1's own homepage H2 outline lists "SEO content block" and
+ * "FAQ" as two of the page's H2s, with the content block's H3s named
+ * explicitly: "what clear-view fencing is · 358 mesh explained ·
+ * applications · finishes · US shipping" — the five H3s below are exactly
+ * that list, not an invented structure.
+ *
+ * seoguide.md §5 requires FAQPage JSON-LD whose `text` is "identical to the
+ * answer already in the DOM" and never JS-injected. FAQS is defined once
+ * below and used for both the rendered <details> answers and the JSON-LD via
+ * JSON.stringify, so the two can't drift out of sync. Two of the six
+ * questions ("What is 358 mesh fencing?" / "Do you ship across the United
+ * States?") are seoguide.md Appendix B3's own example Q&As, reused verbatim
+ * rather than reworded — they're already the canonical answers.
+ *
+ * FAQ accordion: unlike BuiltFor's exclusive one-at-a-time (matching how
+ * five *alternative* buyer segments should behave — picking one deselects
+ * the others), FAQ answers are independent facts a visitor may want to
+ * compare, so several can stay open at once. Same JS height-animation
+ * technique as BuiltFor, just without the "close the others" step.
+ *
+ * Light section, closing out the rhythm from designguide.md §4.
+ */
+
+type Faq = { question: string; answer: string };
+
+const FAQS: Faq[] = [
+  {
+    question: 'What is 358 mesh fencing?',
+    answer:
+      '358 mesh is a welded steel mesh with 76 × 12.7 mm (3" × 0.5") apertures — too small for fingers or tools, making it anti-climb and anti-cut.',
+  },
+  {
+    question: 'Do you ship across the United States?',
+    answer: 'Yes — we ship nationwide across the continental US, direct from the manufacturer.',
+  },
+  {
+    question: 'How long is the warranty?',
+    answer:
+      'Warranty length depends on finish. Our Plascoat finish — the top of the finish ladder — carries a 10-year warranty; Hot-Dip Galvanised and Powder Coated finishes are covered too, at shorter terms. Full coverage details are on the warranties page.',
+  },
+  {
+    question: 'Can a fingertip fit through 358 mesh?',
+    answer:
+      "No. The 358 aperture is 76.2 × 12.7 mm — tighter than a fingertip, a toe-hold or a bolt-cutter's jaw, which is what makes it anti-climb and anti-cut rather than just a visual deterrent.",
+  },
+  {
+    question: 'Do you install the fencing, or just supply it?',
+    answer:
+      'We manufacture and supply the engineered system — panels, posts, fixings and accessories — direct from the factory. Installation is carried out by you or your contractor; every system ships with installation guidance, and our team supports your contractor through the build.',
+  },
+  {
+    question: 'How do I get a firm price?',
+    answer:
+      'Start with the instant estimator for a bill of materials and a price range. Every completed estimate reaches our team, who confirm a firm quote once your finish, toppings and site details are set.',
+  },
+];
+---
+
+<section data-seo-faq class="bg-gm-white text-gm-black relative overflow-hidden py-20 sm:py-28">
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <!-- SEO content block -->
+    <div class="max-w-3xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+        Clear View Fencing, Explained
+      </p>
+      <h2
+        class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        What Guard Master Actually Builds
+      </h2>
+
+      <div class="mt-8 grid gap-8 sm:grid-cols-2">
+        <div>
+          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
+            What Is Clear View Fencing?
+          </h3>
+          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
+            Clear view fencing is a welded mesh perimeter you can see straight through — unlike a
+            solid privacy fence, it keeps sightlines open for cameras, lighting and security
+            patrols, while the mesh itself stops anyone from climbing or cutting through it.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
+            358 Mesh Explained
+          </h3>
+          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
+            358 mesh takes its name from its dimensions — a welded steel grid with a 76.2 × 12.7 mm
+            aperture, 4 mm wire and a welded node at every intersection, engineered so a fingertip,
+            a foothold or a bolt-cutter's jaw simply doesn't fit.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
+            Where It's Used
+          </h3>
+          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
+            Commercial and industrial sites, utility and solar assets, government and institutional
+            perimeters, and high-security residential properties — see
+            <a href="#built-for" class="text-gm-red underline underline-offset-2">who we protect</a>
+            for the full breakdown by sector.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
+            Finishes Available
+          </h3>
+          <p class="text-gm-grey-600 mt-2 text-sm leading-relaxed">
+            Plain Galvanised, Hot-Dip Galvanised, Powder Coated and Plascoat/PVC — a
+            good/better/best ladder, with the top tier carrying our
+            <a href="/warranties-and-guarantees" class="text-gm-red underline underline-offset-2"
+              >10-year warranty</a
+            >.
+          </p>
+        </div>
+        <div class="sm:col-span-2">
+          <h3 class="font-display text-gm-black text-sm font-bold tracking-tight uppercase">
+            Shipping Across the US
+          </h3>
+          <p class="text-gm-grey-600 mt-2 max-w-2xl text-sm leading-relaxed">
+            Guard Master manufactures and ships direct across the continental United States —
+            imperial units, US specs, US support, not an overseas order dropped at your door with no
+            one to call.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div id="faq" class="mt-20 max-w-3xl lg:mt-24">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">FAQ</p>
+      <h2
+        class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Questions We Get Asked
+      </h2>
+
+      <div class="border-gm-grey-200 mt-10 border-t">
+        {
+          FAQS.map((f) => (
+            <details data-faq-row class="border-gm-grey-200 border-b">
+              <summary class="tap-target flex cursor-pointer list-none items-center justify-between gap-5 py-5 marker:content-none [&::-webkit-details-marker]:hidden">
+                <span class="text-gm-black text-[15px] font-bold sm:text-base">{f.question}</span>
+                <svg
+                  data-faq-chevron
+                  viewBox="0 0 24 24"
+                  class="text-gm-grey-400 h-5 w-5 shrink-0 transition-transform duration-300"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div data-faq-panel>
+                <p class="text-gm-grey-600 max-w-2xl pb-6 text-sm leading-relaxed">{f.answer}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+{
+  /* seoguide.md Appendix B3 — text values are generated from FAQS above, so
+    they can never drift from what's actually rendered in the DOM. */
+}
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  })}
+/>
+
+<style>
+  [data-seo-faq] summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  [data-seo-faq] summary::marker {
+    content: '';
+  }
+  [data-seo-faq] details[open] > summary [data-faq-chevron] {
+    transform: rotate(180deg);
+    color: var(--color-gm-red);
+  }
+
+  /* Same explicit height:0/auto pair as BuiltFor — see that component for
+     why this can't be left to a CSS-only grid-rows trick or to the browser's
+     own closed-<details> hiding. */
+  [data-seo-faq] [data-faq-panel] {
+    overflow: hidden;
+    height: 0;
+    transition: height 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-seo-faq] details[open] > [data-faq-panel] {
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-seo-faq] [data-faq-panel],
+    [data-seo-faq] [data-faq-chevron] {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-seo-faq]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (section && !reduce) {
+    /* Independent accordion — several answers can stay open at once, unlike
+       BuiltFor's exclusive one-row rule. No native `name` grouping here in
+       the first place, so there's no exclusivity to fight. */
+    const rows = Array.from(section.querySelectorAll<HTMLDetailsElement>('[data-faq-row]'));
+
+    const closePanel = (details: HTMLDetailsElement) => {
+      const panel = details.querySelector<HTMLElement>('[data-faq-panel]');
+      if (!panel) return;
+      panel.style.height = panel.scrollHeight + 'px';
+      panel.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        panel.style.height = '0px';
+      });
+      const onEnd = (e: TransitionEvent) => {
+        if (e.propertyName !== 'height') return;
+        panel.removeEventListener('transitionend', onEnd);
+        details.removeAttribute('open');
+        panel.style.height = '';
+      };
+      panel.addEventListener('transitionend', onEnd);
+    };
+
+    const openPanel = (details: HTMLDetailsElement) => {
+      details.setAttribute('open', '');
+      const panel = details.querySelector<HTMLElement>('[data-faq-panel]');
+      if (!panel) return;
+      const target = panel.scrollHeight;
+      panel.style.height = '0px';
+      panel.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        panel.style.height = target + 'px';
+      });
+      const onEnd = (e: TransitionEvent) => {
+        if (e.propertyName !== 'height') return;
+        panel.removeEventListener('transitionend', onEnd);
+        panel.style.height = '';
+      };
+      panel.addEventListener('transitionend', onEnd);
+    };
+
+    rows.forEach((details) => {
+      const summary = details.querySelector('summary');
+      summary?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (details.open) closePanel(details);
+        else openPanel(details);
+      });
+    });
+  }
+</script>

@@ -1,0 +1,152 @@
+---
+import Logo from '@components/ui/Logo.astro';
+import { NAV_ITEMS, CTA } from '@data/nav';
+
+/**
+ * The "fat footer" — seoguide.md §6: "Top nav = six product/content items +
+ * red 'Get a Quote'; everything else lives in the footer — deliberately for
+ * internal link equity." This is that everything-else: the same six nav
+ * items again as real crawlable links, plus the on-page anchors (who we
+ * protect, instant estimate, FAQ) and two legal placeholders.
+ *
+ * Deliberately NOT included: a phone number, street address, email, or
+ * social links. None of those exist yet for Wire Ventures CC — inventing
+ * plausible-looking ones would be worse than leaving the column CTA-only,
+ * both for a visitor who'd try to actually call/email them and for the
+ * Organization/LocalBusiness JSON-LD in BaseLayout.astro, which has the same
+ * gap flagged for the same reason.
+ *
+ * Lives in BaseLayout.astro (rendered on every page), not per-page — same
+ * reasoning as the nav.
+ */
+
+const year = new Date().getFullYear();
+
+const productLinks = NAV_ITEMS.slice(0, 4); // Panels, Posts, Fixtures, Accessories
+const companyLinks = [
+  { label: 'Warranties', href: '/warranties-and-guarantees' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Who We Protect', href: '/#built-for' },
+];
+const getStartedLinks = [
+  { label: 'Get a Quote', href: CTA.href },
+  { label: 'Instant Estimate', href: '/#instant-estimate' },
+  { label: 'FAQ', href: '/#faq' },
+];
+const legalLinks = [
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms of Service', href: '/terms-of-service' },
+];
+
+const TRUST = ['ISO Certified', '10-Year Warranty', 'In-House Manufacturing', 'US-Wide Shipping'];
+---
+
+<footer class="bg-gm-black text-gm-grey-300 border-t border-white/10">
+  <div class="mx-auto max-w-[1400px] px-6 py-16 lg:px-8 lg:py-20">
+    <div class="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
+      <div class="max-w-xs">
+        <a href="/" class="text-gm-white inline-flex" aria-label="Guard Master — home">
+          <Logo variant="sub" class="h-8 w-auto" />
+        </a>
+        <p class="text-gm-grey-400 mt-4 text-sm leading-relaxed">
+          Manufacturer-direct clear view 358 anti-climb security fencing — engineered and shipped
+          across the continental United States.
+        </p>
+      </div>
+
+      <nav aria-label="Products">
+        <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">Products</p>
+        <ul class="mt-4 space-y-3">
+          {
+            productLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="tap-target text-gm-grey-300 hover:text-gm-white inline-flex items-center text-sm transition-colors"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Company">
+        <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">Company</p>
+        <ul class="mt-4 space-y-3">
+          {
+            companyLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="tap-target text-gm-grey-300 hover:text-gm-white inline-flex items-center text-sm transition-colors"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Get started">
+        <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
+          Get Started
+        </p>
+        <ul class="mt-4 space-y-3">
+          {
+            getStartedLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="tap-target text-gm-grey-300 hover:text-gm-white inline-flex items-center text-sm transition-colors"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Legal">
+        <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">Legal</p>
+        <ul class="mt-4 space-y-3">
+          {
+            legalLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="tap-target text-gm-grey-300 hover:text-gm-white inline-flex items-center text-sm transition-colors"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <ul class="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/10 pt-8">
+      {
+        TRUST.map((t) => (
+          <li class="text-gm-grey-400 flex items-center gap-2 text-xs">
+            <span class="text-gm-red" aria-hidden="true">
+              ✓
+            </span>
+            {t}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div
+      class="text-gm-grey-500 mt-8 flex flex-col gap-2 border-t border-white/10 pt-8 text-xs sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>&copy; {year} Guard Master. All rights reserved.</p>
+      <p>Wire Ventures CC t/a Guard Master Fencing Solutions</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,415 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 6 — "Proof in the Field".
+ *
+ * No client photography exists yet (DemoStage.astro's original placeholder
+ * flagged this as still pending) — so rather than inventing specific named
+ * projects (a false, misleading claim), this shows what's true and useful
+ * right now: the kind of scope and spec each sector typically runs, as a
+ * stylised site-plan schematic, not a photo. The intro copy says so plainly
+ * ("here's the kind of scope"), and every number carries a ≈ — illustrative,
+ * not a specific completed job. Real project photography replaces/extends
+ * this once it exists; the schematic style is deliberately kept (still a
+ * legitimate way to show scope even once photos exist).
+ *
+ * Five sectors, so the same shape-of-content problem as BuiltFor — but a
+ * horizontal scroll-snap filmstrip is a different interaction from that
+ * section's accordion, giving this part of the page its own identity rather
+ * than repeating a pattern (animationguide.md §0's no-generic-grid rule, and
+ * plain variety besides).
+ *
+ * Each schematic's perimeter line stroke-draws in once scrolled into view —
+ * the same pathLength=100 technique used for SystemAssembly's icons, applied
+ * here to something structural (an actual perimeter outline) rather than a
+ * decorative icon, which is the more honest use of it: it reads as the
+ * fence line being surveyed/drawn, not a flourish.
+ *
+ * Dark section — hero (light) → Proof358 (dark) → SystemAssembly (light) →
+ * FinishLadder (dark) → BuiltFor (light) → here (dark), continuing
+ * designguide.md §4's rhythm.
+ */
+
+type Site = {
+  id: string;
+  sector: string;
+  title: string;
+  lf: string;
+  spec: string;
+  /** Perimeter polygon, drawn in a 0 0 200 140 viewBox. */
+  path: string;
+  /** Post markers — [x, y] pairs, roughly at panel joints/corners. */
+  posts: [number, number][];
+  /** Where the gate break sits on the perimeter — [x, y, angle in degrees]. */
+  gate: [number, number, number];
+  /** True for sites with a double perimeter (a real correctional-facility trait). */
+  double?: boolean;
+};
+
+const SITES: Site[] = [
+  {
+    id: 'commercial',
+    sector: 'Commercial',
+    title: 'Distribution Center Perimeter',
+    lf: '≈2,400 LF',
+    spec: '358 Anti-Climb · HDG',
+    path: 'M20,30 L180,30 L180,110 L20,110 Z',
+    posts: [
+      [20, 30],
+      [100, 30],
+      [180, 30],
+      [180, 70],
+      [180, 110],
+      [100, 110],
+      [20, 110],
+      [20, 70],
+    ],
+    gate: [100, 110, 0],
+  },
+  {
+    id: 'industrial',
+    sector: 'Industrial',
+    title: 'Processing Plant Perimeter',
+    lf: '≈1,800 LF',
+    spec: '358 Anti-Climb · Powder Coat',
+    path: 'M20,20 L140,20 L140,60 L180,60 L180,120 L20,120 Z',
+    posts: [
+      [20, 20],
+      [140, 20],
+      [140, 60],
+      [180, 60],
+      [180, 120],
+      [100, 120],
+      [20, 120],
+      [20, 70],
+    ],
+    gate: [180, 90, 90],
+  },
+  {
+    id: 'utility-solar',
+    sector: 'Utility & Solar',
+    title: 'Solar Farm Perimeter',
+    lf: '≈6,000 LF',
+    spec: '358 Anti-Climb · Plascoat, 10-Yr Warranty',
+    path: 'M10,40 L190,40 L190,100 L10,100 Z',
+    posts: [
+      [10, 40],
+      [64, 40],
+      [118, 40],
+      [190, 40],
+      [190, 70],
+      [190, 100],
+      [118, 100],
+      [64, 100],
+      [10, 100],
+      [10, 70],
+    ],
+    gate: [64, 100, 0],
+  },
+  {
+    id: 'government',
+    sector: 'Government & Institutional',
+    title: 'Correctional Facility Perimeter',
+    lf: '≈3,200 LF',
+    spec: '358 Anti-Climb · HDG, Razor Topping',
+    path: 'M30,20 L170,20 L170,120 L30,120 Z',
+    posts: [
+      [30, 20],
+      [170, 20],
+      [170, 70],
+      [170, 120],
+      [100, 120],
+      [30, 120],
+      [30, 70],
+    ],
+    gate: [100, 20, 180],
+    double: true,
+  },
+  {
+    id: 'residential',
+    sector: 'Residential',
+    title: 'Private Estate Perimeter',
+    lf: '≈900 LF',
+    spec: '358 Anti-Climb · Powder Coat',
+    path: 'M40,25 L160,35 L175,100 L100,120 L25,90 Z',
+    posts: [
+      [40, 25],
+      [160, 35],
+      [175, 100],
+      [100, 120],
+      [25, 90],
+    ],
+    gate: [25, 90, -60],
+  },
+];
+---
+
+<section data-projects class="bg-gm-black text-gm-white relative overflow-hidden py-20 sm:py-28">
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(85% 110% at 85% 0%, rgba(228,17,42,0.10), transparent 55%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-2xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Proof in the Field</p>
+      <h2
+        class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        From 900 Feet to 6,000. <span class="text-gm-red">Same Standard, Every Time.</span>
+      </h2>
+      <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+        Every perimeter is engineered to the site — length, terrain, access points and finish
+        specified from scratch, not picked off a shelf. Here's the kind of scope each sector
+        typically runs.
+      </p>
+    </div>
+  </div>
+
+  <!-- Horizontal filmstrip. Native scroll-snap, so it works (and is
+       discoverable) with touch/trackpad alone; the arrow buttons are there
+       for mouse/keyboard users where a horizontal-only gesture is less
+       obvious, and for a11y. -->
+  <div class="relative mt-14 lg:mt-16">
+    <div
+      data-track
+      tabindex="0"
+      role="region"
+      aria-label="Perimeter scope by sector, scroll horizontally"
+      class="focus-visible:outline-gm-red mx-auto flex max-w-[1400px] snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-6 pb-4 focus-visible:outline-2 focus-visible:outline-offset-4 lg:px-8"
+      style="scrollbar-width: none;"
+    >
+      {
+        SITES.map((site) => (
+          <figure
+            data-card
+            class="w-[280px] shrink-0 snap-start rounded-md border border-white/10 bg-[#0c0c0e] p-5 sm:w-[320px]"
+          >
+            <svg
+              viewBox="0 0 200 140"
+              class="block h-auto w-full"
+              role="img"
+              aria-label={`Schematic: ${site.title}, ${site.lf}`}
+            >
+              {/* faint site-plan grid, decoration only */}
+              <g stroke="rgba(255,255,255,0.05)" stroke-width="1">
+                {[20, 60, 100, 140, 180].map((x) => (
+                  <line x1={x} y1="0" x2={x} y2="140" />
+                ))}
+                {[20, 60, 100].map((y) => (
+                  <line x1="0" y1={y} x2="200" y2={y} />
+                ))}
+              </g>
+
+              {site.double && (
+                <path
+                  d="M18,10 L182,10 L182,130 L18,130 Z"
+                  fill="none"
+                  stroke="#3a3a3a"
+                  stroke-width="1.4"
+                  stroke-dasharray="3 3"
+                />
+              )}
+
+              <path
+                data-draw
+                pathLength="100"
+                d={`${site.path} Z`}
+                fill="none"
+                stroke="#e4112a"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+
+              {site.posts.map(([x, y]) => (
+                <circle cx={x} cy={y} r="2.4" fill="#161616" stroke="#e4112a" stroke-width="1.2" />
+              ))}
+
+              {/* gate break: a short perpendicular tick either side of the line */}
+              <g
+                stroke="#f4f4f4"
+                stroke-width="2"
+                stroke-linecap="round"
+                transform={`translate(${site.gate[0]} ${site.gate[1]}) rotate(${site.gate[2]})`}
+              >
+                <line x1="-7" y1="-4" x2="-7" y2="4" />
+                <line x1="7" y1="-4" x2="7" y2="4" />
+              </g>
+            </svg>
+
+            <figcaption class="mt-4">
+              <p class="text-gm-red font-mono text-[10px] tracking-[0.18em] uppercase">
+                {site.sector}
+              </p>
+              <h3 class="font-display text-gm-white mt-1.5 text-sm font-bold tracking-tight uppercase">
+                {site.title}
+              </h3>
+              <p class="text-gm-grey-400 mt-2 flex items-baseline gap-2 font-mono text-[11px]">
+                <span class="text-gm-white">{site.lf}</span>
+                <span aria-hidden="true">·</span>
+                <span>{site.spec}</span>
+              </p>
+            </figcaption>
+          </figure>
+        ))
+      }
+
+      {
+        /* trailing spacer so the last card can snap fully into view past the
+          section's own right padding */
+      }
+      <div class="w-px shrink-0" aria-hidden="true"></div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-between px-6 lg:px-8">
+      <p class="text-gm-grey-500 text-xs">Swipe or scroll to see every sector →</p>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          data-prev
+          aria-label="Previous"
+          class="tap-target text-gm-white flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:border-white/40"
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" aria-hidden="true">
+            <path
+              d="M15 6l-6 6 6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-next
+          aria-label="Next"
+          class="tap-target text-gm-white flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:border-white/40"
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" aria-hidden="true">
+            <path
+              d="M9 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-14 max-w-[1400px] px-6 lg:px-8">
+    <div class="flex flex-wrap gap-3">
+      <a
+        href={CTA.href}
+        class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+      >
+        {CTA.label}
+      </a>
+      <a
+        href="/clear-view-fencing-panels"
+        class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+      >
+        Explore the Range
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hide the scrollbar visually — the arrow buttons + native touch/trackpad
+     scrolling remain, this just keeps a stray scrollbar from fighting the
+     dark, edge-to-edge look. Scrolling itself is never disabled. */
+  [data-projects] [data-track]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* scroll-padding has to match the track's own px-6/lg:px-8 padding.
+     Without it, scroll-snap treats the padding as outside the "safe area"
+     and snaps the first card flush to the scrollport edge on load —
+     visually cancelling the padding and landing the filmstrip ~32px left of
+     the heading above it, out of line with every other section. */
+  [data-projects] [data-track] {
+    scroll-padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    [data-projects] [data-track] {
+      scroll-padding-inline: 2rem;
+    }
+  }
+
+  /* Each perimeter draws itself in once its card is visible in the
+     filmstrip — an engineering line being surveyed, not a decorative
+     flourish. pathLength="100" normalises stroke-dasharray/dashoffset
+     regardless of each site's actual polygon geometry. */
+  [data-projects] [data-draw] {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  [data-projects].is-armed [data-draw] {
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 0.9s ease-out;
+  }
+  [data-projects].is-armed [data-card].is-in [data-draw] {
+    stroke-dashoffset: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-projects] [data-track] {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-projects]');
+  const track = section?.querySelector<HTMLElement>('[data-track]');
+  if (section && track) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* Each card's perimeter draws in once it's actually visible on screen.
+       No custom `root` here on purpose: with a custom root, intersection is
+       computed purely against that root's own bounds, ignoring whether the
+       root itself has scrolled into the page's viewport at all — that made
+       every card starting near track.scrollLeft 0 "intersect" (and draw in)
+       immediately on page load, cards the user hadn't scrolled anywhere
+       near yet. The default (viewport) root still correctly accounts for
+       clipping from the track's own horizontal scroll — a card scrolled
+       out of the filmstrip's visible window reports as not intersecting —
+       so this one setting correctly gates on both page scroll and track
+       scroll at once. */
+    if (!reduce) {
+      section.classList.add('is-armed');
+      const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-card]'));
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.6 },
+      );
+      cards.forEach((c) => io.observe(c));
+    }
+
+    /* Arrow buttons: step by roughly one card width. Native scroll-snap
+       does the settling; this just gives mouse/keyboard users an explicit,
+       discoverable way to move the filmstrip. */
+    const prev = section.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = section.querySelector<HTMLButtonElement>('[data-next]');
+    const step = () => track.querySelector('[data-card]')?.getBoundingClientRect().width ?? 300;
+
+    prev?.addEventListener('click', () =>
+      track.scrollBy({ left: -(step() + 20), behavior: reduce ? 'auto' : 'smooth' }),
+    );
+    next?.addEventListener('click', () =>
+      track.scrollBy({ left: step() + 20, behavior: reduce ? 'auto' : 'smooth' }),
+    );
+  }
+</script>

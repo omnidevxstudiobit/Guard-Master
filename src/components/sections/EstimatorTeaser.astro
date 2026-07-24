@@ -1,0 +1,184 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 7 — Estimator teaser.
+ *
+ * businessguide.md §7: the real funnel is organic/paid traffic → the
+ * configurator/instant estimator → an estimate with a bill of materials =
+ * a lead → Monday.com CRM → firm quote. The full estimator (draw-your-
+ * perimeter, finish picker, firm pricing) is a separate, much larger build —
+ * this section is a teaser, but a genuinely working one: drag the slider and
+ * the panel/post/gate counts update live, running the real arithmetic
+ * (panel width is 10 ft per §5's own panel-size spec, so linear feet ÷ 10 is
+ * an actual count, not an invented one).
+ *
+ * What this deliberately does NOT do: show a dollar figure. §7 is explicit
+ * that "pricing is always a range, never a fixed price" and lives in a
+ * CMS-editable config this build doesn't have access to — inventing a
+ * placeholder rate here would risk reading as a real number. A bill-of-
+ * materials count sidesteps that entirely while still proving the estimator
+ * genuinely calculates something live, echoing the LF figures ProjectsShowcase
+ * already put in front of the visitor (900–6,000 LF) — the slider covers the
+ * same range on purpose.
+ *
+ * Light section — the sixth in the rhythm from designguide.md §4
+ * (hero light, Proof358 dark, SystemAssembly light, FinishLadder dark,
+ * BuiltFor light, ProjectsShowcase dark, here light).
+ *
+ * No GSAP: the native <input type="range"> is the whole interaction, styled
+ * with `accent-color` rather than a custom-built slider control, and the
+ * live counts are a direct text update on `input` — a delayed count-up
+ * animation would visibly lag behind a fast drag, so the immediate update
+ * *is* the correct feel here, not a corner cut.
+ */
+
+const MIN_LF = 100;
+const MAX_LF = 6000;
+const DEFAULT_LF = 500;
+const PANEL_WIDTH_FT = 10; // businessguide.md §5: panel size runs 10'×6' → 10'×10'
+---
+
+<section
+  id="instant-estimate"
+  data-estimator
+  class="bg-gm-white text-gm-black relative overflow-hidden py-20 sm:py-28"
+>
+  <div
+    class="mx-auto grid max-w-[1400px] items-center gap-14 px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:px-8"
+  >
+    <div class="min-w-0">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Instant Estimate</p>
+      <h2
+        class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        Give Us a Length. <span class="text-gm-red">We'll Give You a Parts List.</span>
+      </h2>
+      <p class="text-gm-grey-600 mt-6 max-w-xl text-base leading-relaxed">
+        Drag the slider to a rough perimeter and watch the panel and post count update live — the
+        same arithmetic the full estimator runs, plus a finish picker, topping options and a firm
+        price range once you're ready to go further.
+      </p>
+
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a
+          href={CTA.href}
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          Get Your Full Estimate
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="border-gm-grey-200 bg-gm-white rounded-md border p-6 shadow-[0_1px_3px_rgba(0,0,0,0.06)] sm:p-8"
+    >
+      <div class="flex items-baseline justify-between gap-3">
+        <span class="text-gm-grey-500 font-mono text-[11px] tracking-[0.24em] uppercase"
+          >Perimeter length</span
+        >
+        <span class="text-gm-black font-mono text-2xl font-bold">
+          <span data-lf-value>{DEFAULT_LF.toLocaleString()}</span> ft
+        </span>
+      </div>
+
+      {
+        /* The "ruler" — a bar that visibly extends as the slider moves,
+          tick-marked every 22px by a repeating gradient rather than one SVG
+          element per panel (which, at up to 600 panels, would be a lot of
+          DOM for a purely decorative flourish). */
+      }
+      <div class="bg-gm-grey-100 mt-4 h-3.5 overflow-hidden rounded-sm">
+        <div
+          data-ruler-fill
+          class="h-full"
+          style="background: repeating-linear-gradient(90deg, #e4112a 0 2px, transparent 2px 22px); transition: width 0.12s ease-out;"
+        >
+        </div>
+      </div>
+
+      <input
+        data-lf-slider
+        type="range"
+        min={MIN_LF}
+        max={MAX_LF}
+        step="10"
+        value={DEFAULT_LF}
+        aria-label="Perimeter length in linear feet"
+        class="tap-target accent-gm-red mt-4 w-full"
+      />
+      <div
+        class="text-gm-grey-400 flex justify-between font-mono text-[10px] tracking-wide uppercase"
+      >
+        <span>{MIN_LF.toLocaleString()} ft</span>
+        <span>{MAX_LF.toLocaleString()} ft</span>
+      </div>
+
+      <div class="border-gm-grey-200 mt-8 grid grid-cols-3 gap-4 border-t pt-6">
+        <div>
+          <p class="text-gm-black font-mono text-3xl font-black" data-panels>
+            {Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT)}
+          </p>
+          <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+            Panels
+          </p>
+        </div>
+        <div>
+          <p class="text-gm-black font-mono text-3xl font-black" data-posts>
+            {Math.ceil(DEFAULT_LF / PANEL_WIDTH_FT) + 1}
+          </p>
+          <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+            Posts
+          </p>
+        </div>
+        <div>
+          <p class="text-gm-black font-mono text-3xl font-black" data-gates>
+            {Math.max(1, Math.round(DEFAULT_LF / 800))}
+          </p>
+          <p class="text-gm-grey-500 mt-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+            Est. Gates
+          </p>
+        </div>
+      </div>
+
+      <p class="text-gm-grey-500 mt-6 text-[11px] leading-relaxed">
+        Illustrative count based on standard 10 ft panels — your firm bill of materials is confirmed
+        on survey.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-estimator] [data-lf-slider] {
+    height: 20px;
+  }
+</style>
+
+<script is:inline define:vars={{ MIN_LF, MAX_LF, DEFAULT_LF, PANEL_WIDTH_FT }}>
+  const section = document.querySelector('[data-estimator]');
+  if (section) {
+    const slider = section.querySelector('[data-lf-slider]');
+    const lfValue = section.querySelector('[data-lf-value]');
+    const rulerFill = section.querySelector('[data-ruler-fill]');
+    const panelsEl = section.querySelector('[data-panels]');
+    const postsEl = section.querySelector('[data-posts]');
+    const gatesEl = section.querySelector('[data-gates]');
+
+    const render = (lf) => {
+      const panels = Math.ceil(lf / PANEL_WIDTH_FT);
+      const posts = panels + 1;
+      const gates = Math.max(1, Math.round(lf / 800));
+      const pct = ((lf - MIN_LF) / (MAX_LF - MIN_LF)) * 100;
+
+      lfValue.textContent = lf.toLocaleString();
+      rulerFill.style.width = pct + '%';
+      panelsEl.textContent = String(panels);
+      postsEl.textContent = String(posts);
+      gatesEl.textContent = String(gates);
+    };
+
+    render(DEFAULT_LF);
+    slider.addEventListener('input', () => render(Number(slider.value)));
+  }
+</script>

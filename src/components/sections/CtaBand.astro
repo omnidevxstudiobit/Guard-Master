@@ -1,0 +1,107 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 9a — closing CTA band.
+ *
+ * The page's last word before the footer, so it deliberately bookends the
+ * hero: "See Through It. Never Get Through It." returns verbatim, extended
+ * with one new payoff line, rather than introducing a new tagline this late.
+ * After a page full of interactive/animated sections, the restraint here —
+ * one fade-up on scroll, nothing scrubbed or looping — is the choice: the
+ * statement is the impact, not more motion.
+ *
+ * Dark — closing into the footer on the brand's black, not fading out on
+ * white.
+ */
+---
+
+<section
+  data-cta-band
+  class="bg-gm-black text-gm-white relative overflow-hidden py-24 text-center sm:py-32"
+>
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(70% 90% at 50% 100%, rgba(228,17,42,0.14), transparent 60%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="mx-auto max-w-3xl px-6">
+    <p data-line class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+      Manufacturer-Direct · US-Wide
+    </p>
+
+    <h2
+      data-line
+      class="font-display text-gm-white mt-6 text-4xl leading-[1.05] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+    >
+      See Through It. Never Get Through It. <span class="text-gm-red">Now Build It.</span>
+    </h2>
+
+    <p data-line class="text-gm-grey-300 mx-auto mt-6 max-w-xl text-base leading-relaxed">
+      Manufacturer-direct 358 anti-climb fencing, engineered to your site and backed by a 10-year
+      warranty.
+    </p>
+
+    <div data-line class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+      <a
+        href={CTA.href}
+        class="tap-target bg-gm-red text-gm-white inline-flex items-center px-8 py-4 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+      >
+        {CTA.label}
+      </a>
+      <a
+        href="#instant-estimate"
+        class="text-gm-grey-300 hover:text-gm-white text-[13px] font-semibold tracking-[0.04em] underline underline-offset-4"
+      >
+        or try the instant estimator
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-cta-band].is-armed [data-line] {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-cta-band].is-armed.is-in [data-line] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-cta-band].is-armed.is-in [data-line]:nth-of-type(1) {
+    transition-delay: 0s;
+  }
+  [data-cta-band].is-armed.is-in [data-line]:nth-of-type(2) {
+    transition-delay: 0.1s;
+  }
+  [data-cta-band].is-armed.is-in [data-line]:nth-of-type(3) {
+    transition-delay: 0.2s;
+  }
+  [data-cta-band].is-armed.is-in [data-line]:nth-of-type(4) {
+    transition-delay: 0.3s;
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-cta-band]');
+  if (section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.classList.add('is-armed');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            section.classList.add('is-in');
+            io.disconnect();
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px' },
+    );
+    io.observe(section);
+  }
+</script>

@@ -256,14 +256,17 @@ const ROWS = [
             </defs>
             <rect data-mesh-hot x="0" y="0" width="381" height="254" fill="url(#mesh-358-hot)"
             ></rect>
-            <g class="hot-sparks">
-              <circle cx="66" cy="42" r="2.4"></circle>
-              <circle cx="150" cy="150" r="2"></circle>
-              <circle cx="212" cy="80" r="2.6"></circle>
-              <circle cx="120" cy="206" r="2"></circle>
-              <circle cx="286" cy="178" r="2.4"></circle>
-              <circle cx="330" cy="58" r="2"></circle>
-            </g>
+          </svg>
+
+          {
+            /* Weld sparks — empty on purpose. The reference spawns these at
+            random, right where the scan is currently hottest, each one
+            drifting and fading over a few hundred milliseconds — not a fixed
+            set of dots twinkling on a loop. The script below creates and
+            removes real circles here, matching that. */
+          }
+          <svg class="spark-layer" viewBox="0 0 381 254" aria-hidden="true">
+            <g data-spark-layer></g>
           </svg>
 
           {
@@ -385,19 +388,15 @@ const ROWS = [
     opacity: 0.32;
   }
 
-  /* One knob paces the scanner sweep (the lit-mesh band + its sparks); raise it
-     to calm the motion further. */
-  [data-proof358] {
-    --scan-dur: 8s;
-  }
-
-  /* The scanner. A red "hot" copy of the mesh, revealed only inside a band that
-     sweeps across, so the fence lights up wire-by-wire as the beam passes —
-     the reference's effect, but one masked layer instead of a canvas particle
-     loop. Both overlays scale with the base svg, so the lit wires land exactly
-     on the grey ones. Paced by --scan-dur, gated to on-screen, off under
-     reduced motion. */
+  /* The scanner. A red "hot" copy of the mesh, revealed only inside a band
+     that sweeps across, so the fence lights up wire-by-wire as the beam
+     passes — the reference's effect, but a masked layer instead of a canvas
+     redraw. --scan-pos is written every frame by the script below (not a CSS
+     @keyframes) so the sweep and the weld sparks share one clock and can't
+     drift out of sync with each other. Falls back to -60% (fully hidden) if
+     the script never runs. */
   [data-proof358] .mesh-hot,
+  [data-proof358] .spark-layer,
   [data-proof358] .probe-layer {
     position: absolute;
     inset: 0;
@@ -415,68 +414,18 @@ const ROWS = [
     mask-repeat: no-repeat;
     -webkit-mask-size: 36% 100%;
     mask-size: 36% 100%;
-    -webkit-mask-position: -60% 0;
-    mask-position: -60% 0;
-    animation: gm-hotsweep var(--scan-dur) linear infinite;
-    animation-play-state: paused;
-  }
-  [data-proof358].in-view .mesh-hot {
-    animation-play-state: running;
-  }
-  @keyframes gm-hotsweep {
-    from {
-      -webkit-mask-position: -60% 0;
-      mask-position: -60% 0;
-    }
-    to {
-      -webkit-mask-position: 160% 0;
-      mask-position: 160% 0;
-    }
+    -webkit-mask-position: var(--scan-pos, -60%) 0;
+    mask-position: var(--scan-pos, -60%) 0;
   }
 
-  /* Weld sparks — amber flecks on the mesh that twinkle. They live in the hot
-     layer, so the same sweeping band reveals each as the beam reaches it. */
-  [data-proof358] .hot-sparks circle {
-    fill: #ffcf6a;
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
+  /* Weld sparks — the script creates and removes the actual <circle>
+     elements (see the loop below); this just styles whichever one exists at
+     a given moment. Ephemeral by construction: each spark plays one WAAPI
+     animation and removes itself on finish, so there's nothing here to gate
+     on in-view/reduced-motion — the spawn loop that creates them already is. */
+  [data-proof358] .spark {
+    fill: #ffdc8c;
     filter: drop-shadow(0 0 2px rgba(255, 180, 80, 0.9));
-    animation: gm-twinkle 1.1s ease-in-out infinite;
-    animation-play-state: paused;
-  }
-  [data-proof358].in-view .hot-sparks circle {
-    animation-play-state: running;
-  }
-  [data-proof358] .hot-sparks circle:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  [data-proof358] .hot-sparks circle:nth-child(3) {
-    animation-delay: 0.45s;
-  }
-  [data-proof358] .hot-sparks circle:nth-child(4) {
-    animation-delay: 0.15s;
-  }
-  [data-proof358] .hot-sparks circle:nth-child(5) {
-    animation-delay: 0.6s;
-  }
-  [data-proof358] .hot-sparks circle:nth-child(6) {
-    animation-delay: 0.32s;
-  }
-  @keyframes gm-twinkle {
-    0%,
-    100% {
-      opacity: 0;
-      transform: scale(0.4);
-    }
-    45% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    75% {
-      opacity: 0.3;
-      transform: scale(0.7);
-    }
   }
 
   /* Redraw pulse — on a toggle the mesh dips and zooms as it reconfigures to
@@ -648,20 +597,89 @@ const ROWS = [
     // Wire the default state without animating (it already renders as 358).
     setActive('358', false);
 
-    /* Reveal on scroll + gate the ambient scan. The reveal latches on once
-       (is-in is never removed, so it can't reverse); in-view toggles with the
-       section, so the scan animates only while it's on screen. Under reduced
-       motion the section stays un-armed — visible, no reveal — and the scan is
-       hidden in CSS, so the observer is harmless there. */
+    /* The scanner + weld sparks — one rAF loop driving both, so they can't
+       drift out of sync with each other (they did, when the sweep was a CSS
+       @keyframes and the sparks were a separate CSS animation). Gated
+       entirely by IntersectionObserver below: it only runs while the section
+       is actually on screen, same discipline as everything else here. */
+    const meshHot = section.querySelector<HTMLElement>('.mesh-hot');
+    const sparkLayer = section.querySelector<SVGGElement>('[data-spark-layer]');
+    const VIEW_W = 381;
+    const VIEW_H = 254;
+    const CYCLE_MS = 8000; // one full sweep
+    const BAND_WIDTH_PCT = 36; // matches .mesh-hot's mask-size
+    const SWEEP_FROM = -60;
+    const SWEEP_TO = 160;
+
+    let scanRafId = 0;
+    let scanStart = 0;
+
+    /* A spark that spawns, drifts a few pixels, and removes itself — not a
+       fixed dot on a loop. Matches the reference: sparks appear at random
+       right where the mesh is hottest, not at pre-set positions. */
+    const spawnSpark = (x: number, y: number) => {
+      if (!sparkLayer) return;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      el.setAttribute('cx', String(x));
+      el.setAttribute('cy', String(y));
+      el.setAttribute('r', '2.2');
+      el.setAttribute('class', 'spark');
+      el.style.transformBox = 'fill-box';
+      el.style.transformOrigin = 'center';
+      sparkLayer.appendChild(el);
+
+      const dx = (Math.random() - 0.5) * 16;
+      const dy = (Math.random() - 0.5) * 16;
+      const anim = el.animate(
+        [
+          { transform: 'scale(0.5)', opacity: 0.9 },
+          { transform: `translate(${dx}px, ${dy}px) scale(0.15)`, opacity: 0 },
+        ],
+        { duration: 380 + Math.random() * 180, easing: 'ease-out' },
+      );
+      anim.onfinish = () => el.remove();
+    };
+
+    const scanFrame = (t: number) => {
+      if (!scanStart) scanStart = t;
+      const f = ((t - scanStart) % CYCLE_MS) / CYCLE_MS; // 0..1 through one sweep
+      const posPct = SWEEP_FROM + f * (SWEEP_TO - SWEEP_FROM);
+      meshHot?.style.setProperty('--scan-pos', posPct + '%');
+
+      // Spawn near the current hot band's centre — low odds per frame, and
+      // only while that centre is actually over the visible mesh.
+      const centerPct = posPct + BAND_WIDTH_PCT / 2;
+      if (centerPct > 4 && centerPct < 96 && Math.random() < 0.05) {
+        spawnSpark((centerPct / 100) * VIEW_W + (Math.random() - 0.5) * 12, Math.random() * VIEW_H);
+      }
+
+      scanRafId = requestAnimationFrame(scanFrame);
+    };
+
+    const startScan = () => {
+      if (scanRafId) return;
+      scanStart = 0;
+      scanRafId = requestAnimationFrame(scanFrame);
+    };
+    const stopScan = () => {
+      cancelAnimationFrame(scanRafId);
+      scanRafId = 0;
+    };
+
+    /* Reveal on scroll + gate the scanner. The reveal latches on once (is-in
+       is never removed, so it can't reverse); the scanner starts/stops with
+       the section's actual on-screen state each time, in both directions.
+       Under reduced motion the section stays un-armed — visible, no reveal —
+       and the scanner is never started at all. */
     if (!reduce) section.classList.add('is-armed');
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             section.classList.add('is-in');
-            section.classList.add('in-view');
+            if (!reduce) startScan();
           } else {
-            section.classList.remove('in-view');
+            stopScan();
           }
         });
       },

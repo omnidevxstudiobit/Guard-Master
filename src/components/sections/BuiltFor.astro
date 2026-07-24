@@ -1,0 +1,397 @@
+---
+import { CTA } from '@data/nav';
+
+/**
+ * Section 5 — "Built For".
+ *
+ * businessguide.md §3: Guard Master sells to five buyer groups, and the
+ * estimator's own "What are you protecting?" step maps directly to them. This
+ * section previews that question — visitors self-identify their sector and
+ * see the real sites and the actual job titles that buy there, priming intent
+ * before they ever reach the estimator. §3 also flags that the buyer is very
+ * often a specifier or contractor buying on the owner's behalf, not the owner
+ * — the intro copy speaks to both.
+ *
+ * Five parallel, equal-weight categories is exactly the shape that tempts a
+ * generic AI four-card grid (animationguide.md §0 rules that out). Instead
+ * this is a plain list — an accordion, not a grid of tiles. With no JS, each
+ * row is an independent native <details> — every row can open on its own,
+ * nothing is exclusive, but everything works. With JS (and motion allowed),
+ * the script intercepts the click to enforce one-row-at-a-time and animate
+ * the height — native `name`-grouped exclusivity was tried first, but an
+ * auto-closed sibling's `open` attribute changes synchronously as a side
+ * effect of opening the new one, racing whatever timing the script tries to
+ * control, so the script owns exclusivity outright instead of fighting that.
+ *
+ * Light section — hero (light) → Proof358 (dark) → SystemAssembly (light) →
+ * FinishLadder (dark) → here (light), continuing designguide.md §4's rhythm.
+ *
+ * Unlike Proof358/SystemAssembly/FinishLadder, nothing here needs GSAP —
+ * just the accordion script above and a light IntersectionObserver fade-up
+ * on the row list, both skipped under reduced motion.
+ */
+
+type Segment = {
+  id: string;
+  name: string;
+  sites: string;
+  buyers: string;
+};
+
+const SEGMENTS: Segment[] = [
+  {
+    id: 'commercial',
+    name: 'Commercial',
+    sites:
+      'Warehouses & distribution centers, logistics yards, retail parks, car dealerships, self-storage, business parks, data centers',
+    buyers:
+      'Facility & operations managers, corporate security managers, property owners & developers',
+  },
+  {
+    id: 'industrial',
+    name: 'Industrial',
+    sites:
+      'Factories & manufacturing plants, oil/gas & chemical depots, mining sites, ports, quarries, recycling yards',
+    buyers: 'Plant & site managers, EHS and site-security officers, industrial estate operators',
+  },
+  {
+    id: 'utility-solar',
+    name: 'Utility & Solar',
+    sites:
+      'Electrical substations, power plants, water-treatment works, telecom towers, solar farms',
+    buyers:
+      'Utility asset owners, EPC contractors & solar developers, critical-infrastructure security teams',
+  },
+  {
+    id: 'government',
+    name: 'Government & Institutional',
+    sites:
+      'Military & defense bases, correctional facilities, airports, schools & universities, courthouses',
+    buyers:
+      'Government procurement offices, base & facility commanders, institutional security directors',
+  },
+  {
+    id: 'residential',
+    name: 'Residential',
+    sites: 'Luxury estates, gated communities & HOAs, private compounds, farms & ranches',
+    buyers: 'Affluent homeowners, estate managers, security consultants specifying on their behalf',
+  },
+];
+---
+
+<section
+  id="built-for"
+  data-built-for
+  class="bg-gm-white text-gm-black relative overflow-hidden py-20 sm:py-28"
+>
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-2xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Who We Protect</p>
+      <h2
+        class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+      >
+        Whatever You're Protecting, We've Already <span class="text-gm-red">Built For It.</span>
+      </h2>
+      <p class="text-gm-grey-600 mt-6 max-w-xl text-base leading-relaxed">
+        From distribution warehouses to solar farms to correctional facilities, Guard Master
+        perimeters are specified across five sectors — often by the EPC firm, security consultant or
+        contractor buying on your behalf, not the end owner directly.
+      </p>
+    </div>
+
+    <div data-accordion class="border-gm-grey-200 mt-16 border-t lg:mt-20">
+      {
+        SEGMENTS.map((s, i) => (
+          <details data-row open={i === 0} class="border-gm-grey-200 border-b">
+            <summary class="tap-target flex cursor-pointer list-none items-center gap-5 py-6 marker:content-none [&::-webkit-details-marker]:hidden">
+              <span
+                data-icon
+                class="border-gm-grey-200 bg-gm-white flex h-14 w-14 shrink-0 items-center justify-center rounded-full border transition-colors"
+              >
+                {s.id === 'commercial' && (
+                  <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
+                    <rect x="6" y="14" width="36" height="24" stroke="#161616" stroke-width="2" />
+                    <path
+                      d="M6 14V8H42V14"
+                      stroke="#161616"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <line x1="14" y1="26" x2="14" y2="38" stroke="#161616" stroke-width="1.4" />
+                    <line x1="24" y1="26" x2="24" y2="38" stroke="#161616" stroke-width="1.4" />
+                    <line x1="34" y1="26" x2="34" y2="38" stroke="#161616" stroke-width="1.4" />
+                  </svg>
+                )}
+                {s.id === 'industrial' && (
+                  <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
+                    <rect x="8" y="22" width="32" height="18" stroke="#161616" stroke-width="2" />
+                    <path
+                      d="M8 22 16 14 16 22M16 22 24 14 24 22M24 22 32 14 32 22"
+                      stroke="#161616"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <rect x="32" y="6" width="6" height="12" stroke="#161616" stroke-width="2" />
+                  </svg>
+                )}
+                {s.id === 'utility-solar' && (
+                  <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
+                    <rect x="6" y="14" width="36" height="22" stroke="#161616" stroke-width="2" />
+                    <line x1="18" y1="14" x2="18" y2="36" stroke="#161616" stroke-width="1.4" />
+                    <line x1="30" y1="14" x2="30" y2="36" stroke="#161616" stroke-width="1.4" />
+                    <line x1="6" y1="25" x2="42" y2="25" stroke="#161616" stroke-width="1.4" />
+                    <line x1="24" y1="36" x2="24" y2="42" stroke="#161616" stroke-width="2" />
+                  </svg>
+                )}
+                {s.id === 'government' && (
+                  <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
+                    <path
+                      d="M6 18 24 6 42 18"
+                      stroke="#161616"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <line x1="6" y1="18" x2="42" y2="18" stroke="#161616" stroke-width="2" />
+                    <line x1="12" y1="18" x2="12" y2="36" stroke="#161616" stroke-width="2" />
+                    <line x1="20" y1="18" x2="20" y2="36" stroke="#161616" stroke-width="2" />
+                    <line x1="28" y1="18" x2="28" y2="36" stroke="#161616" stroke-width="2" />
+                    <line x1="36" y1="18" x2="36" y2="36" stroke="#161616" stroke-width="2" />
+                    <line x1="6" y1="40" x2="42" y2="40" stroke="#161616" stroke-width="2" />
+                  </svg>
+                )}
+                {s.id === 'residential' && (
+                  <svg viewBox="0 0 48 48" class="h-6 w-6" fill="none" aria-hidden="true">
+                    <path
+                      d="M8 22 24 8 40 22"
+                      stroke="#161616"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <rect x="12" y="22" width="24" height="18" stroke="#161616" stroke-width="2" />
+                    <rect x="21" y="30" width="6" height="10" stroke="#161616" stroke-width="2" />
+                  </svg>
+                )}
+              </span>
+
+              <span class="font-display text-gm-black flex-1 text-lg font-bold tracking-tight uppercase sm:text-xl">
+                {s.name}
+              </span>
+
+              <svg
+                data-chevron
+                viewBox="0 0 24 24"
+                class="text-gm-grey-400 h-5 w-5 shrink-0 transition-transform duration-300"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </summary>
+
+            <div data-panel>
+              <div
+                data-panel-inner
+                class="grid gap-6 pb-8 pl-[4.5rem] sm:grid-cols-2 sm:pl-[4.75rem]"
+              >
+                <div>
+                  <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
+                    Real Sites
+                  </p>
+                  <p class="text-gm-grey-700 mt-2 text-sm leading-relaxed">{s.sites}</p>
+                </div>
+                <div>
+                  <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
+                    Who Buys
+                  </p>
+                  <p class="text-gm-grey-700 mt-2 text-sm leading-relaxed">{s.buyers}</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+
+    <div class="mt-14 flex flex-wrap gap-3">
+      <a
+        href={CTA.href}
+        class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+      >
+        {CTA.label}
+      </a>
+      <a
+        href="/projects"
+        class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+      >
+        See Our Projects
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Accordion. With no JS every row is an independent native <details> — not
+     exclusive, but fully functional. With JS (see the script below), clicks
+     are intercepted to enforce one-row-open and animate it. */
+  [data-built-for] summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  [data-built-for] summary::marker {
+    content: '';
+  }
+
+  /* Active-row highlight — the icon badge picks up the brand red once its
+     row is the open one. */
+  [data-built-for] details[open] > summary [data-icon] {
+    border-color: var(--color-gm-red);
+    background: rgba(228, 17, 42, 0.06);
+  }
+  [data-built-for] details[open] > summary [data-chevron] {
+    transform: rotate(180deg);
+    color: var(--color-gm-red);
+  }
+
+  /* The open/close animation itself: a plain pixel `height` transition.
+     Closed defaults to a real, author-defined `height: 0` — not left to the
+     browser's own closed-<details> hiding, which turned out not to be a
+     plain overridable `display: none` rule (or at least not one this could
+     reliably hook a transition to) and produced a snap-back-to-full-height
+     bug once JS started clearing its own inline height on close. With an
+     explicit rule for both states, the script only ever has to animate
+     between two clearly-defined pixel values. */
+  [data-built-for] [data-panel] {
+    overflow: hidden;
+    height: 0;
+    transition: height 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-built-for] details[open] > [data-panel] {
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-built-for] [data-panel],
+    [data-built-for] [data-chevron] {
+      transition: none;
+    }
+  }
+
+  /* Scroll-in reveal — a plain triggered fade-up on the row list, not a
+     scroll-scrub: there's no sequence or hierarchy being built here (unlike
+     SystemAssembly/FinishLadder), just five parallel, independently-openable
+     rows, so a one-shot reveal fits better than tying it to scroll position. */
+  [data-built-for].is-armed [data-row] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-built-for].is-armed.is-in [data-row] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-built-for].is-armed.is-in [data-row]:nth-of-type(1) {
+    transition-delay: 0s;
+  }
+  [data-built-for].is-armed.is-in [data-row]:nth-of-type(2) {
+    transition-delay: 0.08s;
+  }
+  [data-built-for].is-armed.is-in [data-row]:nth-of-type(3) {
+    transition-delay: 0.16s;
+  }
+  [data-built-for].is-armed.is-in [data-row]:nth-of-type(4) {
+    transition-delay: 0.24s;
+  }
+  [data-built-for].is-armed.is-in [data-row]:nth-of-type(5) {
+    transition-delay: 0.32s;
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-built-for]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (section) {
+    if (!reduce) {
+      section.classList.add('is-armed');
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              section.classList.add('is-in');
+              io.disconnect();
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      io.observe(section);
+    }
+
+    /* Accordion open/close. Native `<details name>` exclusivity (declared in
+       the markup) is the fallback if this script never runs — instant,
+       un-animated, but fully correct. Here, the click is intercepted so the
+       same open/close states can be driven explicitly with a height
+       animation; see the style block above for why that has to be JS-owned
+       rather than left to the `[open]`-attribute cascade. */
+    if (!reduce) {
+      const rows = Array.from(section.querySelectorAll<HTMLDetailsElement>('[data-row]'));
+
+      const closePanel = (details: HTMLDetailsElement) => {
+        const panel = details.querySelector<HTMLElement>('[data-panel]');
+        if (!panel) return;
+        panel.style.height = panel.scrollHeight + 'px';
+        panel.getBoundingClientRect(); // force a reflow so the line above "commits" before…
+        requestAnimationFrame(() => {
+          panel.style.height = '0px'; // …this starts, which is what makes it transition.
+        });
+        const onEnd = (e: TransitionEvent) => {
+          if (e.propertyName !== 'height') return;
+          panel.removeEventListener('transitionend', onEnd);
+          details.removeAttribute('open');
+          panel.style.height = '';
+        };
+        panel.addEventListener('transitionend', onEnd);
+      };
+
+      const openPanel = (details: HTMLDetailsElement) => {
+        details.setAttribute('open', '');
+        const panel = details.querySelector<HTMLElement>('[data-panel]');
+        if (!panel) return;
+        const target = panel.scrollHeight;
+        panel.style.height = '0px';
+        panel.getBoundingClientRect();
+        requestAnimationFrame(() => {
+          panel.style.height = target + 'px';
+        });
+        const onEnd = (e: TransitionEvent) => {
+          if (e.propertyName !== 'height') return;
+          panel.removeEventListener('transitionend', onEnd);
+          panel.style.height = ''; // back to natural sizing (e.g. on viewport resize)
+        };
+        panel.addEventListener('transitionend', onEnd);
+      };
+
+      rows.forEach((details) => {
+        const summary = details.querySelector('summary');
+        summary?.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (details.open) {
+            closePanel(details);
+          } else {
+            rows.forEach((other) => {
+              if (other !== details && other.open) closePanel(other);
+            });
+            openPanel(details);
+          }
+        });
+      });
+    }
+  }
+</script>
