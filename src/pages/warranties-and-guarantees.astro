@@ -142,9 +142,9 @@ const WARRANTY_FAQS = [
         The Higher The Finish, The Longer The Cover
       </h2>
       <p class="text-gm-grey-400 mt-6 max-w-2xl text-base leading-relaxed">
-        Warranty follows the same finish ladder as everything else — every finish is covered
-        against manufacturing defects, and coverage lengthens as you move up it. Plascoat, our
-        most weather-resistant finish, is the only one we back for a full 10 years.
+        Warranty follows the same finish ladder as everything else — every finish is covered against
+        manufacturing defects, and coverage lengthens as you move up it. Plascoat, our most
+        weather-resistant finish, is the only one we back for a full 10 years.
       </p>
 
       <div
@@ -201,7 +201,9 @@ const WARRANTY_FAQS = [
   <section class="bg-gm-white text-gm-black py-16 sm:py-20">
     <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
       <div class="mx-auto max-w-2xl text-center">
-        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">The Fine Print, Plainly</p>
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+          The Fine Print, Plainly
+        </p>
         <h2
           class="font-display text-gm-black mt-5 text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
         >
@@ -359,7 +361,12 @@ const WARRANTY_FAQS = [
       const pos = i * 0.85;
 
       if (bar)
-        tl.fromTo(bar, { '--growth': 0 }, { '--growth': 1, duration: 0.9, ease: 'power3.out' }, pos);
+        tl.fromTo(
+          bar,
+          { '--growth': 0 },
+          { '--growth': 1, duration: 0.9, ease: 'power3.out' },
+          pos,
+        );
       if (label)
         tl.fromTo(
           label,

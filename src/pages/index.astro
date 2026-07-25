@@ -3,30 +3,58 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Hero from '@components/sections/Hero.astro';
 import IntrusionAttempt from '@components/sections/IntrusionAttempt.astro';
 import Proof358 from '@components/sections/Proof358.astro';
-import SystemAssembly from '@components/sections/SystemAssembly.astro';
+import ProductRange from '@components/sections/ProductRange.astro';
 import FinishLadder from '@components/sections/FinishLadder.astro';
 import BuiltFor from '@components/sections/BuiltFor.astro';
-import ProjectsShowcase from '@components/sections/ProjectsShowcase.astro';
-import EstimatorTeaser from '@components/sections/EstimatorTeaser.astro';
 import HowItWorks from '@components/sections/HowItWorks.astro';
-import SeoFaq from '@components/sections/SeoFaq.astro';
+import FactoryDirect from '@components/sections/FactoryDirect.astro';
+import RecentProject from '@components/sections/RecentProject.astro';
+import ContactBlock from '@components/sections/ContactBlock.astro';
 import CtaBand from '@components/sections/CtaBand.astro';
+
+/**
+ * Homepage section order.
+ *
+ * Three sections that used to live here have moved off it: SystemAssembly
+ * ("Post to Cap"), EstimatorTeaser ("Give us a length") and SeoFaq ("What
+ * Guard Master actually builds") all belong on the individual product pages
+ * now — the estimator in particular needs each product's own price to be
+ * worth anything, which a single homepage instance can't give it. They're
+ * still in src/components/sections/ awaiting that work; nothing on this page
+ * imports them.
+ *
+ * Their removal broke designguide.md §4's light/dark alternation in three
+ * places at once (every one of the three was a light section separating two
+ * dark ones), so the order below is rebuilt rather than just shortened:
+ *
+ *   Hero · IntrusionAttempt▮ · Proof358▮ · ProductRange □ · FinishLadder▮ ·
+ *   BuiltFor □ · HowItWorks▮ · FactoryDirect □ · RecentProject▮ ·
+ *   ContactBlock □ · CtaBand▮
+ *
+ * The one remaining dark-on-dark pair — IntrusionAttempt into Proof358 — is
+ * deliberate and predates this change: the attack demonstration and the spec
+ * lab read as one continuous dark passage.
+ *
+ * Commercially the page now runs: show the attack failing → prove the spec →
+ * here's the range and what it costs → finishes → who we protect → how
+ * ordering works → who we are → what we've built → talk to us.
+ */
 ---
 
 <BaseLayout
   title="Guard Master — Clear View 358 High-Security Fencing"
-  description="Manufacturer-direct clear view 358 anti-climb security fencing: panels, posts and fixings, backed by a 10-year warranty."
+  description="South African manufacturer of clear view 358 anti-climb security fencing, razor wire and rapid deployment barriers. Factory-direct pricing from Benoni, Gauteng."
   fullBleedHero
 >
   <Hero />
   <IntrusionAttempt />
   <Proof358 />
-  <SystemAssembly />
+  <ProductRange />
   <FinishLadder />
   <BuiltFor />
-  <ProjectsShowcase />
-  <EstimatorTeaser />
   <HowItWorks />
-  <SeoFaq />
+  <FactoryDirect />
+  <RecentProject />
+  <ContactBlock />
   <CtaBand />
 </BaseLayout>

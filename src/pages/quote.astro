@@ -1,0 +1,449 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import { VAT_RATE } from '@data/clear-view-panels';
+
+/**
+ * /quote — the basket, and the end of the estimating flow.
+ *
+ * **This is a quote request, not a checkout.** The build is a static site with
+ * no backend, no stock system and no payment integration, so there is nothing
+ * here that could take an order and it would be dishonest to dress it as one.
+ * What it does instead is what the client's own site does at the same point:
+ * assemble a priced bill of materials and hand it to a human. The page says so
+ * plainly rather than showing a "Place order" button that emails somebody.
+ *
+ * The basket is entirely client-side (src/lib/quote-cart.ts), so this page
+ * renders an empty shell and fills it on load. That is unusual for this
+ * codebase — everything else here is static-first — and it is unavoidable: the
+ * contents live in localStorage and the server has never seen them. The no-JS
+ * state is therefore an honest explanation of what the page is for and a link
+ * to the contact details, not a broken table.
+ *
+ * Submission composes a `mailto:` with the itemised list, the same no-backend
+ * approach ContactBlock uses. It is a real, working handoff that costs nothing
+ * to run and cannot silently drop an enquiry the way an unmonitored form can.
+ */
+---
+
+<BaseLayout
+  title="Your Quote | Guard Master"
+  description="Review your Clear View fencing bill of materials — panels, posts, clamps and toppings — and send it to our team for a firm quotation."
+>
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Quote', href: '/quote' },
+    ]}
+  />
+
+  <section class="bg-gm-black text-gm-white py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Bill Of Materials</p>
+      <h1
+        class="font-display text-gm-white mt-5 max-w-3xl text-4xl leading-[0.98] font-black tracking-tight uppercase sm:text-5xl"
+      >
+        Your Quote, <span class="text-gm-red">Itemised.</span>
+      </h1>
+      <p class="text-gm-grey-400 mt-6 max-w-2xl text-base leading-relaxed">
+        Everything you've priced across the site, in one list. Adjust quantities here, then send it
+        to us and we'll come back with a firm quotation including delivery.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-gm-black text-gm-white border-t border-white/10 pb-20 sm:pb-28">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <!-- Server-rendered fallback. Replaced the moment the script runs; it is
+           what a visitor without JS sees, and it tells the truth. -->
+      <div data-quote-empty class="py-16">
+        <p class="text-gm-grey-300 max-w-xl text-base leading-relaxed">
+          Your quote is empty — or your browser has JavaScript turned off, in which case the basket
+          can't be read at all, because it lives in this browser rather than on our server.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href="/clear-view-fencing-panels"
+            class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+          >
+            Price Panels
+          </a>
+          <a
+            href="/clear-view-fencing-posts"
+            class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+          >
+            Price Posts
+          </a>
+          <a
+            href="/#contact"
+            class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+          >
+            Just Call Us
+          </a>
+        </div>
+      </div>
+
+      <div data-quote-full class="hidden py-12">
+        <div class="-mr-6 overflow-x-auto pr-6 lg:mr-0 lg:pr-0">
+          <table class="quote-table w-full min-w-[44rem] border-collapse text-left">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" class="num">Each</th>
+                <th scope="col" class="num">Qty</th>
+                <th scope="col" class="num">Line</th>
+                <th scope="col"><span class="sr-only">Remove</span></th>
+              </tr>
+            </thead>
+            <tbody data-quote-body></tbody>
+          </table>
+        </div>
+
+        <div class="mt-10 flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+          <div class="max-w-lg">
+            <h2 class="font-display text-gm-white text-xl font-black tracking-tight uppercase">
+              Send It To Us
+            </h2>
+            <p class="text-gm-grey-400 mt-3 text-[13px] leading-relaxed">
+              This isn't a checkout — we don't take payment online. Send the list and a real person
+              comes back with a firm quotation, lead time and delivery cost.
+            </p>
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <label class="block">
+                <span
+                  class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                  >Your name</span
+                >
+                <input data-quote-name type="text" autocomplete="name" class="quote-field mt-2" />
+              </label>
+              <label class="block">
+                <span
+                  class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                  >Site or town</span
+                >
+                <input data-quote-site type="text" class="quote-field mt-2" />
+              </label>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a
+                data-quote-send
+                href="#"
+                class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+              >
+                Send This Quote
+              </a>
+              <button
+                type="button"
+                data-quote-copy
+                class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                Copy As Text
+              </button>
+              <button
+                type="button"
+                data-quote-clear
+                class="tap-target text-gm-grey-500 hover:text-gm-white inline-flex items-center px-2 text-[12px] font-bold tracking-[0.08em] uppercase transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+            <p data-quote-status class="text-gm-grey-500 mt-4 text-[12px]" role="status"></p>
+          </div>
+
+          <dl class="border-gm-red min-w-[19rem] border-t-2 pt-6 font-mono text-sm">
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2.5">
+              <dt class="text-gm-grey-400">Total excl. VAT</dt>
+              <dd data-quote-ex class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2.5">
+              <dt class="text-gm-grey-400">VAT ({VAT_RATE * 100}%)</dt>
+              <dd data-quote-vat class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2.5">
+              <dt class="text-gm-white font-bold">Total incl. VAT</dt>
+              <dd data-quote-incl class="text-gm-red font-bold tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 py-2.5">
+              <dt class="text-gm-grey-400">Estimated mass</dt>
+              <dd data-quote-kg class="text-gm-grey-300 tabular-nums">—</dd>
+            </div>
+          </dl>
+        </div>
+
+        <p class="text-gm-grey-500 mt-10 max-w-2xl text-[11px] leading-relaxed">
+          Prices are our published list prices excluding VAT and exclude delivery, installation and
+          any groundworks. Quantities are estimates from the perimeter you entered and assume a
+          closed run with no gates — we'll check them against your drawing before quoting.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quote-table th,
+  .quote-table td {
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    padding: 0.85rem 1rem 0.85rem 0;
+    vertical-align: baseline;
+  }
+  .quote-table thead th {
+    border-bottom-color: rgb(255 255 255 / 0.22);
+    color: var(--color-gm-grey-500);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .quote-table .num {
+    padding-right: 0;
+    padding-left: 1rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .quote-table tbody td {
+    color: var(--color-gm-white);
+    font-size: 13px;
+  }
+  .quote-table .item-label {
+    color: var(--color-gm-white);
+    font-weight: 700;
+  }
+  .quote-table .item-detail {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--color-gm-grey-500);
+    font-size: 11px;
+  }
+  .quote-table .item-group {
+    display: block;
+    color: var(--color-gm-red);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .quote-table input {
+    width: 4.5rem;
+    height: 2.25rem;
+    padding: 0 0.5rem;
+    border: 1px solid #35353d;
+    background: #111114;
+    color: var(--color-gm-white);
+    font-size: 13px;
+    text-align: right;
+  }
+  .quote-table button {
+    color: var(--color-gm-grey-600);
+    font-size: 16px;
+    line-height: 1;
+  }
+  .quote-table button:hover {
+    color: var(--color-gm-red);
+  }
+
+  .quote-field {
+    width: 100%;
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    border: 1px solid #35353d;
+    background: #111114;
+    color: var(--color-gm-white);
+    font-size: 14px;
+  }
+  .quote-field:focus-visible {
+    outline: 2px solid var(--color-gm-red);
+    outline-offset: 1px;
+  }
+</style>
+
+<script>
+  import { read, setQty, remove, clear, totals, rand, onChange, submit } from '@/lib/quote-cart';
+  import type { QuoteLine } from '@/lib/quote-cart';
+
+  const emptyEl = document.querySelector<HTMLElement>('[data-quote-empty]');
+  const fullEl = document.querySelector<HTMLElement>('[data-quote-full]');
+  const bodyEl = document.querySelector<HTMLElement>('[data-quote-body]');
+  const statusEl = document.querySelector<HTMLElement>('[data-quote-status]');
+
+  if (emptyEl && fullEl && bodyEl) {
+    const out = (sel: string) => document.querySelector<HTMLElement>(sel);
+
+    /** The plain-text bill of materials, used by both send and copy. */
+    const asText = (lines: QuoteLine[]): string => {
+      const t = totals(lines);
+      const rows = lines.map(
+        (l) =>
+          `${l.qty} × ${l.label}${l.detail ? ` (${l.detail})` : ''} @ ${rand(l.unitEx)} = ${rand(
+            Math.round(l.unitEx * l.qty * 100) / 100,
+          )}`,
+      );
+      return [
+        ...rows,
+        '',
+        `Total excl. VAT: ${rand(t.ex)}`,
+        `VAT (15%): ${rand(t.vat)}`,
+        `Total incl. VAT: ${rand(t.incl)}`,
+        t.kg > 0 ? `Estimated mass: ${t.kg.toFixed(2)} kg` : '',
+      ]
+        .filter(Boolean)
+        .join('\n');
+    };
+
+    const paint = () => {
+      const lines = read();
+      emptyEl.classList.toggle('hidden', lines.length > 0);
+      fullEl.classList.toggle('hidden', lines.length === 0);
+      if (!lines.length) return;
+
+      bodyEl.replaceChildren(
+        ...lines.map((l) => {
+          const tr = document.createElement('tr');
+
+          const th = document.createElement('th');
+          th.setAttribute('scope', 'row');
+          const group = document.createElement('span');
+          group.className = 'item-group';
+          group.textContent = l.group;
+          const label = document.createElement('span');
+          label.className = 'item-label';
+          label.textContent = l.label;
+          th.append(group, label);
+          if (l.detail) {
+            const detail = document.createElement('span');
+            detail.className = 'item-detail';
+            detail.textContent = l.detail;
+            th.append(detail);
+          }
+
+          const each = document.createElement('td');
+          each.className = 'num';
+          each.textContent = rand(l.unitEx);
+
+          const qty = document.createElement('td');
+          qty.className = 'num';
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.min = '1';
+          input.step = '1';
+          input.value = String(l.qty);
+          input.setAttribute('aria-label', `Quantity for ${l.label}`);
+          input.addEventListener('change', () => setQty(l.id, Number(input.value) || 0));
+          qty.append(input);
+
+          const line = document.createElement('td');
+          line.className = 'num';
+          line.textContent = rand(Math.round(l.unitEx * l.qty * 100) / 100);
+
+          const act = document.createElement('td');
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.textContent = '✕';
+          del.setAttribute('aria-label', `Remove ${l.label}`);
+          del.addEventListener('click', () => remove(l.id));
+          act.append(del);
+
+          tr.append(th, each, qty, line, act);
+          return tr;
+        }),
+      );
+
+      const t = totals(lines);
+      const set = (sel: string, v: string) => {
+        const el = out(sel);
+        if (el) el.textContent = v;
+      };
+      set('[data-quote-ex]', rand(t.ex));
+      set('[data-quote-vat]', rand(t.vat));
+      set('[data-quote-incl]', rand(t.incl));
+      set('[data-quote-kg]', t.kg > 0 ? `${t.kg.toFixed(2)} kg` : '—');
+
+      /* The mailto is rebuilt on every paint so it always carries the current
+         list — an href composed once goes stale the moment a qty changes. */
+      const send = document.querySelector<HTMLAnchorElement>('[data-quote-send]');
+      if (send) {
+        const name = document.querySelector<HTMLInputElement>('[data-quote-name]')?.value.trim();
+        const site = document.querySelector<HTMLInputElement>('[data-quote-site]')?.value.trim();
+        const subject = `Quote request${site ? ` — ${site}` : ''}${name ? ` — ${name}` : ''}`;
+        const body = [
+          name ? `Name: ${name}` : '',
+          site ? `Site: ${site}` : '',
+          '',
+          asText(lines),
+          '',
+          'Please confirm pricing, lead time and delivery.',
+        ]
+          .filter(Boolean)
+          .join('\n');
+        send.href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent(
+          subject,
+        )}&body=${encodeURIComponent(body)}`;
+      }
+    };
+
+    /* Send: freeze the basket under a reference, hand the itemised list to the
+       mail client (the actual submission — there is no server to post to), then
+       move the visitor to the status page for that reference. The mailto is
+       triggered first and the navigation deferred a beat, because assigning
+       location twice in the same task loses the mailto in some browsers. */
+    document.querySelector('[data-quote-send]')?.addEventListener('click', (event) => {
+      const lines = read();
+      if (!lines.length) return;
+      event.preventDefault();
+
+      const name = document.querySelector<HTMLInputElement>('[data-quote-name]')?.value.trim();
+      const site = document.querySelector<HTMLInputElement>('[data-quote-site]')?.value.trim();
+      const sub = submit({ name, site });
+
+      /* Compose the mail here rather than reusing the href painted earlier —
+         that one has no reference in it, and the reference is the whole point
+         of the number we just issued. */
+      const subject = `Quote ${sub.ref}${site ? ` — ${site}` : ''}${name ? ` — ${name}` : ''}`;
+      const body = [
+        `Reference: ${sub.ref}`,
+        name ? `Name: ${name}` : '',
+        site ? `Site: ${site}` : '',
+        '',
+        asText(lines),
+        '',
+        'Please confirm pricing, lead time and delivery.',
+      ]
+        .filter(Boolean)
+        .join('\n');
+      window.location.href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent(
+        subject,
+      )}&body=${encodeURIComponent(body)}`;
+      if (statusEl) statusEl.textContent = `Quote ${sub.ref} sent. Taking you to its status…`;
+
+      /* The basket is now a sent quote, so it starts empty for the next one. */
+      window.setTimeout(() => {
+        clear();
+        window.location.assign(`/quote-status?ref=${encodeURIComponent(sub.ref)}`);
+      }, 900);
+    });
+
+    document.querySelector('[data-quote-clear]')?.addEventListener('click', () => {
+      clear();
+      if (statusEl) statusEl.textContent = 'Quote cleared.';
+    });
+
+    document.querySelector('[data-quote-copy]')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(asText(read()));
+        if (statusEl) statusEl.textContent = 'Copied to your clipboard.';
+      } catch {
+        if (statusEl) statusEl.textContent = "Couldn't copy — select the table and copy manually.";
+      }
+    });
+
+    /* Typing a name or site changes the mailto, so repaint on input. */
+    document
+      .querySelectorAll('[data-quote-name], [data-quote-site]')
+      .forEach((el) => el.addEventListener('input', paint));
+
+    onChange(paint);
+    paint();
+  }
+</script>

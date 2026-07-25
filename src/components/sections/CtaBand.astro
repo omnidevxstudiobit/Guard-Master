@@ -70,8 +70,14 @@ import { CTA } from '@data/nav';
       >
         {CTA.label}
       </a>
+      {
+        /* Was '#instant-estimate' — an on-page jump to EstimatorTeaser, which
+           has moved off the homepage to the product pages. The full estimator
+           page is the live target now, so this is a real navigation rather
+           than a jump to an id that no longer exists. */
+      }
       <a
-        href="#instant-estimate"
+        href="/quote-estimator"
         class="text-gm-grey-300 hover:text-gm-white text-[13px] font-semibold tracking-[0.04em] underline underline-offset-4"
       >
         or try the instant estimator

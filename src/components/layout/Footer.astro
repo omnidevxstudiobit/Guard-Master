@@ -9,16 +9,17 @@ import { NAV_ITEMS, CTA } from '@data/nav';
  * items again as real crawlable links, plus the on-page anchors (who we
  * protect, instant estimate, FAQ) and two legal placeholders.
  *
- * Phone + email are real: the client's own reference site
- * (fencing-supplier.com) lists +1 (954) 756-5216 / export@fencing-supplier.com
- * as its actual "International / Export Sales" line — the right one for a
- * US-market site, as opposed to the South Africa sales numbers on the same
- * page. Still deliberately NOT included: a street address or social links.
- * The reference site's only physical address is the Benoni, South Africa
- * factory — not relevant to present as "the" address on a US site — and no
- * real social profiles were found. Fabricating either would be worse than
- * leaving them out; a missing field reads as incomplete, a wrong one reads
- * as fact once a search engine indexes it.
+ * Phone, email and address are all real, and all come from the client's own
+ * reference site (fencing-supplier.com). This footer used to lead with
+ * +1 (954) 756-5216 / export@fencing-supplier.com — that site's
+ * "International / Export Sales" line — and deliberately withheld the street
+ * address, on the reasoning that a US-market site shouldn't present a South
+ * African factory as "the" address. That reasoning is retired: the site is
+ * now built for the business as it actually trades, a Benoni manufacturer
+ * quoting in rand, so the general SA line and the factory address lead, and
+ * the +1 number stays on as what it always was — the export line. Social
+ * links are still omitted; no real profiles were found, and inventing one
+ * reads as fact the moment a search engine indexes it.
  *
  * Lives in BaseLayout.astro (rendered on every page), not per-page — same
  * reasoning as the nav.
@@ -32,17 +33,26 @@ const companyLinks = [
   { label: 'Projects', href: '/projects' },
   { label: 'Who We Protect', href: '/#built-for' },
 ];
+/* '/#instant-estimate' and '/#faq' used to live here. Both anchors are gone
+   from the homepage — EstimatorTeaser and SeoFaq moved off it, to be remounted
+   per-product — so these now point at targets that actually exist: the full
+   estimator page, and the homepage's own contact section. */
 const getStartedLinks = [
   { label: 'Get a Quote', href: CTA.href },
-  { label: 'Instant Estimate', href: '/#instant-estimate' },
-  { label: 'FAQ', href: '/#faq' },
+  { label: 'Instant Estimate', href: '/quote-estimator' },
+  { label: 'Contact Us', href: '/#contact' },
 ];
 const legalLinks = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms of Service', href: '/terms-of-service' },
 ];
 
-const TRUST = ['ISO Certified', '10-Year Warranty', 'In-House Manufacturing', 'US-Wide Shipping'];
+const TRUST = [
+  'ISO Certified',
+  '10-Year Warranty',
+  'In-House Manufacturing',
+  'Nationwide & Export Delivery',
+];
 ---
 
 <footer class="bg-gm-black text-gm-grey-300 border-t border-white/10">
@@ -53,21 +63,32 @@ const TRUST = ['ISO Certified', '10-Year Warranty', 'In-House Manufacturing', 'U
           <Logo variant="sub" class="h-8 w-auto" />
         </a>
         <p class="text-gm-grey-400 mt-4 text-sm leading-relaxed">
-          Manufacturer-direct clear view 358 anti-climb security fencing — engineered and shipped
-          across the continental United States.
+          Manufacturer-direct clear view 358 anti-climb security fencing, razor wire and rapid
+          deployment barriers — made in Benoni, Gauteng.
         </p>
+        <address class="text-gm-grey-400 mt-4 text-sm leading-relaxed not-italic">
+          10 Burnley Street<br />
+          Benoni South Extn.<br />
+          Gauteng 1501, South Africa
+        </address>
         <div class="mt-5 space-y-1.5">
           <a
-            href="tel:+19547565216"
+            href="tel:+27114378903"
             class="tap-target text-gm-grey-300 hover:text-gm-white flex items-center text-sm transition-colors"
           >
-            +1 (954) 756-5216
+            +27 11 437 8903
           </a>
           <a
-            href="mailto:export@fencing-supplier.com"
+            href="mailto:info@fencing-supplier.com"
             class="tap-target text-gm-grey-300 hover:text-gm-white flex items-center text-sm transition-colors"
           >
-            export@fencing-supplier.com
+            info@fencing-supplier.com
+          </a>
+          <a
+            href="tel:+19547565216"
+            class="tap-target text-gm-grey-500 hover:text-gm-white flex items-center text-sm transition-colors"
+          >
+            +1 (954) 756-5216 <span class="ml-2 text-xs">· International / Export</span>
           </a>
         </div>
       </div>

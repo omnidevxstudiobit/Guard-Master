@@ -1,0 +1,176 @@
+---
+import { findImage } from '@data/products';
+
+/**
+ * Section — recent work, in real photographs.
+ *
+ * The reference site (fencing-supplier.com) carries a "RECENT PROJECT" block
+ * on its homepage; this is that slot, built from the client's own site
+ * photography in the "Products 2026" drop rather than from a stock library.
+ *
+ * What it deliberately does not do is invent case studies. There are no
+ * client names, no site addresses, no completion dates and no linear-metre
+ * figures attached to any of these frames, because none of that came with the
+ * photographs — and a plausible-looking "≈2,400 m · completed 2025" caption is
+ * exactly the kind of detail that reads as verified fact once it's on a page.
+ * Each caption states only what is visible in its own frame (the sector, and
+ * what's actually built there), and the footnote says plainly why the sites
+ * aren't named. ProjectsShowcase.astro held this same line when it had no
+ * photography at all and drew schematics instead; the honesty rule outlives
+ * the constraint that created it.
+ *
+ * Dark section, between FactoryDirect (light) and ContactBlock (light).
+ *
+ * A mosaic, not a filmstrip: HowItWorks already owns the horizontal-scroll
+ * silhouette on this page, and a gallery of unequal frames is also just a
+ * better way to look at photographs than five identically-cropped cards.
+ */
+
+type Shot = { slug: string; id: string; sector: string; caption: string };
+
+const SHOTS: Shot[] = [
+  {
+    slug: 'projects',
+    id: 'dji-20240903-084123-886',
+    sector: 'Aerial',
+    caption: 'A completed clear view run, seen from above',
+  },
+  {
+    slug: 'projects',
+    id: '14',
+    sector: 'Industrial',
+    caption: 'Petrochemical processing plant perimeter',
+  },
+  { slug: 'projects', id: '15', sector: 'Logistics', caption: 'Container terminal boundary' },
+  {
+    slug: 'projects',
+    id: '25',
+    sector: 'Utility',
+    caption: 'Remote line with electric topping',
+  },
+  { slug: 'projects', id: '33', sector: 'Commercial', caption: 'Marina and moorings' },
+];
+
+const SHOWN = SHOTS.map((shot) => ({ ...shot, image: findImage(shot.slug, shot.id) })).filter(
+  (shot): shot is Shot & { image: NonNullable<ReturnType<typeof findImage>> } =>
+    Boolean(shot.image),
+);
+
+const [lead, ...rest] = SHOWN;
+---
+
+<section
+  data-recent
+  class="bg-gm-black text-gm-white relative isolate overflow-hidden py-20 sm:py-28"
+>
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: radial-gradient(85% 110% at 15% 0%, rgba(228,17,42,0.10), transparent 55%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-8">
+      <div class="max-w-2xl">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Proof In The Field</p>
+        <h2
+          class="font-display text-gm-white mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+        >
+          Recent Work. <span class="text-gm-red">Real Perimeters.</span>
+        </h2>
+        <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
+          Refineries, ports, utilities, estates and public grounds — the same 358 mesh, the same
+          posts and the same fixings, specified to whatever the site actually needs.
+        </p>
+      </div>
+
+      <a
+        href="/projects"
+        class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+      >
+        See Scope By Sector
+      </a>
+    </div>
+
+    {
+      lead && (
+        <div class="mt-14 grid gap-4 lg:mt-16 lg:grid-cols-4 lg:grid-rows-2">
+          <figure
+            data-shot
+            class="group relative aspect-[4/3] overflow-hidden rounded-md lg:col-span-2 lg:row-span-2 lg:aspect-auto"
+          >
+            <img
+              src={lead.image.src}
+              srcset={lead.image.srcset}
+              sizes="(min-width: 1024px) 700px, 100vw"
+              width={lead.image.width}
+              height={lead.image.height}
+              alt={lead.image.alt}
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+            <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-5 pt-12">
+              <p class="text-gm-red font-mono text-[10px] tracking-[0.2em] uppercase">
+                {lead.sector}
+              </p>
+              <p class="text-gm-white mt-1 text-sm font-bold tracking-tight uppercase">
+                {lead.caption}
+              </p>
+            </figcaption>
+          </figure>
+
+          {rest.map((shot) => (
+            <figure data-shot class="group relative aspect-[4/3] overflow-hidden rounded-md">
+              <img
+                src={shot.image.src}
+                srcset={shot.image.srcset}
+                sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
+                width={shot.image.width}
+                height={shot.image.height}
+                alt={shot.image.alt}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+              <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-4 pt-10">
+                <p class="text-gm-red font-mono text-[10px] tracking-[0.2em] uppercase">
+                  {shot.sector}
+                </p>
+                <p class="text-gm-white mt-1 text-[13px] font-bold tracking-tight uppercase">
+                  {shot.caption}
+                </p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )
+    }
+
+    <p class="text-gm-grey-500 mt-8 max-w-2xl text-[11px] leading-relaxed">
+      Sites aren't named here — perimeter security work generally isn't advertised by address. Ask
+      us directly and we'll talk you through comparable installations for your sector.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* A slow push-in on hover, so the mosaic has some life without any of the
+     frames moving on their own. Purely decorative — dropped entirely under
+     reduced motion, and the photographs are fully visible either way. */
+  [data-recent] [data-shot] img {
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  [data-recent] [data-shot]:hover img {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-recent] [data-shot] img,
+    [data-recent] [data-shot]:hover img {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

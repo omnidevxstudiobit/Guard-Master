@@ -1,0 +1,606 @@
+{
+  "clear-view-fencing-panels": [
+    {
+      "id": "56",
+      "alt": "Render of a galvanised clear view post, 358 mesh panel and shark-tooth spike topping",
+      "src": "/images/products/clear-view-fencing-panels/56-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/56-480.webp 480w, /images/products/clear-view-fencing-panels/56-640.webp 640w"
+    },
+    {
+      "id": "30",
+      "alt": "Three-quarter render of a clear view fence run with spike topping",
+      "src": "/images/products/clear-view-fencing-panels/30-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/30-480.webp 480w, /images/products/clear-view-fencing-panels/30-640.webp 640w"
+    },
+    {
+      "id": "4",
+      "alt": "Close render of the welded junction where horizontal and vertical 358 wires meet",
+      "src": "/images/products/clear-view-fencing-panels/4-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/4-480.webp 480w, /images/products/clear-view-fencing-panels/4-640.webp 640w"
+    },
+    {
+      "id": "34",
+      "alt": "Render of a clear view post finished with a moulded solar cap",
+      "src": "/images/products/clear-view-fencing-panels/34-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/34-480.webp 480w, /images/products/clear-view-fencing-panels/34-640.webp 640w"
+    },
+    {
+      "id": "32",
+      "alt": "Render of two capped posts carrying a run of clear view mesh",
+      "src": "/images/products/clear-view-fencing-panels/32-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/32-480.webp 480w, /images/products/clear-view-fencing-panels/32-640.webp 640w"
+    },
+    {
+      "id": "31",
+      "alt": "Render of a single clear view post, isolated on white",
+      "src": "/images/products/clear-view-fencing-panels/31-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/31-480.webp 480w, /images/products/clear-view-fencing-panels/31-640.webp 640w"
+    },
+    {
+      "id": "clear-view-high-security-anti-climb-fencing-panels-plain-galv",
+      "alt": "Plain galvanised clear view 358 mesh panels running at an angle along a perimeter",
+      "src": "/images/products/clear-view-fencing-panels/clear-view-high-security-anti-climb-fencing-panels-plain-galv-950.webp",
+      "width": 950,
+      "height": 700,
+      "srcset": "/images/products/clear-view-fencing-panels/clear-view-high-security-anti-climb-fencing-panels-plain-galv-480.webp 480w, /images/products/clear-view-fencing-panels/clear-view-high-security-anti-climb-fencing-panels-plain-galv-950.webp 950w"
+    },
+    {
+      "id": "57",
+      "alt": "Galvanised clear view panel fixed to a post, seen head-on",
+      "src": "/images/products/clear-view-fencing-panels/57-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/57-480.webp 480w, /images/products/clear-view-fencing-panels/57-640.webp 640w"
+    },
+    {
+      "id": "58",
+      "alt": "Black powder-coated clear view panels with spike topping",
+      "src": "/images/products/clear-view-fencing-panels/58-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/58-480.webp 480w, /images/products/clear-view-fencing-panels/58-640.webp 640w"
+    },
+    {
+      "id": "clear-view-fencing-commercial-property-high-security-fencing-600x442",
+      "alt": "Clear view fencing securing a commercial property boundary",
+      "src": "/images/products/clear-view-fencing-panels/clear-view-fencing-commercial-property-high-security-fencing-600x442-600.webp",
+      "width": 600,
+      "height": 442,
+      "srcset": "/images/products/clear-view-fencing-panels/clear-view-fencing-commercial-property-high-security-fencing-600x442-480.webp 480w, /images/products/clear-view-fencing-panels/clear-view-fencing-commercial-property-high-security-fencing-600x442-600.webp 600w"
+    },
+    {
+      "id": "clear-view-fencing-private-property-powder-coated-option-anti-climb-600x442",
+      "alt": "Powder-coated anti-climb clear view fencing on a private property",
+      "src": "/images/products/clear-view-fencing-panels/clear-view-fencing-private-property-powder-coated-option-anti-climb-600x442-600.webp",
+      "width": 600,
+      "height": 442,
+      "srcset": "/images/products/clear-view-fencing-panels/clear-view-fencing-private-property-powder-coated-option-anti-climb-600x442-480.webp 480w, /images/products/clear-view-fencing-panels/clear-view-fencing-private-property-powder-coated-option-anti-climb-600x442-600.webp 600w"
+    },
+    {
+      "id": "52",
+      "alt": "Black clear view fencing along a landscaped office boundary",
+      "src": "/images/products/clear-view-fencing-panels/52-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/52-480.webp 480w, /images/products/clear-view-fencing-panels/52-640.webp 640w"
+    },
+    {
+      "id": "clear-view-fencing-anti-cut-anti-climb-high-visibility",
+      "alt": "Anti-cut, anti-climb clear view fencing with full visibility through the mesh",
+      "src": "/images/products/clear-view-fencing-panels/clear-view-fencing-anti-cut-anti-climb-high-visibility-950.webp",
+      "width": 950,
+      "height": 700,
+      "srcset": "/images/products/clear-view-fencing-panels/clear-view-fencing-anti-cut-anti-climb-high-visibility-480.webp 480w, /images/products/clear-view-fencing-panels/clear-view-fencing-anti-cut-anti-climb-high-visibility-950.webp 950w"
+    },
+    {
+      "id": "8",
+      "alt": "Clear view fence line curving away under open sky",
+      "src": "/images/products/clear-view-fencing-panels/8-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/8-480.webp 480w, /images/products/clear-view-fencing-panels/8-640.webp 640w"
+    },
+    {
+      "id": "17",
+      "alt": "Flat sample of 358 welded mesh showing the narrow aperture pattern",
+      "src": "/images/products/clear-view-fencing-panels/17-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/17-480.webp 480w, /images/products/clear-view-fencing-panels/17-640.webp 640w"
+    }
+  ],
+  "clear-view-fencing-posts": [
+    {
+      "id": "34",
+      "alt": "Clear view fencing post with a moulded black cap",
+      "src": "/images/products/clear-view-fencing-posts/34-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/34-480.webp 480w, /images/products/clear-view-fencing-posts/34-640.webp 640w"
+    },
+    {
+      "id": "35",
+      "alt": "Two clear view posts side by side, silver and graphite cap options",
+      "src": "/images/products/clear-view-fencing-posts/35-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/35-480.webp 480w, /images/products/clear-view-fencing-posts/35-640.webp 640w"
+    },
+    {
+      "id": "32",
+      "alt": "Clear view posts with solar caps carrying a run of mesh panels",
+      "src": "/images/products/clear-view-fencing-posts/32-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/32-480.webp 480w, /images/products/clear-view-fencing-posts/32-640.webp 640w"
+    },
+    {
+      "id": "57",
+      "alt": "Galvanised post with a clear view panel clamped to it",
+      "src": "/images/products/clear-view-fencing-posts/57-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/57-480.webp 480w, /images/products/clear-view-fencing-posts/57-640.webp 640w"
+    },
+    {
+      "id": "img-5074",
+      "alt": "Close-up of a solar post cap with its integrated light",
+      "src": "/images/products/clear-view-fencing-posts/img-5074-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/clear-view-fencing-posts/img-5074-480.webp 480w, /images/products/clear-view-fencing-posts/img-5074-960.webp 960w, /images/products/clear-view-fencing-posts/img-5074-1600.webp 1600w"
+    },
+    {
+      "id": "img-4742",
+      "alt": "Finished post samples on display in the Guard Master factory",
+      "src": "/images/products/clear-view-fencing-posts/img-4742-1600.webp",
+      "width": 1600,
+      "height": 1200,
+      "srcset": "/images/products/clear-view-fencing-posts/img-4742-480.webp 480w, /images/products/clear-view-fencing-posts/img-4742-960.webp 960w, /images/products/clear-view-fencing-posts/img-4742-1600.webp 1600w"
+    },
+    {
+      "id": "5bfcf5b7-b5c7-4941-ab24-88a74b552970",
+      "alt": "Stacked galvanised post profiles fresh off the line",
+      "src": "/images/products/clear-view-fencing-posts/5bfcf5b7-b5c7-4941-ab24-88a74b552970-1600.webp",
+      "width": 1600,
+      "height": 900,
+      "srcset": "/images/products/clear-view-fencing-posts/5bfcf5b7-b5c7-4941-ab24-88a74b552970-480.webp 480w, /images/products/clear-view-fencing-posts/5bfcf5b7-b5c7-4941-ab24-88a74b552970-960.webp 960w, /images/products/clear-view-fencing-posts/5bfcf5b7-b5c7-4941-ab24-88a74b552970-1600.webp 1600w"
+    },
+    {
+      "id": "d8e851de-f908-4f6b-8961-f6fbb22056b7",
+      "alt": "Bundled square post stock in the factory yard",
+      "src": "/images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-1600.webp",
+      "width": 1600,
+      "height": 2844,
+      "srcset": "/images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-480.webp 480w, /images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-960.webp 960w, /images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-1600.webp 1600w"
+    }
+  ],
+  "razor-wire-mesh": [
+    {
+      "id": "42",
+      "alt": "Welded razor wire mesh sheet showing the diamond blade pattern",
+      "src": "/images/products/razor-wire-mesh/42-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/razor-wire-mesh/42-480.webp 480w, /images/products/razor-wire-mesh/42-640.webp 640w"
+    },
+    {
+      "id": "razor-wire-mesh-sheet-high-density-200x200",
+      "alt": "High-density razor wire mesh sheet, isolated against black",
+      "src": "/images/products/razor-wire-mesh/razor-wire-mesh-sheet-high-density-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh/razor-wire-mesh-sheet-high-density-200x200-200.webp 200w"
+    },
+    {
+      "id": "razor-wire-mesh-sheet-standard-density-200x200",
+      "alt": "Standard-density razor wire mesh sheet, isolated against black",
+      "src": "/images/products/razor-wire-mesh/razor-wire-mesh-sheet-standard-density-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh/razor-wire-mesh-sheet-standard-density-200x200-200.webp 200w"
+    },
+    {
+      "id": "welded-razor-wire-mesh-200x200",
+      "alt": "Razor wire blade profile called out against a welded mesh sheet",
+      "src": "/images/products/razor-wire-mesh/welded-razor-wire-mesh-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh/welded-razor-wire-mesh-200x200-200.webp 200w"
+    },
+    {
+      "id": "razor-wire-mesh-standard-density-reinforced-with-concertina-coils-as-topping-1",
+      "alt": "Standard-density razor wire mesh fence reinforced with concertina coil topping",
+      "src": "/images/products/razor-wire-mesh/razor-wire-mesh-standard-density-reinforced-with-concertina-coils-as-topping-1-950.webp",
+      "width": 950,
+      "height": 700,
+      "srcset": "/images/products/razor-wire-mesh/razor-wire-mesh-standard-density-reinforced-with-concertina-coils-as-topping-1-480.webp 480w, /images/products/razor-wire-mesh/razor-wire-mesh-standard-density-reinforced-with-concertina-coils-as-topping-1-950.webp 950w"
+    },
+    {
+      "id": "dji-20250930-103020-472",
+      "alt": "Looking down the barrel of a coiled razor wire mesh roll",
+      "src": "/images/products/razor-wire-mesh/dji-20250930-103020-472-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/razor-wire-mesh/dji-20250930-103020-472-480.webp 480w, /images/products/razor-wire-mesh/dji-20250930-103020-472-960.webp 960w, /images/products/razor-wire-mesh/dji-20250930-103020-472-1600.webp 1600w"
+    },
+    {
+      "id": "img-6277",
+      "alt": "Razor wire mesh rolls stacked in the factory yard",
+      "src": "/images/products/razor-wire-mesh/img-6277-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/razor-wire-mesh/img-6277-480.webp 480w, /images/products/razor-wire-mesh/img-6277-960.webp 960w, /images/products/razor-wire-mesh/img-6277-1600.webp 1600w"
+    },
+    {
+      "id": "img-6282",
+      "alt": "Galvanised razor wire mesh rolls ready for dispatch",
+      "src": "/images/products/razor-wire-mesh/img-6282-1600.webp",
+      "width": 1600,
+      "height": 1200,
+      "srcset": "/images/products/razor-wire-mesh/img-6282-480.webp 480w, /images/products/razor-wire-mesh/img-6282-960.webp 960w, /images/products/razor-wire-mesh/img-6282-1600.webp 1600w"
+    },
+    {
+      "id": "1",
+      "alt": "Installers setting a razor wire mesh panel onto its post",
+      "src": "/images/products/razor-wire-mesh/1-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/razor-wire-mesh/1-480.webp 480w, /images/products/razor-wire-mesh/1-640.webp 640w"
+    },
+    {
+      "id": "razor-wire-mesh-post-installation-layout",
+      "alt": "Technical drawing of the razor wire mesh post installation layout",
+      "src": "/images/products/razor-wire-mesh/razor-wire-mesh-post-installation-layout-1200.webp",
+      "width": 1200,
+      "height": 800,
+      "srcset": "/images/products/razor-wire-mesh/razor-wire-mesh-post-installation-layout-480.webp 480w, /images/products/razor-wire-mesh/razor-wire-mesh-post-installation-layout-960.webp 960w, /images/products/razor-wire-mesh/razor-wire-mesh-post-installation-layout-1200.webp 1200w"
+    },
+    {
+      "id": "razor-wire-mesh-post-installation-solutions",
+      "alt": "Technical drawing of light and heavy main post details for razor wire mesh",
+      "src": "/images/products/razor-wire-mesh/razor-wire-mesh-post-installation-solutions-1200.webp",
+      "width": 1200,
+      "height": 800,
+      "srcset": "/images/products/razor-wire-mesh/razor-wire-mesh-post-installation-solutions-480.webp 480w, /images/products/razor-wire-mesh/razor-wire-mesh-post-installation-solutions-960.webp 960w, /images/products/razor-wire-mesh/razor-wire-mesh-post-installation-solutions-1200.webp 1200w"
+    }
+  ],
+  "razor-wire-mesh-posts": [
+    {
+      "id": "razor-wire-mesh-installation-posts",
+      "alt": "Galvanised corner post carrying razor wire mesh on a site perimeter",
+      "src": "/images/products/razor-wire-mesh-posts/razor-wire-mesh-installation-posts-950.webp",
+      "width": 950,
+      "height": 700,
+      "srcset": "/images/products/razor-wire-mesh-posts/razor-wire-mesh-installation-posts-480.webp 480w, /images/products/razor-wire-mesh-posts/razor-wire-mesh-installation-posts-950.webp 950w"
+    },
+    {
+      "id": "069cfd6a-a505-41c1-85d8-1b7024b10a6f",
+      "alt": "Racked galvanised round posts in the Guard Master warehouse",
+      "src": "/images/products/razor-wire-mesh-posts/069cfd6a-a505-41c1-85d8-1b7024b10a6f-1600.webp",
+      "width": 1600,
+      "height": 738,
+      "srcset": "/images/products/razor-wire-mesh-posts/069cfd6a-a505-41c1-85d8-1b7024b10a6f-480.webp 480w, /images/products/razor-wire-mesh-posts/069cfd6a-a505-41c1-85d8-1b7024b10a6f-960.webp 960w, /images/products/razor-wire-mesh-posts/069cfd6a-a505-41c1-85d8-1b7024b10a6f-1600.webp 1600w"
+    },
+    {
+      "id": "34f80cda-3177-4d2b-bb99-f3ca71a81c57",
+      "alt": "Close-up of a round post with its pre-punched fixing slots",
+      "src": "/images/products/razor-wire-mesh-posts/34f80cda-3177-4d2b-bb99-f3ca71a81c57-1600.webp",
+      "width": 1600,
+      "height": 738,
+      "srcset": "/images/products/razor-wire-mesh-posts/34f80cda-3177-4d2b-bb99-f3ca71a81c57-480.webp 480w, /images/products/razor-wire-mesh-posts/34f80cda-3177-4d2b-bb99-f3ca71a81c57-960.webp 960w, /images/products/razor-wire-mesh-posts/34f80cda-3177-4d2b-bb99-f3ca71a81c57-1600.webp 1600w"
+    },
+    {
+      "id": "dji-20250930-103133-031",
+      "alt": "Bundled post stock stacked in the yard",
+      "src": "/images/products/razor-wire-mesh-posts/dji-20250930-103133-031-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/razor-wire-mesh-posts/dji-20250930-103133-031-480.webp 480w, /images/products/razor-wire-mesh-posts/dji-20250930-103133-031-960.webp 960w, /images/products/razor-wire-mesh-posts/dji-20250930-103133-031-1600.webp 1600w"
+    },
+    {
+      "id": "razor-wire-mesh-main-post-min-200x200",
+      "alt": "Razor wire mesh main post with a pointed driven end",
+      "src": "/images/products/razor-wire-mesh-posts/razor-wire-mesh-main-post-min-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh-posts/razor-wire-mesh-main-post-min-200x200-200.webp 200w"
+    },
+    {
+      "id": "stay-posts-razor-wire-and-diamond-mesh-fencing-min-200x200",
+      "alt": "Three stay posts for razor wire and diamond mesh fencing",
+      "src": "/images/products/razor-wire-mesh-posts/stay-posts-razor-wire-and-diamond-mesh-fencing-min-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh-posts/stay-posts-razor-wire-and-diamond-mesh-fencing-min-200x200-200.webp 200w"
+    },
+    {
+      "id": "main-posts-support-razor-wire-mesh-diamond-fencing-min-200x200",
+      "alt": "Bundle of main support posts for razor wire and diamond mesh fencing",
+      "src": "/images/products/razor-wire-mesh-posts/main-posts-support-razor-wire-mesh-diamond-fencing-min-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/razor-wire-mesh-posts/main-posts-support-razor-wire-mesh-diamond-fencing-min-200x200-200.webp 200w"
+    }
+  ],
+  "concertina-razor-wire": [
+    {
+      "id": "concertina-razor-wire-coils-diameter-980mm-1",
+      "alt": "A 980 mm diameter concertina razor wire coil stretched out along a warehouse floor",
+      "src": "/images/products/concertina-razor-wire/concertina-razor-wire-coils-diameter-980mm-1-950.webp",
+      "width": 950,
+      "height": 700,
+      "srcset": "/images/products/concertina-razor-wire/concertina-razor-wire-coils-diameter-980mm-1-480.webp 480w, /images/products/concertina-razor-wire/concertina-razor-wire-coils-diameter-980mm-1-950.webp 950w"
+    },
+    {
+      "id": "45",
+      "alt": "Stacked concertina razor wire coils in the factory yard",
+      "src": "/images/products/concertina-razor-wire/45-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/concertina-razor-wire/45-480.webp 480w, /images/products/concertina-razor-wire/45-640.webp 640w"
+    },
+    {
+      "id": "44",
+      "alt": "Concertina razor wire coils awaiting dispatch",
+      "src": "/images/products/concertina-razor-wire/44-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/concertina-razor-wire/44-480.webp 480w, /images/products/concertina-razor-wire/44-640.webp 640w"
+    },
+    {
+      "id": "54",
+      "alt": "Concertina coils being loaded onto a delivery truck",
+      "src": "/images/products/concertina-razor-wire/54-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/concertina-razor-wire/54-480.webp 480w, /images/products/concertina-razor-wire/54-640.webp 640w"
+    },
+    {
+      "id": "clear-view-fencing-reinforced-concertina-coils-as-topping-200x200",
+      "alt": "Clear view fencing reinforced with concertina coil topping",
+      "src": "/images/products/concertina-razor-wire/clear-view-fencing-reinforced-concertina-coils-as-topping-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/concertina-razor-wire/clear-view-fencing-reinforced-concertina-coils-as-topping-200x200-200.webp 200w"
+    },
+    {
+      "id": "clear-view-fencing-reinforced-with-4-rows-concertina-coils-200x200",
+      "alt": "Perimeter fence reinforced with four rows of concertina coils",
+      "src": "/images/products/concertina-razor-wire/clear-view-fencing-reinforced-with-4-rows-concertina-coils-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/concertina-razor-wire/clear-view-fencing-reinforced-with-4-rows-concertina-coils-200x200-200.webp 200w"
+    },
+    {
+      "id": "concertina-razor-wire-blade-profiles-options-200x200",
+      "alt": "The range of concertina razor wire blade profiles",
+      "src": "/images/products/concertina-razor-wire/concertina-razor-wire-blade-profiles-options-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/concertina-razor-wire/concertina-razor-wire-blade-profiles-options-200x200-200.webp 200w"
+    },
+    {
+      "id": "concertina-razor-wire-coils-as-topping-200x200",
+      "alt": "Concertina razor wire installed as a wall topping",
+      "src": "/images/products/concertina-razor-wire/concertina-razor-wire-coils-as-topping-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/concertina-razor-wire/concertina-razor-wire-coils-as-topping-200x200-200.webp 200w"
+    }
+  ],
+  "temporary-fencing": [
+    {
+      "id": "img-6996",
+      "alt": "Free-standing temporary fence panels braced across a yard gateway",
+      "src": "/images/products/temporary-fencing/img-6996-1290.webp",
+      "width": 1290,
+      "height": 2796,
+      "srcset": "/images/products/temporary-fencing/img-6996-480.webp 480w, /images/products/temporary-fencing/img-6996-960.webp 960w, /images/products/temporary-fencing/img-6996-1290.webp 1290w"
+    },
+    {
+      "id": "img-6995",
+      "alt": "Temporary fencing panels standing at a site entrance beside a bakkie",
+      "src": "/images/products/temporary-fencing/img-6995-1290.webp",
+      "width": 1290,
+      "height": 2796,
+      "srcset": "/images/products/temporary-fencing/img-6995-480.webp 480w, /images/products/temporary-fencing/img-6995-960.webp 960w, /images/products/temporary-fencing/img-6995-1290.webp 1290w"
+    },
+    {
+      "id": "img-6936",
+      "alt": "Temporary fence panels stacked on a pallet in the factory",
+      "src": "/images/products/temporary-fencing/img-6936-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/temporary-fencing/img-6936-480.webp 480w, /images/products/temporary-fencing/img-6936-960.webp 960w, /images/products/temporary-fencing/img-6936-1600.webp 1600w"
+    },
+    {
+      "id": "img-6994",
+      "alt": "A temporary fence panel being assembled on site",
+      "src": "/images/products/temporary-fencing/img-6994-1290.webp",
+      "width": 1290,
+      "height": 2796,
+      "srcset": "/images/products/temporary-fencing/img-6994-480.webp 480w, /images/products/temporary-fencing/img-6994-960.webp 960w, /images/products/temporary-fencing/img-6994-1290.webp 1290w"
+    },
+    {
+      "id": "img-6918",
+      "alt": "Wrapped and palletised temporary fencing ready for dispatch",
+      "src": "/images/products/temporary-fencing/img-6918-1600.webp",
+      "width": 1600,
+      "height": 1200,
+      "srcset": "/images/products/temporary-fencing/img-6918-480.webp 480w, /images/products/temporary-fencing/img-6918-960.webp 960w, /images/products/temporary-fencing/img-6918-1600.webp 1600w"
+    },
+    {
+      "id": "img-6916",
+      "alt": "Temporary fencing pallets being checked before loading",
+      "src": "/images/products/temporary-fencing/img-6916-1600.webp",
+      "width": 1600,
+      "height": 1200,
+      "srcset": "/images/products/temporary-fencing/img-6916-480.webp 480w, /images/products/temporary-fencing/img-6916-960.webp 960w, /images/products/temporary-fencing/img-6916-1600.webp 1600w"
+    }
+  ],
+  "fixtures-and-screws": [
+    {
+      "id": "clear-view-fence-100mmx12-7mm-clamps-powder-coating-black-200x200",
+      "alt": "Black powder-coated 100 × 12.7 mm clear view fence clamp",
+      "src": "/images/products/fixtures-and-screws/clear-view-fence-100mmx12-7mm-clamps-powder-coating-black-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/fixtures-and-screws/clear-view-fence-100mmx12-7mm-clamps-powder-coating-black-200x200-200.webp 200w"
+    },
+    {
+      "id": "clear-view-fence-76mmx50mm-clamps-powder-coating-black-200x200",
+      "alt": "Black powder-coated 76 × 50 mm clear view fence clamp",
+      "src": "/images/products/fixtures-and-screws/clear-view-fence-76mmx50mm-clamps-powder-coating-black-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/fixtures-and-screws/clear-view-fence-76mmx50mm-clamps-powder-coating-black-200x200-200.webp 200w"
+    },
+    {
+      "id": "30",
+      "alt": "Clamp and fixing detail where a panel meets its post",
+      "src": "/images/products/fixtures-and-screws/30-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/fixtures-and-screws/30-480.webp 480w, /images/products/fixtures-and-screws/30-640.webp 640w"
+    },
+    {
+      "id": "32",
+      "alt": "Post caps and clamps fixing a run of clear view mesh",
+      "src": "/images/products/fixtures-and-screws/32-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/fixtures-and-screws/32-480.webp 480w, /images/products/fixtures-and-screws/32-640.webp 640w"
+    }
+  ],
+  "accessories": [
+    {
+      "id": "clear-view-fence-anti-climb-reinforced-with-shark-tooth-spikes-600x442",
+      "alt": "Clear view fencing reinforced with shark-tooth spike topping",
+      "src": "/images/products/accessories/clear-view-fence-anti-climb-reinforced-with-shark-tooth-spikes-600x442-600.webp",
+      "width": 600,
+      "height": 442,
+      "srcset": "/images/products/accessories/clear-view-fence-anti-climb-reinforced-with-shark-tooth-spikes-600x442-480.webp 480w, /images/products/accessories/clear-view-fence-anti-climb-reinforced-with-shark-tooth-spikes-600x442-600.webp 600w"
+    },
+    {
+      "id": "sliding-gate-galvanized-clear-view-mesh-filling-reinforced-intermedia-spikes-600x442",
+      "alt": "Galvanised sliding gate with clear view mesh infill and spike reinforcement",
+      "src": "/images/products/accessories/sliding-gate-galvanized-clear-view-mesh-filling-reinforced-intermedia-spikes-600x442-600.webp",
+      "width": 600,
+      "height": 442,
+      "srcset": "/images/products/accessories/sliding-gate-galvanized-clear-view-mesh-filling-reinforced-intermedia-spikes-600x442-480.webp 480w, /images/products/accessories/sliding-gate-galvanized-clear-view-mesh-filling-reinforced-intermedia-spikes-600x442-600.webp 600w"
+    },
+    {
+      "id": "clear-view-anti-climb-fencing-panels-powder-coated-intermedia-spikes-200x200",
+      "alt": "Powder-coated clear view panels with intermediate anti-climb spikes",
+      "src": "/images/products/accessories/clear-view-anti-climb-fencing-panels-powder-coated-intermedia-spikes-200x200-200.webp",
+      "width": 200,
+      "height": 200,
+      "srcset": "/images/products/accessories/clear-view-anti-climb-fencing-panels-powder-coated-intermedia-spikes-200x200-200.webp 200w"
+    },
+    {
+      "id": "36",
+      "alt": "Spike-topped clear view fencing seen against a treeline",
+      "src": "/images/products/accessories/36-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/accessories/36-480.webp 480w, /images/products/accessories/36-640.webp 640w"
+    }
+  ],
+  "accessories-caps": [
+    {
+      "id": "img-5084",
+      "alt": "Solar post cap mounted on a clear view post",
+      "src": "/images/products/accessories-caps/img-5084-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/accessories-caps/img-5084-480.webp 480w, /images/products/accessories-caps/img-5084-960.webp 960w, /images/products/accessories-caps/img-5084-1600.webp 1600w"
+    },
+    {
+      "id": "img-5053",
+      "alt": "Detail of the solar cap lens and housing",
+      "src": "/images/products/accessories-caps/img-5053-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/accessories-caps/img-5053-480.webp 480w, /images/products/accessories-caps/img-5053-960.webp 960w, /images/products/accessories-caps/img-5053-1600.webp 1600w"
+    }
+  ],
+  "projects": [
+    {
+      "id": "14",
+      "alt": "Clear view fencing around a petrochemical processing plant",
+      "src": "/images/products/projects/14-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/14-480.webp 480w, /images/products/projects/14-640.webp 640w"
+    },
+    {
+      "id": "15",
+      "alt": "Perimeter fencing along a container port with gantry cranes behind",
+      "src": "/images/products/projects/15-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/15-480.webp 480w, /images/products/projects/15-640.webp 640w"
+    },
+    {
+      "id": "25",
+      "alt": "Fence line with electric-fence topping running across open veld",
+      "src": "/images/products/projects/25-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/25-480.webp 480w, /images/products/projects/25-640.webp 640w"
+    },
+    {
+      "id": "26",
+      "alt": "Perimeter fencing following a service road through open country",
+      "src": "/images/products/projects/26-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/26-480.webp 480w, /images/products/projects/26-640.webp 640w"
+    },
+    {
+      "id": "33",
+      "alt": "Clear view fencing securing a marina and its moorings",
+      "src": "/images/products/projects/33-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/33-480.webp 480w, /images/products/projects/33-640.webp 640w"
+    },
+    {
+      "id": "51",
+      "alt": "Clear view fencing around a school playground",
+      "src": "/images/products/projects/51-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/51-480.webp 480w, /images/products/projects/51-640.webp 640w"
+    },
+    {
+      "id": "24",
+      "alt": "Fence line tracking a ridge across remote terrain",
+      "src": "/images/products/projects/24-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/24-480.webp 480w, /images/products/projects/24-640.webp 640w"
+    },
+    {
+      "id": "dji-20240903-084123-886",
+      "alt": "Aerial view of a completed clear view perimeter installation",
+      "src": "/images/products/projects/dji-20240903-084123-886-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/projects/dji-20240903-084123-886-480.webp 480w, /images/products/projects/dji-20240903-084123-886-960.webp 960w, /images/products/projects/dji-20240903-084123-886-1600.webp 1600w"
+    }
+  ]
+}

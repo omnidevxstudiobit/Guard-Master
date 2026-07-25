@@ -1,0 +1,938 @@
+---
+import {
+  WIRE_SIZES,
+  FINISHES,
+  POST_LENGTH_MM,
+  SPIDER_CLAMPS,
+  PANEL_WIDTH_MM,
+  VAT_RATE,
+} from '@data/clear-view-panels';
+import { formatRand } from '@data/products';
+import { CTA } from '@data/nav';
+import AssemblySheet from '@components/ui/AssemblySheet.astro';
+
+/**
+ * Every Clear View panel the client sells, priced — with a working estimator
+ * over the top of it.
+ *
+ * Ninety-six configurations: two wire sizes x three security grades x four
+ * heights x four finishes, read straight off their own instant-quote
+ * estimator. src/data/clear-view-panels.ts records where each figure comes
+ * from and how the ex-VAT basis was established.
+ *
+ * **The maths is theirs, not invented.** This is a faithful port of the
+ * `calculateClearview` routine on the reference site:
+ *
+ *     meters    -> perimeter = value
+ *     sqm       -> perimeter = sqrt(value) * 4          (a square site)
+ *     hectares  -> perimeter = sqrt(value * 10 000) * 4
+ *     panels    = ceil(perimeter / 3 m)
+ *     posts     = panels + 1                            (one closes the run)
+ *     VAT       = ex-VAT subtotal x 0.15,  incl = subtotal + VAT
+ *
+ * **Prices display ex VAT**, because that is what the source displays: their
+ * option labels read "… plain galv. => R 1,106.00" and 1106 is the ex-VAT
+ * `data-price`. VAT is added once, on the total, exactly as their
+ * `updateGrandTotal` does. An earlier pass here showed the VAT-inclusive figure
+ * per panel, which put every price on this page 15% above the same panel on the
+ * manufacturer's own quote.
+ *
+ * Getting any of this wrong is quiet: divide by the 3.013 m as-built width
+ * instead of the 3 m nominal, drop the closing post, or shift the VAT basis,
+ * and the numbers still look plausible while disagreeing with the quote the
+ * client's own site gives for the same perimeter.
+ *
+ * **Tables, deliberately.** animationguide.md rules out defaulting to card
+ * grids, and the temptation with pricing is three "pricing cards" each showing
+ * one headline number. That hides what a specifier is here for: how the price
+ * moves with height and finish. Sixteen numbers per grade, laid out as sixteen
+ * numbers, is both the honest presentation and the scannable one.
+ *
+ * Each row also carries what that height *needs* — post length and spider-clamp
+ * count, off the manufacturer's own assembly drawing — because "what does a
+ * 2.4 m panel cost" is never really the question. The question is what the
+ * 2.4 m line costs, and the panel is only part of it.
+ *
+ * **Every control here is JS-only, by design.** The tables are the content and
+ * they render in full with no JS: both wire sizes, all six grades, all
+ * ninety-six prices. The wire tabs, the estimator inputs and the totals are
+ * enhancements, hidden until a script exists to make them work — a control that
+ * does nothing is worse than no control, and nothing is hidden behind them.
+ */
+
+/** "2400" -> "2 400". `en-ZA` groups with a no-break space, which can render as
+ *  a tofu box in mono faces; normalised to a plain space, same as formatRand.
+ *  An earlier version stripped commas, which this locale never emits, so it
+ *  silently did nothing. */
+const mm = (value: number): string =>
+  value.toLocaleString('en-ZA').replace(/[\u00a0\u202f,]/g, ' ');
+const kg = (value: number): string => value.toFixed(2);
+
+/**
+ * The datasheet behind each grade — our version of the two-slide lightbox the
+ * reference site opens from the same place: a close-up of the real mesh, then
+ * the dimensioned assembly drawing.
+ *
+ * Keyed by grade, not by grade-and-wire-size: the aperture is what changes
+ * between the three sheets, and both wire sizes share it. Three dialogs serve
+ * all six grade blocks.
+ */
+const DATASHEETS = [
+  { id: 'high' as const, label: 'High Security', aperture: '76mm × 12.7mm' },
+  { id: 'medium' as const, label: 'Medium Security', aperture: '76mm × 25mm' },
+  { id: 'low' as const, label: 'Low Security', aperture: '76mm × 50mm' },
+];
+
+const METHODS = [
+  { id: 'meters', label: 'Perimeter', unit: 'm' },
+  { id: 'sqm', label: 'Area', unit: 'm²' },
+  { id: 'hectares', label: 'Area', unit: 'hectares' },
+];
+---
+
+<section class="bg-gm-black text-gm-white py-20 sm:py-28">
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Panel Pricing</p>
+      <h2
+        class="font-display text-gm-white mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl"
+      >
+        Three Grades. <span class="text-gm-red">Every Height.</span>
+      </h2>
+      <p class="text-gm-grey-400 mt-6 text-base leading-relaxed">
+        The same {mm(PANEL_WIDTH_MM)} mm panel in three apertures, four heights and four finishes. Every
+        number below is our published list price for that exact configuration, excluding VAT — not a starting
+        point, and not a range. Put your perimeter in and it prices the whole run.
+      </p>
+    </div>
+
+    <div data-calc data-panel-width={PANEL_WIDTH_MM / 1000} class="mt-12 sm:mt-14">
+      <!-- One measurement, three grades priced against it — the same
+           arrangement the manufacturer's own estimator uses. -->
+      <div class="calc-head border-gm-grey-800 border-y py-6">
+        <div class="flex flex-wrap items-end gap-x-6 gap-y-5">
+          <div>
+            <label
+              for="calc-method"
+              class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+            >
+              I know my
+            </label>
+            <select id="calc-method" data-calc-method class="calc-field mt-2">
+              {
+                METHODS.map((m) => (
+                  <option value={m.id}>
+                    {m.label} ({m.unit})
+                  </option>
+                ))
+              }
+            </select>
+          </div>
+          <div>
+            <label
+              for="calc-value"
+              class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+            >
+              Measurement <span data-calc-unit>m</span>
+            </label>
+            <input
+              id="calc-value"
+              data-calc-value
+              type="number"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              placeholder="e.g. 400"
+              class="calc-field mt-2 w-40"
+            />
+          </div>
+          <p
+            data-calc-derived
+            class="text-gm-grey-400 min-w-[16rem] flex-1 text-[13px] leading-snug"
+          >
+            Enter a perimeter and every grade below is costed for the whole run.
+          </p>
+        </div>
+      </div>
+
+      <div class="wire-tabs mt-8 flex-wrap gap-2" role="group" aria-label="Choose a wire size">
+        {
+          WIRE_SIZES.map((wire, i) => (
+            <button
+              type="button"
+              data-wire-btn={wire.id}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              class="wire-btn tap-target rounded-sm border px-5 text-[12px] font-bold tracking-[0.08em] uppercase transition-colors"
+            >
+              Wire {wire.label}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        WIRE_SIZES.map((wire, w) => (
+          <div data-wire={wire.id} class:list={['wire-panel', { 'is-current': w === 0 }]}>
+            <h3 class="wire-heading font-display text-gm-white mt-10 text-xl font-black tracking-tight uppercase">
+              Wire size {wire.label}
+            </h3>
+
+            {wire.grades.map((grade, g) => (
+              <article data-grade class="mt-12 first-of-type:mt-8">
+                <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <span class="text-gm-grey-500 font-mono text-[10px] tracking-[0.2em] tabular-nums">
+                    0{g + 1}
+                  </span>
+                  <h4
+                    data-grade-name
+                    class="font-display text-gm-white text-lg font-bold tracking-tight uppercase"
+                  >
+                    {grade.label}
+                  </h4>
+                  <span class="text-gm-red font-mono text-[11px] tracking-[0.12em]">
+                    {grade.aperture} aperture
+                  </span>
+                  {/* Only the Ø3 × Ø4 range has a datasheet: the mesh
+                      photograph behind it was shot at that wire size, and the
+                      heavier Ø4 × Ø4 build has no equivalent. Showing the same
+                      sheet under both would caption one product with a picture
+                      of another. */}
+                  {wire.id === 'w3x4' && (
+                    <button
+                      type="button"
+                      data-sheet-open={grade.id}
+                      class="sheet-btn tap-target ml-auto items-center border border-white/25 px-4 text-[11px] font-bold tracking-[0.1em] uppercase transition-colors"
+                    >
+                      Datasheet
+                    </button>
+                  )}
+                </div>
+
+                <div data-calc-row class="calc-row border-gm-grey-800 mt-4 border p-4 sm:p-5">
+                  <div class="flex flex-wrap items-end gap-x-5 gap-y-4">
+                    <div class="min-w-[16rem] flex-1">
+                      <label
+                        for={`calc-opt-${wire.id}-${grade.id}`}
+                        class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                      >
+                        Panel
+                      </label>
+                      <select
+                        id={`calc-opt-${wire.id}-${grade.id}`}
+                        data-calc-option
+                        class="calc-field mt-2 w-full"
+                      >
+                        <option value="">Select a height and finish…</option>
+                        {grade.rows.map((row) => (
+                          <optgroup label={`Height ${mm(row.heightMm)} mm`}>
+                            {FINISHES.map((f) => (
+                              <option
+                                value={`${row.heightMm}:${f.key}`}
+                                data-ex={row.ex[f.key]}
+                                data-clamps={SPIDER_CLAMPS[row.heightMm].total}
+                                data-post={POST_LENGTH_MM[row.heightMm]}
+                              >
+                                {mm(row.heightMm)} mm · {f.label} — {formatRand(row.ex[f.key])}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label
+                        for={`calc-qty-${wire.id}-${grade.id}`}
+                        class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                      >
+                        Panels
+                      </label>
+                      <input
+                        id={`calc-qty-${wire.id}-${grade.id}`}
+                        data-calc-qty
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                        class="calc-field mt-2 w-28"
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        data-calc-add
+                        disabled
+                        class="add-btn tap-target bg-gm-red text-gm-white inline-flex items-center px-5 text-[11px] font-bold tracking-[0.1em] uppercase transition-colors hover:bg-[#c50e24] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        Add To Quote
+                      </button>
+                    </div>
+                  </div>
+                  <p
+                    data-calc-line
+                    class="text-gm-grey-400 mt-4 hidden text-[13px] leading-relaxed"
+                  />
+                </div>
+
+                <div class="mt-6 -mr-6 overflow-x-auto pr-6 lg:mr-0 lg:pr-0">
+                  <table class="price-table w-full min-w-[46rem] border-collapse text-left">
+                    <caption class="sr-only">
+                      {grade.label} Clear View panels, {grade.aperture} aperture, wire {wire.label}{' '}
+                      — price per {mm(PANEL_WIDTH_MM)} mm panel by height and finish, excluding VAT
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Height</th>
+                        <th scope="col">Post</th>
+                        <th scope="col">
+                          Clamps<span class="th-note">per panel</span>
+                        </th>
+                        <th scope="col">Mass</th>
+                        {FINISHES.map((f) => (
+                          <th scope="col" class="num">
+                            {f.short}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {grade.rows.map((row) => (
+                        <tr>
+                          <th scope="row">{mm(row.heightMm)} mm</th>
+                          <td>{mm(POST_LENGTH_MM[row.heightMm])} mm</td>
+                          <td>
+                            {SPIDER_CLAMPS[row.heightMm].total}
+                            <span class="cell-note">
+                              {SPIDER_CLAMPS[row.heightMm].perSide} a side
+                            </span>
+                          </td>
+                          <td>{kg(row.massKg)} kg</td>
+                          {FINISHES.map((f) => (
+                            <td class="num">{formatRand(row.ex[f.key])}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            ))}
+          </div>
+        ))
+      }
+
+      <div data-calc-total class="calc-total border-gm-red mt-12 hidden border-t-2 pt-8">
+        <div class="flex flex-wrap items-start justify-between gap-8">
+          <div>
+            <p class="text-gm-grey-500 font-mono text-[10px] tracking-[0.2em] uppercase">
+              Order Estimate
+            </p>
+            <p
+              data-calc-total-lines
+              class="text-gm-grey-300 mt-3 max-w-md text-[13px] leading-relaxed"
+            >
+            </p>
+          </div>
+          <dl class="min-w-[17rem] font-mono text-[13px]">
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2">
+              <dt class="text-gm-grey-400">Total excl. VAT</dt>
+              <dd data-calc-ex class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2">
+              <dt class="text-gm-grey-400">VAT ({VAT_RATE * 100}%)</dt>
+              <dd data-calc-vat class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 py-2">
+              <dt class="text-gm-white font-bold">Total incl. VAT</dt>
+              <dd data-calc-incl class="text-gm-red font-bold tabular-nums">—</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-start sm:justify-between"
+    >
+      <p class="text-gm-grey-500 max-w-lg text-[11px] leading-relaxed">
+        Prices are per {mm(PANEL_WIDTH_MM)} mm panel and exclude VAT; VAT at {VAT_RATE * 100}% is
+        added in the estimate above. Panel counts assume a closed run with one closing post and no
+        gates — adjust for corners, gates and raking ground. Posts, clamps and screws are quoted
+        separately; the post length and clamp count shown are what that height requires, not what
+        the panel price covers.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href={CTA.href}
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          {CTA.label}
+        </a>
+        <a
+          href="/quote-estimator"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          Estimate A Full Run
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {/* Datasheets. Three dialogs, shared by both wire sizes. */}
+  {
+    DATASHEETS.map((sheet) => (
+      <dialog data-sheet={sheet.id} class="sheet" aria-label={`${sheet.label} datasheet`}>
+        <div class="sheet__inner">
+          <header class="sheet__bar">
+            <div>
+              <p class="sheet__eyebrow">Clear View · Datasheet</p>
+              <h3 class="sheet__title">
+                {sheet.label} <span>{sheet.aperture}</span>
+              </h3>
+            </div>
+            <div class="sheet__tabs" role="group" aria-label="Datasheet pages">
+              <button type="button" data-sheet-tab="0" aria-pressed="true">
+                01 · Mesh
+              </button>
+              <button type="button" data-sheet-tab="1" aria-pressed="false">
+                02 · Assembly
+              </button>
+            </div>
+            <button
+              type="button"
+              data-sheet-close
+              class="sheet__close"
+              aria-label="Close datasheet"
+            >
+              ✕
+            </button>
+          </header>
+
+          <div class="sheet__body">
+            <figure data-sheet-page="0" class="sheet__page is-current">
+              <img
+                src={`/images/mesh-detail/${sheet.id}-900.webp`}
+                srcset={`/images/mesh-detail/${sheet.id}-480.webp 480w, /images/mesh-detail/${sheet.id}-900.webp 900w, /images/mesh-detail/${sheet.id}-1100.webp 1100w`}
+                sizes="(min-width: 1024px) 1100px, 92vw"
+                width="1100"
+                height="800"
+                loading="lazy"
+                decoding="async"
+                alt={`Close-up of ${sheet.label.toLowerCase()} Clear View mesh at a ${sheet.aperture} aperture, showing the 4V bends stiffening the vertical wires.`}
+              />
+              <figcaption>
+                The real weave at {sheet.aperture}. The shallow waves down the vertical wires are
+                the 4V bends — the panel is stiffened by its own geometry, not by a frame.
+              </figcaption>
+            </figure>
+
+            <figure data-sheet-page="1" class="sheet__page">
+              <AssemblySheet
+                grade={sheet.id}
+                aperture={sheet.aperture}
+                label={`Assembly drawing of a ${sheet.label.toLowerCase()} Clear View bay: two posts set in concrete carrying a 3 000 mm panel, with panel and post schedules, the T-upright section and the ${sheet.aperture} aperture detail.`}
+              />
+              <figcaption>
+                One bay, dimensioned. Panel and post schedules cover all four heights; the aperture
+                detail bottom right is drawn at this grade's own ratio.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </dialog>
+    ))
+  }
+</section>
+
+<style>
+  /* Everything interactive stays out of the document until the script can make
+     it work. The tables underneath are the content and never depend on it. */
+  [data-calc] .calc-head,
+  [data-calc] .calc-row,
+  [data-calc] .wire-tabs {
+    display: none;
+  }
+  [data-calc].is-live .calc-head,
+  [data-calc].is-live .calc-row {
+    display: block;
+  }
+  [data-calc].is-live .wire-tabs {
+    display: flex;
+  }
+  [data-calc].is-live .wire-panel:not(.is-current) {
+    display: none;
+  }
+  /* With the tabs live the per-panel heading is the tab label, so it would be
+     announced twice. Kept in the DOM for the no-JS rendering. */
+  [data-calc].is-live .wire-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-calc] .calc-field {
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    border: 1px solid #35353d;
+    background: #111114;
+    color: var(--color-gm-white);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  [data-calc] .calc-field:focus-visible {
+    outline: 2px solid var(--color-gm-red);
+    outline-offset: 1px;
+  }
+  [data-calc] select.calc-field {
+    max-width: 100%;
+  }
+
+  [data-calc] .wire-btn {
+    border-color: #35353d;
+    background: transparent;
+    color: var(--color-gm-grey-300);
+    line-height: 1.2;
+  }
+  [data-calc] .wire-btn[aria-pressed='true'] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+
+  /* --- datasheet dialog ---
+     The trigger is useless without JS (a <dialog> needs showModal()), so it
+     stays hidden until the script exists — same rule as the tabs above. */
+  [data-calc] .sheet-btn {
+    display: none;
+    color: var(--color-gm-white);
+  }
+  [data-calc].is-live .sheet-btn {
+    display: inline-flex;
+  }
+  [data-calc] .sheet-btn:hover {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+  }
+
+  .sheet {
+    width: min(96vw, 1400px);
+    max-width: none;
+    height: min(92vh, 940px);
+    max-height: none;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-gm-white);
+    overflow: hidden;
+  }
+  .sheet::backdrop {
+    background: rgb(6 6 8 / 0.86);
+  }
+  .sheet__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #0e0e11;
+    border: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  .sheet__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .sheet__eyebrow {
+    color: var(--color-gm-red);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+  }
+  .sheet__title {
+    margin-top: 0.35rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .sheet__title span {
+    margin-left: 0.6rem;
+    color: var(--color-gm-grey-500);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+  .sheet__tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+  .sheet__tabs button {
+    min-height: 2.25rem;
+    padding: 0 0.9rem;
+    border: 1px solid #35353d;
+    color: var(--color-gm-grey-300);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .sheet__tabs button[aria-pressed='true'] {
+    border-color: var(--color-gm-red);
+    background: var(--color-gm-red);
+    color: var(--color-gm-white);
+  }
+  .sheet__close {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border: 1px solid #35353d;
+    color: var(--color-gm-grey-300);
+  }
+  .sheet__close:hover {
+    border-color: var(--color-gm-white);
+    color: var(--color-gm-white);
+  }
+
+  .sheet__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+  .sheet__page {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  /* Without JS both pages simply stack; the script turns them into tabs. */
+  .sheet.is-tabbed .sheet__page {
+    display: none;
+  }
+  .sheet.is-tabbed .sheet__page.is-current {
+    display: flex;
+  }
+  .sheet__page + .sheet__page {
+    margin-top: 1.5rem;
+  }
+  .sheet__page img {
+    width: 100%;
+    height: auto;
+    background: #fff;
+  }
+  .sheet__page figcaption {
+    color: var(--color-gm-grey-400);
+    font-size: 12px;
+    line-height: 1.55;
+    max-width: 62ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet__tabs button {
+      transition: none;
+    }
+  }
+
+  .price-table th,
+  .price-table td {
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    padding: 0.7rem 1rem 0.7rem 0;
+    vertical-align: baseline;
+  }
+  .price-table thead th {
+    border-bottom-color: rgb(255 255 255 / 0.22);
+    color: var(--color-gm-grey-500);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .price-table tbody th {
+    color: var(--color-gm-white);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .price-table tbody td {
+    color: var(--color-gm-grey-300);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .price-table .num {
+    padding-right: 0;
+    padding-left: 1rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .price-table tbody td.num {
+    color: var(--color-gm-white);
+    font-weight: 600;
+  }
+  /* The cheapest finish in each row is the one people scan for first. */
+  .price-table tbody td.num:first-of-type {
+    color: var(--color-gm-red);
+  }
+  .price-table .th-note,
+  .price-table .cell-note {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--color-gm-grey-600);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+  .price-table tbody tr:hover td,
+  .price-table tbody tr:hover th {
+    background: rgb(255 255 255 / 0.03);
+  }
+</style>
+
+<script>
+  import { add } from '@/lib/quote-cart';
+
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+
+  if (root) {
+    const VAT = 0.15;
+    /** Metres. Read off the markup so it can't drift from the catalogue. */
+    const PANEL_W = Number(root.dataset.panelWidth) || 3;
+
+    const rand = (v: number): string =>
+      `R ${new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(v)}`;
+
+    const methodEl = root.querySelector<HTMLSelectElement>('[data-calc-method]');
+    const valueEl = root.querySelector<HTMLInputElement>('[data-calc-value]');
+    const unitEl = root.querySelector<HTMLElement>('[data-calc-unit]');
+    const derivedEl = root.querySelector<HTMLElement>('[data-calc-derived]');
+    const totalEl = root.querySelector<HTMLElement>('[data-calc-total]');
+    const totalLinesEl = root.querySelector<HTMLElement>('[data-calc-total-lines]');
+    const exEl = root.querySelector<HTMLElement>('[data-calc-ex]');
+    const vatEl = root.querySelector<HTMLElement>('[data-calc-vat]');
+    const inclEl = root.querySelector<HTMLElement>('[data-calc-incl]');
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('[data-calc-row]'));
+    const wirePanels = Array.from(root.querySelectorAll<HTMLElement>('[data-wire]'));
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-wire-btn]'));
+
+    /* A row the visitor has typed a quantity into is never overwritten by a
+       later perimeter change — their number wins over ours. */
+    const edited = new WeakSet<HTMLElement>();
+
+    const UNITS: Record<string, string> = { meters: 'm', sqm: 'm²', hectares: 'ha' };
+
+    /** The reference estimator's own conversion — a square site's perimeter. */
+    const perimeterOf = (method: string, value: number): number => {
+      if (value <= 0) return 0;
+      if (method === 'sqm') return Math.sqrt(value) * 4;
+      if (method === 'hectares') return Math.sqrt(value * 10000) * 4;
+      return value;
+    };
+
+    const currentWire = (): HTMLElement | undefined =>
+      wirePanels.find((panel) => panel.classList.contains('is-current')) ?? wirePanels[0];
+
+    const recalc = () => {
+      const method = methodEl?.value ?? 'meters';
+      const value = Number(valueEl?.value) || 0;
+      const perimeter = perimeterOf(method, value);
+      const panelCount = perimeter > 0 ? Math.ceil(perimeter / PANEL_W) : 0;
+      const postCount = panelCount > 0 ? panelCount + 1 : 0;
+
+      if (unitEl) unitEl.textContent = UNITS[method] ?? 'm';
+
+      if (derivedEl) {
+        derivedEl.textContent =
+          panelCount > 0
+            ? (method === 'meters' ? '' : `Area → perimeter ≈ ${perimeter.toFixed(1)} m. `) +
+              `${perimeter.toFixed(1)} m ÷ ${PANEL_W} m = ${panelCount} panels and ${postCount} posts. ` +
+              'Override any grade’s quantity below.'
+            : 'Enter a perimeter and every grade below is costed for the whole run.';
+      }
+
+      let totalEx = 0;
+      const lines: string[] = [];
+
+      rows.forEach((row) => {
+        const option = row.querySelector<HTMLSelectElement>('[data-calc-option]');
+        const qtyEl = row.querySelector<HTMLInputElement>('[data-calc-qty]');
+        const lineEl = row.querySelector<HTMLElement>('[data-calc-line]');
+        if (!option || !qtyEl || !lineEl) return;
+
+        const chosen = option.selectedOptions[0];
+        const ex = Number(chosen?.dataset.ex) || 0;
+
+        /* Quantity defaults, in priority order: a perimeter fills every row,
+           and failing that a chosen panel is worth one of. Without the second
+           rule, picking a panel and pressing Add did nothing at all, because
+           the quantity was still empty — the perimeter is optional and most
+           people choose the product first. */
+        if (!edited.has(row)) {
+          if (panelCount > 0) qtyEl.value = String(panelCount);
+          else if (ex && !Number(qtyEl.value)) qtyEl.value = '1';
+        }
+
+        const qty = Math.max(0, Math.floor(Number(qtyEl.value) || 0));
+
+        if (!ex || !qty) {
+          const btn = row.querySelector<HTMLButtonElement>('[data-calc-add]');
+          if (btn) btn.disabled = true;
+          lineEl.classList.add('hidden');
+          return;
+        }
+
+        const lineEx = Math.round(ex * qty * 100) / 100;
+        const clamps = (Number(chosen?.dataset.clamps) || 0) * qty;
+        const post = Number(chosen?.dataset.post) || 0;
+
+        /* The button is only live once the row actually prices something. */
+        const addBtn = row.querySelector<HTMLButtonElement>('[data-calc-add]');
+        if (addBtn) {
+          addBtn.disabled = false;
+          addBtn.onclick = () => {
+            const article = row.closest('[data-grade]');
+            const gradeName =
+              article?.querySelector('[data-grade-name]')?.textContent?.trim() ?? 'Panel';
+            const gradeAperture =
+              article
+                ?.querySelector('[data-grade-name]')
+                ?.nextElementSibling?.textContent?.trim() ?? '';
+            const wireEl = row.closest<HTMLElement>('[data-wire]');
+            const wireId = wireEl?.dataset.wire ?? '';
+            const wireLabel = wireId === 'w3x4' ? 'Ø3 × Ø4 mm' : 'Ø4 × Ø4 mm';
+            const gradeId = article?.querySelector('[data-grade-name]')?.textContent?.trim() ?? '';
+            add({
+              id: `panel:${wireId}:${gradeId}:${chosen.value}`,
+              group: 'Panels',
+              label: `${gradeName} panel — ${chosen.textContent?.split('—')[0].trim()}`,
+              unitEx: ex,
+              qty,
+              detail: `${gradeAperture} aperture · wire ${wireLabel}`,
+            });
+            addBtn.textContent = 'Added ✓';
+            window.setTimeout(() => {
+              addBtn.textContent = 'Add To Quote';
+            }, 1600);
+          };
+        }
+        lineEl.classList.remove('hidden');
+        lineEl.textContent =
+          `${qty} × ${rand(ex)} = ${rand(lineEx)} excl. VAT · ` +
+          `needs ${qty + 1} × ${post} mm posts and ${clamps} spider clamps.`;
+
+        /* Only the wire size on screen counts toward the total — the other
+           one's rows are still in the DOM but aren't part of this quote. */
+        if (row.closest<HTMLElement>('[data-wire]') === currentWire()) {
+          totalEx += lineEx;
+          const name = row.closest('[data-grade]')?.querySelector('[data-grade-name]');
+          lines.push(`${qty} × ${name?.textContent?.trim() ?? 'panels'}`);
+        }
+      });
+
+      if (totalEx > 0) {
+        /* Exactly the source's own arithmetic: VAT is 15% *of the ex-VAT
+           subtotal*, never a figure divided back out of an inclusive one. */
+        const vat = Math.round(totalEx * VAT * 100) / 100;
+        totalEl?.classList.remove('hidden');
+        if (totalLinesEl) totalLinesEl.textContent = lines.join(' · ');
+        if (exEl) exEl.textContent = rand(totalEx);
+        if (vatEl) vatEl.textContent = rand(vat);
+        if (inclEl) inclEl.textContent = rand(Math.round((totalEx + vat) * 100) / 100);
+      } else {
+        totalEl?.classList.add('hidden');
+      }
+    };
+
+    const showWire = (id: string) => {
+      wirePanels.forEach((panel) =>
+        panel.classList.toggle('is-current', panel.dataset.wire === id),
+      );
+      buttons.forEach((button) =>
+        button.setAttribute('aria-pressed', button.dataset.wireBtn === id ? 'true' : 'false'),
+      );
+      recalc();
+    };
+
+    /* Only now is collapsing anything safe: the controls that bring it back
+       exist and work. */
+    root.classList.add('is-live');
+
+    methodEl?.addEventListener('change', recalc);
+    valueEl?.addEventListener('input', recalc);
+    buttons.forEach((button) =>
+      button.addEventListener(
+        'click',
+        () => button.dataset.wireBtn && showWire(button.dataset.wireBtn),
+      ),
+    );
+    rows.forEach((row) => {
+      row.querySelector('[data-calc-option]')?.addEventListener('change', recalc);
+      row.querySelector('[data-calc-qty]')?.addEventListener('input', () => {
+        edited.add(row);
+        recalc();
+      });
+    });
+
+    /* --- datasheet dialogs ---
+       Three dialogs shared by all six grade blocks, keyed by grade. Native
+       <dialog> gives focus trapping, Esc-to-close and inertness for free; the
+       only thing added here is the two-page tabbing and a backdrop click. */
+    const sheets = new Map<string, HTMLDialogElement>();
+    document.querySelectorAll<HTMLDialogElement>('[data-sheet]').forEach((dialog) => {
+      const id = dialog.dataset.sheet;
+      if (!id) return;
+      sheets.set(id, dialog);
+
+      /* Collapsing the two pages into tabs is only safe now that the tab
+         buttons work; with no JS they stay stacked and both are readable. */
+      dialog.classList.add('is-tabbed');
+
+      const pages = Array.from(dialog.querySelectorAll<HTMLElement>('[data-sheet-page]'));
+      const tabs = Array.from(dialog.querySelectorAll<HTMLButtonElement>('[data-sheet-tab]'));
+
+      const showPage = (index: string) => {
+        pages.forEach((page) =>
+          page.classList.toggle('is-current', page.dataset.sheetPage === index),
+        );
+        tabs.forEach((tab) =>
+          tab.setAttribute('aria-pressed', tab.dataset.sheetTab === index ? 'true' : 'false'),
+        );
+        dialog.querySelector('.sheet__body')?.scrollTo({ top: 0 });
+      };
+
+      tabs.forEach((tab) =>
+        tab.addEventListener('click', () => tab.dataset.sheetTab && showPage(tab.dataset.sheetTab)),
+      );
+      dialog.querySelector('[data-sheet-close]')?.addEventListener('click', () => dialog.close());
+
+      /* Clicking the backdrop closes. The dialog element's own box *is* the
+         backdrop area, so a click landing on the dialog itself rather than on
+         .sheet__inner means the visitor clicked outside the panel. */
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-sheet-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const dialog = sheets.get(button.dataset.sheetOpen ?? '');
+        dialog?.showModal();
+      });
+    });
+
+    recalc();
+  }
+</script>

@@ -38,7 +38,14 @@ const SECTORS: Site[] = [
     spec: '358 Anti-Climb · HDG',
     path: 'M20,30 L180,30 L180,110 L20,110 Z',
     posts: [
-      [20, 30], [100, 30], [180, 30], [180, 70], [180, 110], [100, 110], [20, 110], [20, 70],
+      [20, 30],
+      [100, 30],
+      [180, 30],
+      [180, 70],
+      [180, 110],
+      [100, 110],
+      [20, 110],
+      [20, 70],
     ],
     gate: [100, 110, 0],
   },
@@ -50,7 +57,14 @@ const SECTORS: Site[] = [
     spec: '358 Anti-Climb · Powder Coat',
     path: 'M20,20 L140,20 L140,60 L180,60 L180,120 L20,120 Z',
     posts: [
-      [20, 20], [140, 20], [140, 60], [180, 60], [180, 120], [100, 120], [20, 120], [20, 70],
+      [20, 20],
+      [140, 20],
+      [140, 60],
+      [180, 60],
+      [180, 120],
+      [100, 120],
+      [20, 120],
+      [20, 70],
     ],
     gate: [180, 90, 90],
   },
@@ -62,7 +76,16 @@ const SECTORS: Site[] = [
     spec: '358 Anti-Climb · Plascoat, 10-Yr Warranty',
     path: 'M10,40 L190,40 L190,100 L10,100 Z',
     posts: [
-      [10, 40], [64, 40], [118, 40], [190, 40], [190, 70], [190, 100], [118, 100], [64, 100], [10, 100], [10, 70],
+      [10, 40],
+      [64, 40],
+      [118, 40],
+      [190, 40],
+      [190, 70],
+      [190, 100],
+      [118, 100],
+      [64, 100],
+      [10, 100],
+      [10, 70],
     ],
     gate: [64, 100, 0],
   },
@@ -74,7 +97,13 @@ const SECTORS: Site[] = [
     spec: '358 Anti-Climb · HDG, Razor Topping',
     path: 'M30,20 L170,20 L170,120 L30,120 Z',
     posts: [
-      [30, 20], [170, 20], [170, 70], [170, 120], [100, 120], [30, 120], [30, 70],
+      [30, 20],
+      [170, 20],
+      [170, 70],
+      [170, 120],
+      [100, 120],
+      [30, 120],
+      [30, 70],
     ],
     gate: [100, 20, 180],
     double: true,
@@ -86,7 +115,13 @@ const SECTORS: Site[] = [
     lf: '≈900 LF',
     spec: '358 Anti-Climb · Powder Coat',
     path: 'M40,25 L160,35 L175,100 L100,120 L25,90 Z',
-    posts: [[40, 25], [160, 35], [175, 100], [100, 120], [25, 90]],
+    posts: [
+      [40, 25],
+      [160, 35],
+      [175, 100],
+      [100, 120],
+      [25, 90],
+    ],
     gate: [25, 90, -60],
   },
 ];
@@ -130,8 +165,8 @@ const PROCESS = [
         </h1>
         <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
           We're building out our project photography now, so rather than show you stock imagery or
-          invented case studies, here's what's true and useful today: the kind of length, sector
-          and spec each perimeter typically runs.
+          invented case studies, here's what's true and useful today: the kind of length, sector and
+          spec each perimeter typically runs.
         </p>
         <div class="mt-9 flex flex-wrap gap-3">
           <a
@@ -172,10 +207,7 @@ const PROCESS = [
       <div data-sector-grid class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {
           SECTORS.map((site) => (
-            <figure
-              data-card
-              class="rounded-md border border-white/10 bg-[#0c0c0e] p-5"
-            >
+            <figure data-card class="rounded-md border border-white/10 bg-[#0c0c0e] p-5">
               <svg
                 viewBox="0 0 200 140"
                 class="block h-auto w-full"
@@ -212,7 +244,14 @@ const PROCESS = [
                 />
 
                 {site.posts.map(([x, y]) => (
-                  <circle cx={x} cy={y} r="2.4" fill="#161616" stroke="#e4112a" stroke-width="1.2" />
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r="2.4"
+                    fill="#161616"
+                    stroke="#e4112a"
+                    stroke-width="1.2"
+                  />
                 ))}
 
                 <g

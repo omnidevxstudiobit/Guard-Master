@@ -1,0 +1,454 @@
+---
+import { POST_LENGTH_MM, SPIDER_CLAMPS, PANEL_WIDTH_MM } from '@data/clear-view-panels';
+
+/**
+ * The manufacturer's assembly sheet, redrawn.
+ *
+ * Each security grade on the reference site opens a two-slide lightbox: a
+ * close-up of the mesh, and a dimensioned assembly drawing. This is our version
+ * of that second slide — not the original file. The original is a watermarked
+ * raster of someone's CAD export; re-serving it would put a JPEG of another
+ * company's title block on our own product page, and it can't be restyled,
+ * can't be read on a phone and can't be corrected if a dimension changes.
+ *
+ * Every dimension here is off that drawing and is the same figure the pricing
+ * table is built from, imported rather than retyped:
+ *
+ *   - 3 000 mm nominal panel width, 3 013 mm overall across the two posts
+ *   - panel heights 1 800 / 2 100 / 2 400 / 3 000 mm
+ *   - post lengths 2 400 / 2 700 / 3 000 / 3 600 mm, one per height
+ *   - spider clamps 8 / 10 / 12 / 14 a side, so 16 / 20 / 24 / 28 a panel
+ *   - T-upright section: 100 mm base, 60 mm head, 64 mm deep
+ *   - wire Ø 3 mm horizontal, Ø 4 mm vertical
+ *
+ * The mesh is drawn at each grade's *own* aperture ratio — 6:1, 3.04:1 and
+ * 1.52:1 — so the three sheets are visibly three different products rather than
+ * one drawing with the numbers swapped. That is also why the aperture detail
+ * bottom-right is generated from the same ratio instead of being three
+ * hand-drawn swatches that could drift apart.
+ *
+ * No entrance animation. This is a document: it should be readable the instant
+ * the dialog opens, and a spec sheet that animates itself in is a spec sheet
+ * you can't screenshot. Labels are positioned HTML, not SVG `<text>`, for the
+ * same reason as every other drawing here — text that scales with the artwork
+ * stops being legible long before the artwork does.
+ */
+
+interface Props {
+  grade: 'high' | 'medium' | 'low';
+  /** e.g. "76mm × 12.7mm" — printed on the sheet's title block. */
+  aperture: string;
+  label: string;
+}
+
+const { grade, aperture, label } = Astro.props;
+
+/** Aperture height in mm, per grade. The width is 76 mm throughout. */
+const APERTURE_H: Record<Props['grade'], number> = { high: 12.7, medium: 25, low: 50 };
+const AP_W = 76;
+const apH = APERTURE_H[grade];
+const ratio = AP_W / apH;
+
+/* ---------- bay elevation ---------- */
+const BAY = { ground: 560, top: 150, meshTop: 164 };
+const POST_A = { x: 120, w: 32 };
+const POST_B = { x: 688, w: 32 };
+const MESH = { x0: POST_A.x + POST_A.w, x1: POST_B.x, vPitch: 67 };
+const cols = Array.from(
+  { length: Math.round((MESH.x1 - MESH.x0) / MESH.vPitch) + 1 },
+  (_, i) => MESH.x0 + i * MESH.vPitch,
+);
+const hPitch = MESH.vPitch / ratio;
+const rows = Array.from(
+  { length: Math.floor((BAY.ground - BAY.meshTop) / hPitch) + 1 },
+  (_, i) => Math.round((BAY.meshTop + i * hPitch) * 100) / 100,
+);
+
+/* Footings — the posts are set in concrete, which is why the post is longer
+   than the panel is tall. */
+const FOOT = { top: BAY.ground, bottom: 656, pad: 14 };
+
+/* ---------- section A–A: one post in profile ---------- */
+const SEC = { x: 812, w: 32 };
+
+/* ---------- T-upright section (bottom of the details column) ---------- */
+const TEE = { baseY: 268, topY: 204, baseX0: 1004, baseX1: 1104, topX0: 1024, topX1: 1084 };
+
+/* ---------- aperture detail ---------- */
+const DET = { x0: 984, x1: 1152, y0: 392, y1: 496, vPitch: 56 };
+const detCols = Array.from(
+  { length: Math.round((DET.x1 - DET.x0) / DET.vPitch) + 1 },
+  (_, i) => DET.x0 + i * DET.vPitch,
+);
+const detPitch = DET.vPitch / ratio;
+const detRows = Array.from(
+  { length: Math.floor((DET.y1 - DET.y0) / detPitch) + 1 },
+  (_, i) => Math.round((DET.y0 + i * detPitch) * 100) / 100,
+);
+
+const HEIGHTS = [1800, 2100, 2400, 3000];
+const VB = { w: 1200, h: 720 };
+const pct = (v: number, of: number): string => `${((v / of) * 100).toFixed(3)}%`;
+const mm = (v: number): string => v.toLocaleString('en-ZA').replace(/[\u00a0\u202f,]/g, ' ');
+
+/** Arrowed dimension line between two x positions at height y. */
+const hDim = (x0: number, x1: number, y: number): string =>
+  `M${x0} ${y} H${x1} M${x0 + 9} ${y - 5} L${x0} ${y} L${x0 + 9} ${y + 5} M${x1 - 9} ${y - 5} L${x1} ${y} L${x1 - 9} ${y + 5}`;
+/**
+ * Arrowed dimension line between two y positions at x.
+ *
+ * Below about 26 units the two arrowheads are longer than the gap they
+ * measure and collide into an unreadable blob — which is exactly what happens
+ * to the 12.7 mm aperture at detail scale. Draftsmen solve this by putting the
+ * arrows outside and pointing in, so that is what short spans get.
+ */
+const vDim = (y0: number, y1: number, x: number): string => {
+  const short = Math.abs(y1 - y0) < 26;
+  if (short) {
+    return (
+      `M${x} ${y0 - 16} V${y1 + 16}` +
+      ` M${x - 4} ${y0 - 9} L${x} ${y0} L${x + 4} ${y0 - 9}` +
+      ` M${x - 4} ${y1 + 9} L${x} ${y1} L${x + 4} ${y1 + 9}`
+    );
+  }
+  return `M${x} ${y0} V${y1} M${x - 5} ${y0 + 9} L${x} ${y0} L${x + 5} ${y0 + 9} M${x - 5} ${y1 - 9} L${x} ${y1} L${x + 5} ${y1 - 9}`;
+};
+
+const labels: {
+  x: number;
+  y: number;
+  text: string;
+  sub?: string;
+  anchor?: 'mid' | 'end';
+  /** Set along its own dimension line, the way a draftsman writes a length. */
+  vertical?: boolean;
+}[] = [
+  { x: (POST_A.x + POST_B.x + POST_B.w) / 2, y: 66, text: `${mm(3013)} mm`, anchor: 'mid' },
+  { x: (MESH.x0 + MESH.x1) / 2, y: 120, text: `${mm(PANEL_WIDTH_MM)} mm`, anchor: 'mid' },
+  /* Horizontal, these two ran off the left edge and straight through the
+     T-upright detail. Rotated onto their own dimension lines they fit the
+     margin they belong to — which is also how the source drawing sets them. */
+  {
+    x: 56,
+    y: (BAY.meshTop + BAY.ground) / 2,
+    text: 'Panel height',
+    sub: '1 800 / 2 100 / 2 400 / 3 000 mm',
+    vertical: true,
+  },
+  {
+    x: 958,
+    y: (BAY.top + FOOT.bottom) / 2,
+    text: 'Post length',
+    sub: '2 400 / 2 700 / 3 000 / 3 600 mm',
+    vertical: true,
+  },
+  { x: 786, y: 612, text: 'Set in concrete', anchor: 'end' },
+  { x: 1054, y: 146, text: 'T-upright section', anchor: 'mid' },
+  { x: 1054, y: 178, text: '60 mm', anchor: 'mid' },
+  { x: 962, y: 236, text: '64 mm', anchor: 'end' },
+  { x: 1054, y: 296, text: '100 mm', anchor: 'mid' },
+  { x: 1068, y: 344, text: 'Aperture detail', anchor: 'mid' },
+  { x: 1068, y: 372, text: `${AP_W} mm`, anchor: 'mid' },
+  { x: 1068, y: 524, text: `${AP_W} × ${apH} mm`, anchor: 'mid' },
+];
+---
+
+<div class="as" role="img" aria-label={label}>
+  <svg viewBox="0 0 1200 720" class="h-full w-full" aria-hidden="true">
+    <!-- ===== bay elevation ===== -->
+    <line class="as-faint" x1="60" y1={BAY.ground} x2="1180" y2={BAY.ground}></line>
+
+    <!-- mesh, drawn at this grade's own aperture ratio -->
+    <g>
+      {rows.map((y) => <line class="as-wire" x1={MESH.x0} y1={y} x2={MESH.x1} y2={y} />)}
+      {cols.map((x) => <line class="as-mid" x1={x} y1={BAY.meshTop} x2={x} y2={BAY.ground} />)}
+      <rect
+        class="as-edge"
+        x={MESH.x0}
+        y={BAY.meshTop}
+        width={MESH.x1 - MESH.x0}
+        height={BAY.ground - BAY.meshTop}></rect>
+    </g>
+
+    <!-- the two posts, and their footings -->
+    {
+      [POST_A, POST_B].map((post) => (
+        <g>
+          <rect
+            class="as-solid"
+            x={post.x}
+            y={BAY.top}
+            width={post.w}
+            height={BAY.ground - BAY.top}
+          />
+          <line
+            class="as-mid"
+            x1={post.x + post.w / 2}
+            y1={BAY.top + 12}
+            x2={post.x + post.w / 2}
+            y2={BAY.ground - 8}
+          />
+          <rect
+            class="as-foot"
+            x={post.x - FOOT.pad}
+            y={FOOT.top}
+            width={post.w + FOOT.pad * 2}
+            height={FOOT.bottom - FOOT.top}
+          />
+          <rect
+            class="as-solid"
+            x={post.x}
+            y={FOOT.top}
+            width={post.w}
+            height={FOOT.bottom - FOOT.top - 10}
+          />
+        </g>
+      ))
+    }
+
+    <!-- dimensions -->
+    <path class="as-dim" d={hDim(POST_A.x, POST_B.x + POST_B.w, 86)}></path>
+    <path class="as-dim" d={hDim(MESH.x0, MESH.x1, 118)}></path>
+    <path class="as-thin" d={`M${POST_A.x} 78 V${BAY.top} M${POST_B.x + POST_B.w} 78 V${BAY.top}`}
+    ></path>
+    <path class="as-thin" d={`M${MESH.x0} 110 V${BAY.meshTop} M${MESH.x1} 110 V${BAY.meshTop}`}
+    ></path>
+    <path class="as-dim" d={vDim(BAY.meshTop, BAY.ground, 96)}></path>
+    <path class="as-thin" d={`M96 ${BAY.meshTop} H${MESH.x0} M96 ${BAY.ground} H${MESH.x0}`}></path>
+
+    <!-- ===== section A–A ===== -->
+    <g>
+      <rect class="as-solid" x={SEC.x} y={BAY.top} width={SEC.w} height={BAY.ground - BAY.top}
+      ></rect>
+      <line class="as-mid" x1={SEC.x + 16} y1={BAY.top + 12} x2={SEC.x + 16} y2={FOOT.bottom - 20}
+      ></line>
+      <rect
+        class="as-foot"
+        x={SEC.x - FOOT.pad}
+        y={FOOT.top}
+        width={SEC.w + FOOT.pad * 2}
+        height={FOOT.bottom - FOOT.top}></rect>
+      <rect
+        class="as-solid"
+        x={SEC.x}
+        y={FOOT.top}
+        width={SEC.w}
+        height={FOOT.bottom - FOOT.top - 10}></rect>
+      {/* mesh securing teeth down the panel face */}
+      {
+        [210, 280, 350, 420, 490].map((y) => (
+          <path
+            class="as-tooth"
+            d={`M${SEC.x + SEC.w} ${y - 7} L${SEC.x + SEC.w + 14} ${y} L${SEC.x + SEC.w} ${y + 7} Z`}
+          />
+        ))
+      }
+      <path class="as-dim" d={vDim(BAY.top, FOOT.bottom, 926)}></path>
+      <path class="as-thin" d={`M926 ${BAY.top} H${SEC.x} M926 ${FOOT.bottom} H${SEC.x}`}></path>
+    </g>
+
+    <!-- ===== T-upright section ===== -->
+    <g>
+      <path
+        class="as-solid"
+        d={`M${TEE.baseX0} ${TEE.baseY} L${TEE.topX0} ${TEE.topY} L${TEE.topX1} ${TEE.topY} L${TEE.baseX1} ${TEE.baseY} Z`}
+      ></path>
+      <path class="as-dim" d={hDim(TEE.topX0, TEE.topX1, TEE.topY - 24)}></path>
+      <path class="as-dim" d={hDim(TEE.baseX0, TEE.baseX1, TEE.baseY + 26)}></path>
+      <path class="as-dim" d={vDim(TEE.topY, TEE.baseY, TEE.baseX0 - 30)}></path>
+      <path
+        class="as-thin"
+        d={`M${TEE.topX0} ${TEE.topY - 16} V${TEE.topY} M${TEE.topX1} ${TEE.topY - 16} V${TEE.topY}
+            M${TEE.baseX0} ${TEE.baseY} V${TEE.baseY + 18} M${TEE.baseX1} ${TEE.baseY} V${TEE.baseY + 18}`}
+      ></path>
+    </g>
+
+    <!-- ===== aperture detail ===== -->
+    <g>
+      {detRows.map((y) => <line class="as-wire" x1={DET.x0} y1={y} x2={DET.x1} y2={y} />)}
+      {detCols.map((x) => <line class="as-mid" x1={x} y1={DET.y0} x2={x} y2={DET.y1} />)}
+      <rect
+        class="as-accent"
+        x={detCols[1]}
+        y={detRows[1]}
+        width={DET.vPitch}
+        height={Math.round(detPitch * 100) / 100}></rect>
+      <path class="as-dim" d={hDim(detCols[1], detCols[2], DET.y0 - 26)}></path>
+      <path class="as-dim" d={vDim(detRows[1], detRows[2], DET.x1 + 34)}></path>
+      <path
+        class="as-thin"
+        d={`M${detCols[1]} ${DET.y0 - 18} V${DET.y0} M${detCols[2]} ${DET.y0 - 18} V${DET.y0}
+            M${DET.x1} ${detRows[1]} H${DET.x1 + 26} M${DET.x1} ${detRows[2]} H${DET.x1 + 26}`}
+      ></path>
+    </g>
+  </svg>
+
+  {
+    labels.map((l) => (
+      <p
+        class:list={['as-label', { 'as-label--v': l.vertical }]}
+        style={`top:${pct(l.y, VB.h)}; left:${pct(l.x, VB.w)}; --anchor:${l.vertical || l.anchor === 'mid' ? '-50%' : l.anchor === 'end' ? '-100%' : '0'}`}
+        aria-hidden="true"
+      >
+        <span class="as-label__t">{l.text}</span>
+        {l.sub && <span class="as-label__s">{l.sub}</span>}
+      </p>
+    ))
+  }
+
+  <!-- Clamp schedule, straight off the catalogue so it can't drift. -->
+  <dl class="as-schedule" aria-hidden="true">
+    {
+      HEIGHTS.map((h) => (
+        <div>
+          <dt>{mm(h)} mm</dt>
+          <dd>
+            {SPIDER_CLAMPS[h].perSide} × 2 · post {mm(POST_LENGTH_MM[h])} mm
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <p class="as-title" aria-hidden="true">
+    <span>Clear View panel · {aperture} aperture</span>
+    <span>Ø 3 mm horizontal · Ø 4 mm vertical wire</span>
+  </p>
+</div>
+
+<style>
+  .as {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1200 / 720;
+    background: #ffffff;
+    color: #161616;
+  }
+
+  .as .as-faint,
+  .as .as-wire,
+  .as .as-mid,
+  .as .as-edge,
+  .as .as-dim,
+  .as .as-thin {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .as .as-faint {
+    stroke: #b8b8b8;
+    stroke-width: 1.4;
+  }
+  .as .as-wire {
+    stroke: #c6c6c6;
+    stroke-width: 1;
+  }
+  .as .as-mid {
+    stroke: #8c8c8c;
+    stroke-width: 1.2;
+  }
+  .as .as-edge {
+    stroke: #161616;
+    stroke-width: 1.6;
+  }
+  .as .as-dim {
+    stroke: #161616;
+    stroke-width: 1.2;
+  }
+  .as .as-thin {
+    stroke: #b0b0b0;
+    stroke-width: 0.9;
+  }
+  .as .as-solid {
+    fill: #ffffff;
+    stroke: #161616;
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .as .as-foot {
+    fill: #f0f0f0;
+    stroke: #a8a8a8;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+    vector-effect: non-scaling-stroke;
+  }
+  .as .as-tooth {
+    fill: #161616;
+    stroke: none;
+  }
+  .as .as-accent {
+    fill: rgba(228, 17, 42, 0.14);
+    stroke: #e4112a;
+    stroke-width: 1.8;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .as .as-label {
+    position: absolute;
+    transform: translate(var(--anchor, 0), -50%);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: clamp(7px, 0.78vw, 10px);
+    line-height: 1.35;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .as .as-label--v {
+    transform: translate(-50%, -50%) rotate(-90deg);
+    text-align: center;
+  }
+  .as .as-label__t {
+    display: block;
+    font-weight: 700;
+    color: #161616;
+  }
+  .as .as-label__s {
+    display: block;
+    color: #6e6e6e;
+  }
+
+  .as .as-schedule {
+    position: absolute;
+    top: 78%;
+    left: 82%;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: clamp(7px, 0.72vw, 9.5px);
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+  }
+  .as .as-schedule div {
+    display: flex;
+    gap: 0.5em;
+    white-space: nowrap;
+  }
+  .as .as-schedule dt {
+    min-width: 5.2em;
+    font-weight: 700;
+    color: #161616;
+  }
+  .as .as-schedule dd {
+    margin: 0;
+    color: #6e6e6e;
+  }
+
+  .as .as-title {
+    position: absolute;
+    bottom: 3%;
+    left: 4%;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: clamp(7px, 0.76vw, 10px);
+    line-height: 1.6;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6e6e6e;
+  }
+  .as .as-title span {
+    display: block;
+  }
+  .as .as-title span:first-child {
+    font-weight: 700;
+    color: #161616;
+  }
+</style>

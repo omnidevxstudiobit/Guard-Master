@@ -1,0 +1,585 @@
+---
+import { POST_RATES, FIXINGS, BASE_PLATES } from '@data/clear-view-estimator';
+import { PANEL_WIDTH_MM, VAT_RATE } from '@data/clear-view-panels';
+import { formatRand } from '@data/products';
+import { CTA } from '@data/nav';
+import PostSection from '@components/ui/PostSection.astro';
+
+/**
+ * Clear View posts — priced the way they are actually sold: by the metre.
+ *
+ * An earlier version of this section priced posts as fixed lengths, read off
+ * the client's WooCommerce listing. That was the wrong model. Their own quote
+ * estimator sells posts as "Price Per Meter x Height in Meters" — a rate and a
+ * height — and the fixed lengths on the shop are that rate multiplied out.
+ * Pricing from the rate removes a whole class of rounding error (see the note in
+ * clear-view-estimator.ts, where R 257.39 turns out to be R 257.40) and, more
+ * usefully, lets someone price the 2.7 m post they need instead of rounding up
+ * to a length that happens to be listed.
+ *
+ * Three profiles, nine builds. Each leads with a drawing rather than a
+ * photograph, all three at a shared scale, so the difference between a 76 x 40
+ * and a 100 x 60 is visible rather than asserted — see ui/PostSection.astro.
+ *
+ * Wall thickness is a column, not a footnote: the same 76 x 76 square post sells
+ * at 1.6 mm and 2 mm for R 99.00 and R 190.10 a metre, and a table that hides
+ * that looks like it lists one product twice at two different prices.
+ *
+ * One height feeds every profile, and an optional perimeter counts the posts
+ * the way the manufacturer's own calculator does: N panels over a 3 m module
+ * need N + 1, because the last one closes the run.
+ *
+ * **No "Guard Master Post" line.** The client's WooCommerce catalogue lists one
+ * under that name, priced identically to the T-Post 100 x 60 at every length and
+ * finish bar two — which is good evidence they are the same section, and no
+ * evidence at all that they are. Their estimator, which is the source for
+ * everything here, never uses the name. So this section lists the three profiles
+ * the estimator actually sells and leaves the branding claim to someone who can
+ * confirm it.
+ *
+ * Every control is JS-only and hidden until the script runs; the rate tables are
+ * the content and render complete without it.
+ */
+
+type Rate = (typeof POST_RATES)[number];
+
+const PROFILES = [
+  {
+    id: 't100' as const,
+    label: 'T-Post 100 × 60 mm',
+    note: 'The standard T-upright — a 100 mm base tapering to a 60 mm head, 64 mm deep.',
+    match: (r: Rate) => r.kind === 't' && r.w === 100,
+  },
+  {
+    id: 't76' as const,
+    label: 'T-Post 76 × 40 mm',
+    note: 'A lighter T-section for shorter runs and lower-risk perimeters.',
+    match: (r: Rate) => r.kind === 't' && r.w === 76,
+  },
+  {
+    id: 'sq76' as const,
+    label: 'SQ Post 76 × 76 mm',
+    note: 'Square hollow section, in 1.6 mm and 2 mm wall — the heaviest profile in the range.',
+    match: (r: Rate) => r.kind === 'sq',
+  },
+];
+
+/** The panel heights, so a per-metre rate can be read as a post price. */
+const STANDARD_M = [1.8, 2.4, 3.0, 3.6];
+const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) / 100;
+---
+
+<section class="bg-gm-black text-gm-white py-20 sm:py-28">
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Post Pricing</p>
+      <h2
+        class="font-display text-gm-white mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl"
+      >
+        Priced By The Metre. <span class="text-gm-red">Cut To Your Height.</span>
+      </h2>
+      <p class="text-gm-grey-400 mt-6 text-base leading-relaxed">
+        Posts aren't a catalogue of fixed lengths — they're a rate and a height. Pick a section and
+        finish, say how tall, and the price and the mass follow. Rates exclude VAT.
+      </p>
+    </div>
+
+    <div data-postcalc data-panel-width={PANEL_WIDTH_MM / 1000} class="mt-12 sm:mt-14">
+      <div class="calc-head border-gm-grey-800 border-y py-6">
+        <div class="flex flex-wrap items-end gap-x-6 gap-y-5">
+          <div>
+            <label
+              for="post-height"
+              class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+            >
+              Post height (m)
+            </label>
+            <input
+              id="post-height"
+              data-calc-height
+              type="number"
+              min="0"
+              step="0.1"
+              inputmode="decimal"
+              placeholder="e.g. 2.4"
+              class="calc-field mt-2 w-32"
+            />
+          </div>
+          <div>
+            <label
+              for="post-perimeter"
+              class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+            >
+              Perimeter (m) <span class="normal-case">— optional</span>
+            </label>
+            <input
+              id="post-perimeter"
+              data-calc-perimeter
+              type="number"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              placeholder="e.g. 400"
+              class="calc-field mt-2 w-40"
+            />
+          </div>
+          <p
+            data-calc-derived
+            class="text-gm-grey-400 min-w-[16rem] flex-1 text-[13px] leading-snug"
+          >
+            Enter a height to price every profile. Add a perimeter and it counts the posts too.
+          </p>
+        </div>
+      </div>
+
+      {
+        PROFILES.map((profile, p) => {
+          const rates = POST_RATES.filter(profile.match);
+          return (
+            <article data-post-type class="mt-14 first-of-type:mt-10">
+              <div class="grid gap-8 lg:grid-cols-[220px_1fr] lg:gap-12">
+                <div>
+                  <div class="border-gm-grey-800 aspect-square w-full max-w-[220px] border bg-white p-4">
+                    <PostSection
+                      variant={profile.id}
+                      label={`Cross-section of the ${profile.label}, drawn to scale against the other profiles in the range.`}
+                    />
+                  </div>
+                  <div class="mt-4 flex flex-wrap items-baseline gap-x-3">
+                    <span class="text-gm-grey-500 font-mono text-[10px] tracking-[0.2em] tabular-nums">
+                      0{p + 1}
+                    </span>
+                    <h3
+                      data-post-name
+                      class="font-display text-gm-white text-lg font-bold tracking-tight uppercase"
+                    >
+                      {profile.label}
+                    </h3>
+                  </div>
+                  <p class="text-gm-grey-400 mt-2 text-[13px] leading-relaxed">{profile.note}</p>
+                </div>
+
+                <div>
+                  <div data-calc-row class="calc-row border-gm-grey-800 mb-6 border p-4 sm:p-5">
+                    <div class="flex flex-wrap items-end gap-x-5 gap-y-4">
+                      <div class="min-w-[15rem] flex-1">
+                        <label
+                          for={`post-opt-${profile.id}`}
+                          class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                        >
+                          Build
+                        </label>
+                        <select
+                          id={`post-opt-${profile.id}`}
+                          data-calc-option
+                          class="calc-field mt-2 w-full"
+                        >
+                          <option value="">Select a finish and wall…</option>
+                          {rates.map((r) => (
+                            <option
+                              value={`${r.finish}:${r.wallMm}`}
+                              data-rate={r.rate}
+                              data-kg={r.kgPerM}
+                            >
+                              {r.finish} · {r.wallMm} mm wall — {formatRand(r.rate)}/m
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label
+                          for={`post-qty-${profile.id}`}
+                          class="text-gm-grey-500 block font-mono text-[10px] tracking-[0.18em] uppercase"
+                        >
+                          Posts
+                        </label>
+                        <input
+                          id={`post-qty-${profile.id}`}
+                          data-calc-qty
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="0"
+                          class="calc-field mt-2 w-28"
+                        />
+                      </div>
+                      <div>
+                        <button
+                          type="button"
+                          data-calc-add
+                          disabled
+                          class="add-btn tap-target bg-gm-red text-gm-white inline-flex items-center px-5 text-[11px] font-bold tracking-[0.1em] uppercase transition-colors hover:bg-[#c50e24] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Add To Quote
+                        </button>
+                      </div>
+                    </div>
+                    <p
+                      data-calc-line
+                      class="text-gm-grey-400 mt-4 hidden text-[13px] leading-relaxed"
+                    />
+                  </div>
+
+                  <div class="-mr-6 overflow-x-auto pr-6 lg:mr-0 lg:pr-0">
+                    <table class="price-table w-full min-w-[40rem] border-collapse text-left">
+                      <caption class="sr-only">
+                        {profile.label} — rate per metre and mass per metre by finish and wall
+                        thickness, excluding VAT, with the cost at four standard heights
+                      </caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">Finish</th>
+                          <th scope="col">Wall</th>
+                          <th scope="col" class="num">
+                            Per m
+                          </th>
+                          <th scope="col" class="num">
+                            kg/m
+                          </th>
+                          {STANDARD_M.map((m) => (
+                            <th scope="col" class="num">
+                              {m.toFixed(1)} m
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rates.map((r) => (
+                          <tr>
+                            <th scope="row">{r.finish}</th>
+                            <td>{r.wallMm} mm</td>
+                            <td class="num rate">{formatRand(r.rate)}</td>
+                            <td class="num soft">{r.kgPerM.toFixed(2)}</td>
+                            {STANDARD_M.map((m) => (
+                              <td class="num">{formatRand(rateAt(r.rate, m))}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+
+      <div data-calc-total class="calc-total border-gm-red mt-12 hidden border-t-2 pt-8">
+        <div class="flex flex-wrap items-start justify-between gap-8">
+          <div>
+            <p class="text-gm-grey-500 font-mono text-[10px] tracking-[0.2em] uppercase">
+              Order Estimate
+            </p>
+            <p
+              data-calc-total-lines
+              class="text-gm-grey-300 mt-3 max-w-md text-[13px] leading-relaxed"
+            >
+            </p>
+          </div>
+          <dl class="min-w-[17rem] font-mono text-[13px]">
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2">
+              <dt class="text-gm-grey-400">Total excl. VAT</dt>
+              <dd data-calc-ex class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2">
+              <dt class="text-gm-grey-400">VAT ({VAT_RATE * 100}%)</dt>
+              <dd data-calc-vat class="text-gm-white tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 border-b border-white/10 py-2">
+              <dt class="text-gm-white font-bold">Total incl. VAT</dt>
+              <dd data-calc-incl class="text-gm-red font-bold tabular-nums">—</dd>
+            </div>
+            <div class="flex justify-between gap-8 py-2">
+              <dt class="text-gm-grey-400">Mass</dt>
+              <dd data-calc-mass class="text-gm-white tabular-nums">—</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    {/* What goes on the post. Priced per piece, so they sit as plain lists. */}
+    <div class="mt-16 grid gap-10 border-t border-white/10 pt-12 sm:mt-20 lg:grid-cols-2 lg:gap-16">
+      {
+        [
+          {
+            title: 'Clamp Kits & Base Plates',
+            note: 'Per clamp. The panel table says how many a given height needs — 8 a side at 1.8 m, 14 at 3 m.',
+            items: FIXINGS,
+          },
+          {
+            title: 'Brackets & Anchors',
+            note: 'For posts that bolt down to concrete or steel instead of setting into it.',
+            items: BASE_PLATES,
+          },
+        ].map((block) => (
+          <div>
+            <h3 class="font-display text-gm-white text-lg font-bold tracking-tight uppercase">
+              {block.title}
+            </h3>
+            <p class="text-gm-grey-500 mt-2 text-[13px] leading-relaxed">{block.note}</p>
+            <dl class="border-gm-grey-800 mt-5 border-t">
+              {block.items.map((item) => (
+                <div class="border-gm-grey-800 flex items-baseline justify-between gap-6 border-b py-3">
+                  <dt class="text-gm-grey-300 text-[13px]">{item.label}</dt>
+                  <dd class="text-gm-white shrink-0 font-mono text-[13px] tabular-nums">
+                    {formatRand(item.price)}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-start sm:justify-between"
+    >
+      <p class="text-gm-grey-500 max-w-lg text-[11px] leading-relaxed">
+        Rates are per metre of post and exclude VAT; VAT at {VAT_RATE * 100}% is added in the
+        estimate above. A post is longer than the panel it carries — allow for the depth set into
+        concrete. Post counts assume a closed run with one closing post and no gates.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href={CTA.href}
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          {CTA.label}
+        </a>
+        <a
+          href="/clear-view-fencing-panels"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          Price The Panels
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-postcalc] .calc-head,
+  [data-postcalc] .calc-row {
+    display: none;
+  }
+  [data-postcalc].is-live .calc-head,
+  [data-postcalc].is-live .calc-row {
+    display: block;
+  }
+
+  [data-postcalc] .calc-field {
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    border: 1px solid #35353d;
+    background: #111114;
+    color: var(--color-gm-white);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  [data-postcalc] .calc-field:focus-visible {
+    outline: 2px solid var(--color-gm-red);
+    outline-offset: 1px;
+  }
+  [data-postcalc] select.calc-field {
+    max-width: 100%;
+  }
+
+  .price-table th,
+  .price-table td {
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    padding: 0.7rem 1rem 0.7rem 0;
+    vertical-align: baseline;
+  }
+  .price-table thead th {
+    border-bottom-color: rgb(255 255 255 / 0.22);
+    color: var(--color-gm-grey-500);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .price-table tbody th {
+    color: var(--color-gm-white);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .price-table tbody td {
+    color: var(--color-gm-white);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .price-table .num {
+    padding-right: 0;
+    padding-left: 1rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  /* The rate is the product; the multiples are conveniences. */
+  .price-table tbody td.rate {
+    color: var(--color-gm-red);
+  }
+  .price-table tbody td.soft {
+    color: var(--color-gm-grey-500);
+    font-weight: 400;
+  }
+  .price-table tbody tr:hover td,
+  .price-table tbody tr:hover th {
+    background: rgb(255 255 255 / 0.03);
+  }
+</style>
+
+<script>
+  import { add } from '@/lib/quote-cart';
+
+  const root = document.querySelector<HTMLElement>('[data-postcalc]');
+
+  if (root) {
+    const VAT = 0.15;
+    const PANEL_W = Number(root.dataset.panelWidth) || 3;
+
+    const rand = (v: number): string =>
+      `R ${new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(v)}`;
+
+    const heightEl = root.querySelector<HTMLInputElement>('[data-calc-height]');
+    const perimeterEl = root.querySelector<HTMLInputElement>('[data-calc-perimeter]');
+    const derivedEl = root.querySelector<HTMLElement>('[data-calc-derived]');
+    const totalEl = root.querySelector<HTMLElement>('[data-calc-total]');
+    const totalLinesEl = root.querySelector<HTMLElement>('[data-calc-total-lines]');
+    const exEl = root.querySelector<HTMLElement>('[data-calc-ex]');
+    const vatEl = root.querySelector<HTMLElement>('[data-calc-vat]');
+    const inclEl = root.querySelector<HTMLElement>('[data-calc-incl]');
+    const massEl = root.querySelector<HTMLElement>('[data-calc-mass]');
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('[data-calc-row]'));
+
+    const edited = new WeakSet<HTMLElement>();
+
+    const recalc = () => {
+      const height = Number(heightEl?.value) || 0;
+      const perimeter = Number(perimeterEl?.value) || 0;
+      /* N panels over a 3 m module need N + 1 posts — the last closes the run. */
+      const panels = perimeter > 0 ? Math.ceil(perimeter / PANEL_W) : 0;
+      const posts = panels > 0 ? panels + 1 : 0;
+
+      if (derivedEl) {
+        derivedEl.textContent =
+          height > 0
+            ? (posts > 0
+                ? `${perimeter} m ÷ ${PANEL_W} m = ${panels} panels, so ${posts} posts. `
+                : '') + `Every profile costed at ${height} m. Override any quantity below.`
+            : 'Enter a height to price every profile. Add a perimeter and it counts the posts too.';
+      }
+
+      let totalEx = 0;
+      let totalKg = 0;
+      const lines: string[] = [];
+
+      rows.forEach((row) => {
+        const option = row.querySelector<HTMLSelectElement>('[data-calc-option]');
+        const qtyEl = row.querySelector<HTMLInputElement>('[data-calc-qty]');
+        const lineEl = row.querySelector<HTMLElement>('[data-calc-line]');
+        if (!option || !qtyEl || !lineEl) return;
+
+        const chosen = option.selectedOptions[0];
+        const rate = Number(chosen?.dataset.rate) || 0;
+        const kgPerM = Number(chosen?.dataset.kg) || 0;
+
+        /* A perimeter fills every row; failing that, a chosen build is worth
+           one post. The perimeter here is explicitly optional, so leaving the
+           quantity empty made the Add button permanently dead for anyone who
+           only wanted to price a single post. */
+        if (!edited.has(row)) {
+          if (posts > 0) qtyEl.value = String(posts);
+          else if (rate && !Number(qtyEl.value)) qtyEl.value = '1';
+        }
+
+        const qty = Math.max(0, Math.floor(Number(qtyEl.value) || 0));
+
+        if (!rate || !qty || height <= 0) {
+          const btn = row.querySelector<HTMLButtonElement>('[data-calc-add]');
+          if (btn) btn.disabled = true;
+          /* A rate alone can't be priced — say which input is missing rather
+             than leaving a dead button and no explanation. */
+          if (rate && height <= 0) {
+            lineEl.classList.remove('hidden');
+            lineEl.textContent = 'Enter a post height above to price this.';
+          } else {
+            lineEl.classList.add('hidden');
+          }
+          return;
+        }
+
+        const each = Math.round(rate * height * 100) / 100;
+        const lineEx = Math.round(each * qty * 100) / 100;
+        const kgEach = Math.round(kgPerM * height * 100) / 100;
+
+        /* The button is only live once the row actually prices something. */
+        const addBtn = row.querySelector<HTMLButtonElement>('[data-calc-add]');
+        if (addBtn) {
+          addBtn.disabled = false;
+          addBtn.onclick = () => {
+            const profileName =
+              row
+                .closest('[data-post-type]')
+                ?.querySelector('[data-post-name]')
+                ?.textContent?.trim() ?? 'Post';
+            add({
+              id: `post:${profileName}:${chosen.value}:${height}`,
+              group: 'Posts',
+              label: `${profileName} — ${chosen.textContent?.split('—')[0].trim()}`,
+              unitEx: each,
+              qty,
+              detail: `${height} m at ${rand(rate)}/m`,
+              kg: kgEach,
+            });
+            addBtn.textContent = 'Added ✓';
+            window.setTimeout(() => {
+              addBtn.textContent = 'Add To Quote';
+            }, 1600);
+          };
+        }
+        lineEl.classList.remove('hidden');
+        lineEl.textContent =
+          `${rand(rate)}/m × ${height} m = ${rand(each)} a post · ` +
+          `${qty} × ${rand(each)} = ${rand(lineEx)} excl. VAT · ${kgEach.toFixed(2)} kg each.`;
+
+        totalEx += lineEx;
+        totalKg += kgEach * qty;
+        const name = row.closest('[data-post-type]')?.querySelector('[data-post-name]');
+        lines.push(`${qty} × ${name?.textContent?.trim() ?? 'posts'} at ${height} m`);
+      });
+
+      if (totalEx > 0) {
+        const vat = Math.round(totalEx * VAT * 100) / 100;
+        totalEl?.classList.remove('hidden');
+        if (totalLinesEl) totalLinesEl.textContent = lines.join(' · ');
+        if (exEl) exEl.textContent = rand(Math.round(totalEx * 100) / 100);
+        if (vatEl) vatEl.textContent = rand(vat);
+        if (inclEl) inclEl.textContent = rand(Math.round((totalEx + vat) * 100) / 100);
+        if (massEl) massEl.textContent = `${totalKg.toFixed(2)} kg`;
+      } else {
+        totalEl?.classList.add('hidden');
+      }
+    };
+
+    root.classList.add('is-live');
+    heightEl?.addEventListener('input', recalc);
+    perimeterEl?.addEventListener('input', recalc);
+    rows.forEach((row) => {
+      row.querySelector('[data-calc-option]')?.addEventListener('change', recalc);
+      row.querySelector('[data-calc-qty]')?.addEventListener('input', () => {
+        edited.add(row);
+        recalc();
+      });
+    });
+    recalc();
+  }
+</script>

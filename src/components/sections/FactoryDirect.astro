@@ -1,0 +1,149 @@
+---
+import { findImage } from '@data/products';
+
+/**
+ * Section — the manufacturer story, straight off the client's own site.
+ *
+ * Every claim here is a paraphrase of copy Wire Ventures already publishes on
+ * fencing-supplier.com ("Complete perimeter security solutions", "Factory-
+ * direct manufacturing", the Benoni factory address and the sector list). It
+ * is deliberately not new marketing invented for this build: the whole point
+ * of the section is that the "manufacturer, not middleman" line — the central
+ * competitive wedge in businessguide.md §2 — is finally backed by the
+ * factory's real address, real photographs of the floor, and the real
+ * sentences the business already stands behind.
+ *
+ * Note the address: 10 Burnley Street, Benoni South Extn., Gauteng. Earlier
+ * drafts of this site deliberately withheld any address because the build was
+ * framed as US-market and the only real address on record was the South
+ * African factory. That framing is gone — this is a Benoni manufacturer
+ * selling in rand — so the address is now the right thing to show, not the
+ * wrong one.
+ *
+ * Light section, sitting between HowItWorks (dark) and RecentProject (dark).
+ * No JS at all: three photographs, four paragraphs and an address.
+ */
+
+const FLOOR = [
+  findImage('clear-view-fencing-posts', 'img-4742'),
+  findImage('clear-view-fencing-posts', '5bfcf5b7-b5c7-4941-ab24-88a74b552970'),
+  findImage('razor-wire-mesh', 'img-6277'),
+].filter((image): image is NonNullable<typeof image> => Boolean(image));
+
+const CLAIMS = [
+  {
+    title: 'Complete Perimeter Systems',
+    body: 'Not just panels. Matching sliding, swing and pedestrian gates, posts, fixators, security toppings and accessories — supplied together with the technical guidance to make them work as one system.',
+  },
+  {
+    title: 'Factory-Direct Pricing',
+    body: 'Manufacturing our own systems means strict quality control, custom sizes and specifications, shorter lead times where possible, and pricing without a reseller mark-up stacked on top.',
+  },
+  {
+    title: 'Specified, Supplied, Installed',
+    body: "Expert product selection, custom manufacturing, technical support and professional installation where it's required — a tailored quotation built around your site's security, operational and budget requirements.",
+  },
+];
+---
+
+<section class="bg-gm-white text-gm-black relative overflow-hidden py-20 sm:py-28">
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-end lg:gap-16">
+      <div class="max-w-2xl">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+          Wire Ventures · Benoni, Gauteng
+        </p>
+        <h2
+          class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+        >
+          We Don't Resell Fencing. <span class="text-gm-red">We Make It.</span>
+        </h2>
+        <p class="text-gm-grey-600 mt-6 text-base leading-relaxed">
+          Wire Ventures is a South African manufacturer and supplier of high-security fencing —
+          Clear View, Guard Master, razor wire mesh, concertina razor wire and rapid deployment
+          barriers. We supply residential estates, commercial developments, industrial facilities,
+          logistics centres, mines, power utilities, correctional facilities, data centres and
+          government infrastructure.
+        </p>
+      </div>
+
+      <!-- Factory address. A real, verifiable place — the strongest possible
+           form of the manufacturer claim, which is why it gets a card of its
+           own rather than a line in the footer. -->
+      <aside class="border-gm-grey-200 border-l-gm-red bg-gm-grey-50 border border-l-2 p-6 sm:p-8">
+        <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.2em] uppercase">
+          Visit Our Factory
+        </p>
+        <address
+          class="text-gm-black mt-4 text-lg leading-snug font-bold tracking-tight uppercase not-italic"
+        >
+          10 Burnley Street<br />
+          Benoni South Extn.<br />
+          Gauteng 1501, South Africa
+        </address>
+        <a
+          href="tel:+27114378903"
+          class="tap-target text-gm-red mt-5 inline-flex items-center font-mono text-sm font-bold tracking-wide"
+        >
+          +27 11 437 8903
+        </a>
+      </aside>
+    </div>
+
+    <!-- Floor photography. Asymmetric on purpose — a three-up equal grid of
+         factory shots reads as stock decoration; one dominant frame with two
+         supporting ones reads as someone's actual factory. -->
+    {
+      FLOOR.length === 3 && (
+        <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-[1.6fr_1fr]">
+          <figure class="relative aspect-[4/3] overflow-hidden rounded-md sm:col-span-2 lg:col-span-1 lg:aspect-auto lg:h-full lg:min-h-[22rem]">
+            <img
+              src={FLOOR[0].src}
+              srcset={FLOOR[0].srcset}
+              sizes="(min-width: 1024px) 700px, 100vw"
+              width={FLOOR[0].width}
+              height={FLOOR[0].height}
+              alt={FLOOR[0].alt}
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+          <div class="grid gap-4 sm:col-span-2 sm:grid-cols-2 lg:col-span-1 lg:grid-cols-1">
+            {FLOOR.slice(1).map((image) => (
+              <figure class="aspect-[4/3] overflow-hidden rounded-md lg:aspect-[16/10]">
+                <img
+                  src={image.src}
+                  srcset={image.srcset}
+                  sizes="(min-width: 1024px) 420px, (min-width: 640px) 50vw, 100vw"
+                  width={image.width}
+                  height={image.height}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover"
+                />
+              </figure>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    <div
+      class="border-gm-grey-200 mt-14 grid gap-10 border-t pt-12 sm:grid-cols-3 sm:gap-8 lg:mt-16"
+    >
+      {
+        CLAIMS.map((claim, i) => (
+          <div>
+            <p class="text-gm-red font-mono text-[11px] tracking-[0.2em] tabular-nums">0{i + 1}</p>
+            <h3 class="font-display text-gm-black mt-3 text-lg leading-tight font-bold tracking-tight uppercase">
+              {claim.title}
+            </h3>
+            <p class="text-gm-grey-600 mt-3 text-sm leading-relaxed">{claim.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

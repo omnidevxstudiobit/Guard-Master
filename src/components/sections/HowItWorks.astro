@@ -7,21 +7,31 @@ import { CTA } from '@data/nav';
  * Adapted from a reference site's pinned horizontal-scroll process timeline
  * (connecting line + numbered step markers, a card per step with a "why it
  * matters" sub-callout, a huge faint watermark word behind everything). The
- * shape is borrowed; the content is not — every step below is a fact already
- * established elsewhere on this site (EstimatorTeaser's live arithmetic,
- * FinishLadder's finish tiers, SystemAssembly's in-house manufacturing claim,
- * SeoFaq's US-shipping and install facts), not new specs invented for this
- * section. Step 5 originally avoided the reference's own "in-house crew,
- * never subcontractors" framing, back when the brief's working assumption
- * was that Guard Master didn't install at all — confirmed with the client
- * since then that installation *is* part of the offering (businessguide.md
- * §"Do they install or repair?" has the correction). Step 5 now says Guard
- * Master installs, but still doesn't claim "in-house crew, never
- * subcontractors" specifically — that exact mechanism isn't confirmed, only
- * that Guard Master installs.
+ * layout is unchanged from that first pass — it was already right, and the
+ * brief for this revision was explicitly "design is ok". What changed is the
+ * content underneath it.
  *
- * Sits between EstimatorTeaser and SeoFaq: the estimator gets you a number,
- * this explains what happens after you act on it.
+ * The five steps now trace the client's own published process rather than
+ * this site's internal cross-references. Every claim maps to something Wire
+ * Ventures already states on fencing-supplier.com: what their enquiry form
+ * asks for (project, products, quantities, site location, requirements) is
+ * step 1; "expert product selection" and "custom sizes and specifications" is
+ * step 2; "strict quality control" and "reduce lead times where possible" is
+ * step 3; "competitive factory-direct pricing without unnecessary reseller
+ * mark-ups" plus their bulk/trade/export enquiry route is step 4; and their
+ * "Installation & Site Survey Request" option is step 5.
+ *
+ * Step 4 previously read "across the continental US — imperial units, US
+ * specs, US support". That framing is gone site-wide: this is a Benoni,
+ * Gauteng manufacturer quoting in rand, and the delivery step now says so.
+ *
+ * Step 5 still stops short of the reference's own "in-house crew, never
+ * subcontractors" line — businessguide.md §"Do they install or repair?"
+ * confirms that Guard Master installs, but not by which mechanism, so the
+ * copy claims only the confirmed part.
+ *
+ * Sits between BuiltFor and FactoryDirect: who we protect, how the work
+ * actually runs, then who is doing it.
  *
  * Static-first: the five steps are a real, always-scrollable horizontal
  * strip (same native scroll-snap technique as ProjectsShowcase) — nothing
@@ -45,33 +55,33 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    id: 'estimate',
-    title: 'Run The Numbers',
-    body: 'Configure your length, finish and toppings in the instant estimator — the same arithmetic the full estimate runs, with a bill of materials and price range in minutes.',
-    why: 'Every quote traces back to real per-panel math, not a guess a site visit later overturns.',
+    id: 'scope',
+    title: 'Scope The Site',
+    body: 'Send us the project — products, quantities, site location and any specific requirements — or run your perimeter length through the estimator yourself for a bill of materials in minutes.',
+    why: 'The quote is built on your actual run and site conditions, not a per-metre rate applied blind.',
   },
   {
     id: 'specify',
-    title: 'Lock In The Spec',
-    body: 'Confirm your finish tier — Plain Galvanised through Plascoat — plus any spike or razor topping and gate count, before a single panel is cut.',
-    why: 'Finish and topping are the two things site conditions actually change — get them right on paper, not after manufacturing starts.',
+    title: 'Specify The System',
+    body: 'Aperture, panel height, wire size and finish, plus posts, fixators, gates and toppings — selected across the full range, with custom sizes and specifications where the standard range does not fit.',
+    why: 'Every component is chosen to work with the ones either side of it, so nothing has to be made to fit on site.',
   },
   {
     id: 'manufacture',
-    title: 'Built In-House',
-    body: "Post, panel, fixture and cap are manufactured together, under one ISO-certified roof — not assembled from a reseller's mixed-mill parts.",
-    why: 'One manufacturer, one spec, start to finish — nothing stitched together at the last mile.',
+    title: 'Manufactured In-House',
+    body: 'Panels, posts, fixings and razor wire are made on our own line in Benoni under strict quality control — not assembled from a reseller’s mixed-mill parts.',
+    why: 'One manufacturer, one spec, start to finish — and shorter lead times wherever we can hold them.',
   },
   {
-    id: 'ship',
-    title: 'Shipped Direct',
-    body: 'Your order ships straight from the manufacturer to your site, across the continental US — imperial units, US specs, US support.',
-    why: 'No overseas import sitting in a customs queue, and no reseller markup in between.',
+    id: 'deliver',
+    title: 'Factory-Direct Delivery',
+    body: 'Your order leaves the Benoni factory for your site — or for the port, on bulk, trade and export orders — at factory-direct pricing.',
+    why: 'You pay the manufacturer’s price, with no reseller mark-up stacked on top of it.',
   },
   {
     id: 'install',
-    title: 'Installed On Site',
-    body: 'Guard Master installs your system on site. Prefer your own contractor instead? Every system still ships with full installation guidance and our team’s support through the build.',
+    title: 'Survey & Installation',
+    body: 'Book a site survey and our team installs the system. Prefer your own contractor? Every system still ships with full installation guidance and our technical support through the build.',
     why: "You're not left holding a pallet of panels with no one to call once it lands.",
   },
 ];
@@ -97,8 +107,7 @@ const STEPS: Step[] = [
         You Spec It. <span class="text-gm-red">We Take It From There.</span>
       </h2>
       <p class="text-gm-grey-300 mt-6 max-w-xl text-base leading-relaxed">
-        Once your estimate's confirmed, here's exactly what happens between your spec and a standing
-        fence.
+        From first enquiry to a standing fence, here's exactly what happens — and who does it.
       </p>
     </div>
   </div>
@@ -168,10 +177,10 @@ const STEPS: Step[] = [
         {CTA.label}
       </a>
       <a
-        href="#faq"
+        href="#contact"
         class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
       >
-        Installation FAQ
+        Talk To Our Team
       </a>
     </div>
   </div>

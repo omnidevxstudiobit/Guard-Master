@@ -35,3 +35,10 @@ pnpm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Client's raw photography drop — 942 MB of originals, including 190 HEIC and
+# 7 DNG files nothing in this toolchain can decode. The site ships the webp
+# variants generated from it into public/images/products/, which are committed;
+# the originals live wherever the client keeps them. Re-run `npm run images`
+# with the folder present to regenerate.
+Products 2026/

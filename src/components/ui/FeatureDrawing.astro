@@ -1,0 +1,578 @@
+---
+/**
+ * The three Clear View arguments, drawn — anti-cut, anti-climb, CCTV.
+ *
+ * The reference these follow uses three photographs in circles: bolt croppers
+ * on a panel, a hand splayed against one, a camera behind one. Photographs make
+ * that argument by asserting it. A drawing can make it by *showing* it, because
+ * a drawing can move: the jaws here actually close and actually fail, the hand
+ * actually presses and actually stops, the camera's cone actually crosses the
+ * mesh without being interrupted. That is the whole reason these are drawn and
+ * animated rather than shot — the motion is the argument, not decoration on top
+ * of one.
+ *
+ * **The mesh is at a true ratio.** Horizontal wires sit at an 8-unit pitch,
+ * verticals at 48 — exactly 6:1, which is 76.2 ÷ 12.7. Draw it at 3:1 and
+ * you've drawn a climbable fence and the medallion is arguing for a product
+ * that isn't this one. The red cell picked out in each drawing is one real
+ * aperture of that grid (x 22→70, y 100→108), not a rectangle placed where a
+ * cell looks about right.
+ *
+ * **Solid objects occlude.** The cutter, the hand and the camera are filled
+ * with the section's paper colour, so they pass in front of the mesh the way a
+ * real object would instead of letting wires show through them. Because they're
+ * filled, they don't stroke-draw on entry — a filled shape drawn by dashoffset
+ * appears as a blob that then gets an outline. They pop in over the drawn mesh
+ * instead, which is also the order you'd build the picture in by hand.
+ *
+ * **Static-first, same rule as everywhere else.** Default CSS renders the
+ * finished, still drawing. The script adds `is-armed`, which is what *hides*
+ * things ready to animate, and `is-in` on scroll. So no-JS and
+ * `prefers-reduced-motion` both get a complete drawing with no motion, and a
+ * script that fails to load can never leave an empty circle. The looping
+ * behaviours are declared only under `.is-armed.is-in`, so they can't start
+ * before the drawing has been seen.
+ */
+
+interface Props {
+  variant: 'anti-cut' | 'anti-climb' | 'cctv';
+  class?: string;
+}
+
+const { variant, class: className } = Astro.props;
+
+/* One clip id per variant. Three variants render once each per section, so the
+   variant name is already unique in the document; a shared literal id would
+   have every circle clipped by whichever one parsed last. */
+const clipId = `fd-clip-${variant}`;
+
+/* ---------- the mesh, shared by all three ----------
+   8-unit horizontal pitch against a 48-unit vertical pitch — a true 6:1, which
+   is the 358 aperture (76.2 × 12.7 mm) at drawing scale. */
+const H_PITCH = 8;
+const V_PITCH = 48;
+const meshRows = Array.from({ length: 21 }, (_, i) => 20 + i * H_PITCH);
+const meshCols = Array.from({ length: 4 }, (_, i) => 22 + i * V_PITCH);
+
+/**
+ * The one aperture picked out, per variant — always a real cell of the grid
+ * above (its corners are on drawn wires), placed where that drawing's argument
+ * actually happens: beside the jaws that can't enter it, in front of the
+ * fingertip that can't enter it, and on the sightline the camera passes
+ * straight through it.
+ */
+const CELLS: Record<Props['variant'], { x: number; y: number } | null> = {
+  'anti-cut': { x: 22, y: 100 },
+  'anti-climb': { x: 22, y: 100 },
+  /* Nothing for the camera. A cone spreading from a point is narrow near its
+     apex, so a 6:1 horizontal cell placed anywhere in it straddles an edge and
+     reads as a stray bar rather than as an aperture being seen through. The
+     beam crossing the mesh uninterrupted is the claim; the target on the far
+     side is the red mark. */
+  cctv: null,
+};
+const cell = CELLS[variant];
+const CELL = cell ? { ...cell, w: V_PITCH, h: H_PITCH } : null;
+
+/* ---------- decorative ring ----------
+   Two arcs with gaps at the sides, matching the reference's ring. Endpoints are
+   on r = 95 at 195°/345° and 15°/165°, so the four gaps are symmetrical. */
+const RING_TOP = 'M8.2 75.4 A95 95 0 0 1 191.8 75.4';
+const RING_BOTTOM = 'M191.8 124.6 A95 95 0 0 1 8.2 124.6';
+---
+
+<div data-feature-drawing class:list={['fd', `fd-${variant}`, className]}>
+  {
+    /* Decorative: the caption directly beneath each medallion states the same
+      thing in words, so announcing the drawing as well would say it twice. */
+  }
+  <svg viewBox="0 0 200 200" class="h-full w-full" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id={clipId}>
+        <circle cx="100" cy="100" r="84"></circle>
+      </clipPath>
+    </defs>
+
+    {/* ring */}
+    <g class="fd-ring">
+      <path class="fd-draw fd-arc" pathLength="100" style="--d:0s" d={RING_TOP}></path>
+      <path class="fd-draw fd-arc" pathLength="100" style="--d:0.08s" d={RING_BOTTOM}></path>
+    </g>
+
+    <g clip-path={`url(#${clipId})`}>
+      {/* mesh */}
+      {
+        meshRows.map((y, i) => (
+          <line
+            class="fd-draw fd-wire"
+            pathLength="100"
+            style={`--d:${(0.12 + i * 0.014).toFixed(3)}s`}
+            x1="6"
+            y1={y}
+            x2="194"
+            y2={y}
+          />
+        ))
+      }
+      {
+        meshCols.map((x, i) => (
+          <line
+            class="fd-draw fd-mid"
+            pathLength="100"
+            style={`--d:${(0.18 + i * 0.06).toFixed(2)}s`}
+            x1={x}
+            y1="6"
+            x2={x}
+            y2="194"
+          />
+        ))
+      }
+
+      {
+        CELL && (
+          <rect
+            class="fd-draw fd-cell"
+            pathLength="100"
+            style="--d:0.5s"
+            x={CELL.x}
+            y={CELL.y}
+            width={CELL.w}
+            height={CELL.h}
+          />
+        )
+      }
+
+      {
+        variant === 'anti-cut' && (
+          <g class="fd-pop" style="--d:0.62s">
+            {/* Bolt cropper, closing on the panel face and finding nothing to
+                bite. Each jaw is a straight cutting edge with a heavy curved
+                back — the shape that makes it read as a tool rather than a
+                blade — pivoting about the rivet at (170, 100). An earlier pass
+                drew them as two thin symmetrical lens shapes, which read as a
+                leaf. */}
+            <g class="fd-jaw fd-jaw--up">
+              {/* Every vertex is inside the r=84 clip. An earlier pass ran the
+                  jaws out to x=200 so the tool would read as continuing
+                  off-frame; the clip cut the top and right edges off instead
+                  and each jaw stopped being a closed shape, reading as an open
+                  V against the white. */}
+              <path class="fd-tool" d="M76 94 L158 96 L172 88 L168 62 L118 54 L86 72 Z" />
+              <path class="fd-notch" d="M92 94 L102 88 L112 94" />
+              <path class="fd-handle" d="M168 82 L198 68" />
+            </g>
+            <g class="fd-jaw fd-jaw--down">
+              <path class="fd-tool" d="M76 106 L158 104 L172 112 L168 138 L118 146 L86 128 Z" />
+              <path class="fd-notch" d="M92 106 L102 112 L112 106" />
+              <path class="fd-handle" d="M168 118 L198 132" />
+            </g>
+            <circle class="fd-rivet" cx="166" cy="100" r="6" />
+
+            {/* the clash */}
+            <g class="fd-impact">
+              <path class="fd-spark" d="M72 100 L58 100" />
+              <path class="fd-spark" d="M74 92 L64 83" />
+              <path class="fd-spark" d="M74 108 L64 117" />
+            </g>
+          </g>
+        )
+      }
+
+      {
+        variant === 'anti-climb' && (
+          <g class="fd-pop" style="--d:0.62s">
+            {/* A hand flat on the panel. Fingers first, then the thumb, then
+                the palm over the top of both — the palm's paper fill is what
+                hides the finger stems, so they read as emerging from it. */}
+            {/* Fingers of four different lengths — equal-length capsules read
+                as a mitten. The middle finger is the longest and its tip lines
+                up with the called-out aperture, so the thing it cannot enter is
+                directly in front of it. */}
+            <g class="fd-hand">
+              <rect class="fd-tool" x="84" y="74" width="91" height="17" rx="8.5" />
+              <rect class="fd-tool" x="74" y="96" width="101" height="17" rx="8.5" />
+              <rect class="fd-tool" x="80" y="118" width="95" height="17" rx="8.5" />
+              <rect class="fd-tool" x="96" y="136" width="79" height="15" rx="7.5" />
+              <rect
+                class="fd-tool"
+                x="110"
+                y="150"
+                width="44"
+                height="17"
+                rx="8.5"
+                transform="rotate(-12 154 158.5)"
+              />
+              <rect class="fd-tool" x="140" y="60" width="64" height="110" rx="16" />
+            </g>
+          </g>
+        )
+      }
+
+      {
+        variant === 'cctv' && (
+          <g class="fd-pop" style="--d:0.62s">
+            {/* The cone crosses the mesh and keeps going — the point of the
+                product. It pans; the target sits outside the panning group so
+                the cone sweeps across it rather than carrying it along. */}
+            <g class="fd-cone">
+              <path class="fd-beam" d="M98 64 L188.9 134.5 L145 168.9 Z" />
+              <path class="fd-ping" d="M133.6 91.6 A45 45 0 0 1 116.4 105" />
+            </g>
+
+            {/* Target sits further down the axis than the called-out aperture,
+                so the sightline reads as camera → through the mesh → target
+                rather than three red marks piled on one spot. */}
+            <g class="fd-target">
+              <circle class="fd-accent" cx="160" cy="143" r="11" />
+              <path class="fd-accent" d="M149 143 H154 M166 143 H171 M160 132 V137 M160 149 V154" />
+            </g>
+
+            {/* Pole-mounted, not wall-mounted: a bracket arm running out to the
+                left sat almost entirely outside the clip circle and rendered as
+                a stub. A short mast stays inside it. */}
+            <path class="fd-tool-line" d="M58 30 V54" />
+            <rect class="fd-tool" x="34" y="52" width="48" height="24" rx="4" />
+            <rect class="fd-tool" x="82" y="57" width="14" height="14" rx="2" />
+            <circle class="fd-tool" cx="96" cy="64" r="5" />
+            <circle class="fd-led" cx="42" cy="58" r="2.6" />
+          </g>
+        )
+      }
+    </g>
+  </svg>
+</div>
+
+<style>
+  .fd {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Stroke defaults per class, never as a blanket `.fd rect { fill: none }`:
+     a CSS rule outranks an SVG presentation attribute, so a blanket reset
+     erases every `fill="…"` written in the markup — including fills inside
+     `<defs>`, where erasing them breaks masks and patterns outright. Anything
+     that is meant to be filled declares it here. */
+  .fd .fd-arc,
+  .fd .fd-wire,
+  .fd .fd-mid,
+  .fd .fd-accent,
+  .fd .fd-tool-line,
+  .fd .fd-spark,
+  .fd .fd-ping {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fd .fd-arc {
+    stroke: #c9ccd0;
+    stroke-width: 2;
+  }
+  .fd .fd-wire {
+    stroke: #c4c7cb;
+    stroke-width: 1.1;
+  }
+  .fd .fd-mid {
+    stroke: #8d9297;
+    stroke-width: 1.6;
+  }
+  .fd .fd-accent {
+    stroke: #e4112a;
+    stroke-width: 2;
+  }
+  .fd .fd-cell {
+    fill: rgba(228, 17, 42, 0.12);
+    stroke: #e4112a;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Solid objects. The paper fill is what makes them pass *in front of* the
+     mesh; expose it as a variable so a section on a tinted background can
+     match it instead of showing a white cut-out. */
+  .fd .fd-tool {
+    fill: var(--fd-paper, #ffffff);
+    stroke: #161616;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fd .fd-tool-line {
+    stroke: #161616;
+    stroke-width: 2.4;
+  }
+  .fd .fd-handle {
+    fill: none;
+    stroke: #161616;
+    stroke-width: 6;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  /* The cutting recess in each jaw — the detail that separates a bolt cropper
+     from a pair of shears at a glance. */
+  .fd .fd-notch {
+    fill: none;
+    stroke: #161616;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fd .fd-rivet {
+    fill: #161616;
+    stroke: none;
+  }
+  .fd .fd-spark {
+    stroke: #e4112a;
+    stroke-width: 2.4;
+  }
+  .fd .fd-beam {
+    fill: rgba(228, 17, 42, 0.12);
+    stroke: #e4112a;
+    stroke-width: 1.4;
+    stroke-dasharray: 5 5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fd .fd-ping {
+    stroke: #e4112a;
+    stroke-width: 2;
+  }
+  .fd .fd-led {
+    fill: #e4112a;
+    stroke: none;
+  }
+
+  /* --- entrance ---
+     Default is the finished drawing. `is-armed` is what hides it. */
+  .fd .fd-draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .fd.is-armed .fd-draw {
+    stroke-dashoffset: 100;
+  }
+  .fd.is-armed.is-in .fd-draw {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.7s ease-out;
+    transition-delay: var(--d, 0s);
+  }
+
+  .fd.is-armed .fd-pop {
+    opacity: 0;
+    transform: scale(0.86);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .fd.is-armed.is-in .fd-pop {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      opacity 0.35s ease-out,
+      transform 0.55s cubic-bezier(0.2, 1.3, 0.4, 1);
+    transition-delay: var(--d, 0s);
+  }
+
+  /* --- the behaviours ---
+     Declared only once a drawing is both armed and on screen, so they never
+     run for a reduced-motion or no-JS visitor and never run off-screen. All
+     rotate/translate about a point in the viewBox's own coordinates. */
+  .fd .fd-jaw,
+  .fd .fd-hand,
+  .fd .fd-cone,
+  .fd .fd-ping,
+  .fd .fd-impact {
+    transform-box: view-box;
+  }
+
+  .fd .fd-impact {
+    opacity: 0;
+  }
+
+  .fd.is-armed.is-in .fd-jaw--up {
+    transform-origin: 170px 100px;
+    animation: fd-bite-up 3.4s 1.1s ease-in-out infinite;
+  }
+  .fd.is-armed.is-in .fd-jaw--down {
+    transform-origin: 170px 100px;
+    animation: fd-bite-down 3.4s 1.1s ease-in-out infinite;
+  }
+  .fd.is-armed.is-in .fd-impact {
+    animation: fd-clash 3.4s 1.1s ease-out infinite;
+  }
+
+  /* Closes to a hair, clashes, recoils, opens again. It never reaches zero,
+     because that is the claim: the jaw cannot get around a wire. */
+  @keyframes fd-bite-up {
+    0%,
+    14% {
+      transform: rotate(4deg);
+    }
+    38% {
+      transform: rotate(-4deg);
+    }
+    46% {
+      transform: rotate(-2.6deg);
+    }
+    54% {
+      transform: rotate(-4deg);
+    }
+    78%,
+    100% {
+      transform: rotate(4deg);
+    }
+  }
+
+  @keyframes fd-bite-down {
+    0%,
+    14% {
+      transform: rotate(-4deg);
+    }
+    38% {
+      transform: rotate(4deg);
+    }
+    46% {
+      transform: rotate(2.6deg);
+    }
+    54% {
+      transform: rotate(4deg);
+    }
+    78%,
+    100% {
+      transform: rotate(-4deg);
+    }
+  }
+
+  @keyframes fd-clash {
+    0%,
+    34% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    52% {
+      opacity: 0;
+      transform: scale(1.25);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  .fd.is-armed.is-in .fd-hand {
+    animation: fd-press 4.2s 1.1s ease-in-out infinite;
+  }
+
+  @keyframes fd-press {
+    0%,
+    100% {
+      transform: translateX(22px);
+    }
+    40%,
+    68% {
+      transform: translateX(0);
+    }
+  }
+
+  .fd.is-armed.is-in .fd-cone {
+    transform-origin: 98px 64px;
+    animation: fd-pan 6s 1.1s ease-in-out infinite;
+  }
+  .fd.is-armed.is-in .fd-ping {
+    transform-origin: 98px 64px;
+    animation: fd-ping 2.4s 1.4s ease-out infinite;
+  }
+  .fd.is-armed.is-in .fd-led {
+    animation: fd-blink 1.6s 1.1s steps(1, end) infinite;
+  }
+
+  @keyframes fd-pan {
+    0%,
+    100% {
+      transform: rotate(-10deg);
+    }
+    50% {
+      transform: rotate(9deg);
+    }
+  }
+
+  @keyframes fd-ping {
+    0% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    18% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+
+  @keyframes fd-blink {
+    0%,
+    60% {
+      opacity: 1;
+    }
+    61%,
+    100% {
+      opacity: 0.15;
+    }
+  }
+
+  /* The one mark shared by all three keeps a heartbeat after everything else
+     has settled. */
+  .fd.is-armed.is-in .fd-cell {
+    animation: fd-cell-pulse 3.2s 1.6s ease-in-out infinite;
+  }
+
+  @keyframes fd-cell-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  .fd.is-armed.is-in .fd-target {
+    animation: fd-cell-pulse 3s 1.8s ease-in-out infinite;
+  }
+</style>
+
+<script>
+  const drawings = Array.from(document.querySelectorAll<HTMLElement>('[data-feature-drawing]'));
+
+  if (drawings.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    /* Arming is what hides the artwork, so it only happens once we know we can
+       also un-hide it. Everything from here down is enhancement. */
+    drawings.forEach((drawing) => drawing.classList.add('is-armed'));
+
+    /* Flush the armed state before anything can add `is-in`. Without it, a
+       drawing already in view when the script runs gets both classes inside one
+       frame, the browser never sees a pre-draw starting value, and the stroke
+       animation is skipped — the drawing just appears. */
+    void document.documentElement.offsetHeight;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.3 },
+    );
+
+    drawings.forEach((drawing) => observer.observe(drawing));
+  }
+</script>

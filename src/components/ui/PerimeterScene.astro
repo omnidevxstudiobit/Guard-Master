@@ -1,0 +1,442 @@
+---
+/**
+ * A Clear View run drawn in one-point perspective — the product page's hero
+ * scene.
+ *
+ * The homepage hero already owns the flat, daylight, head-on view of this
+ * fence (Hero.astro over /hero-fence.svg), and ProductDrawing.astro's
+ * `clear-view` variant is a flat elevation too. Repeating either one at the top
+ * of the product page would make the two pages read as the same page. So this
+ * is the same fence seen the way you actually meet it on a site: from the end
+ * of the run, looking down the line.
+ *
+ * **The perspective is constructed, not eyeballed.** Every coordinate comes out
+ * of one projective formula. For an object at distance d along the run, the
+ * screen x is
+ *
+ *     x(d) = xv + (x0 - xv) · 1/(1 + d)
+ *
+ * which is `at()` below — so posts, mesh wires and ground ticks all foreshorten
+ * against the *same* vanishing point instead of three hand-picked rhythms that
+ * disagree with each other. `fore()` is that 1/(1+d) term recovered from a
+ * screen x, and `rail()` uses it to drop any near-end height onto its rail.
+ * Because everything is derived, the red aperture cell can be built from two
+ * real vertical wires and two real horizontal wires rather than a quad drawn
+ * roughly where a cell looks like it ought to be.
+ *
+ * **Density is stylised, ratio is not.** A 2.4 m panel at a true 12.7 mm pitch
+ * is ~190 horizontal wires per bay, and a 3 m bay at 76.2 mm is ~39 verticals —
+ * tens of thousands of elements down a run this long, most of them sub-pixel.
+ * What's drawn instead keeps the thing that actually identifies 358 mesh: dense
+ * horizontals, sparse verticals, horizontals far tighter than verticals. The
+ * true 76.2 × 12.7 mm ratio is drawn to scale where it can be read — the flat
+ * drawing on the homepage, and the aperture configurator further down this
+ * page.
+ *
+ * **Motion is pure CSS, no JS at all.** Each shape carries `pathLength="100"`
+ * so one `stroke-dashoffset` keyframe drives lines, rects and paths alike, and
+ * `animation-fill-mode: both` holds the pre-draw state through the delay. The
+ * run builds from the near post outward, which is the direction the eye is
+ * already travelling. Nothing here depends on GSAP or an observer: this scene
+ * is above the fold, so there is nothing to wait for, and a script that never
+ * loads can't leave it blank. Under `prefers-reduced-motion` the animations are
+ * dropped and the default `stroke-dashoffset: 0` renders the finished drawing.
+ */
+
+interface Props {
+  /** Text alternative — this is the only depiction of the product above the fold. */
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+
+/* ---------- the perspective ---------- */
+
+/** Vanishing point. Off-centre right, so the run reads as going *away*. */
+const VP = { x: 1244, y: 268 };
+/** The near end of the run, off-canvas left at full height. */
+const NEAR = { x: -70, top: 88, bottom: 566 };
+const SPAN = VP.x - NEAR.x;
+
+const r2 = (v: number): number => Math.round(v * 100) / 100;
+/** Screen x of the n-th equally spaced object along the run; n = 0 is the near end. */
+const at = (n: number, step: number): number => VP.x - SPAN / (1 + n * step);
+/** Foreshortening at a screen x: 1 at the near end, 0 at the vanishing point. */
+const fore = (x: number): number => (VP.x - x) / SPAN;
+/** Where the rail through near-end height `y0` sits at screen x. */
+const rail = (y0: number, x: number): number => VP.y + (y0 - VP.y) * fore(x);
+
+const POST_STEP = 0.42;
+/** Mesh stops short of the vanishing point — 26 wires meeting at a point is a blot.
+ *  It ends *on* the last post, so the post covers the cut; the rails carry on
+ *  past it, which reads as the line continuing rather than the drawing stopping. */
+const MESH_END = at(12, POST_STEP);
+const RUN_END = at(17, POST_STEP);
+
+/* ---------- posts ---------- */
+const posts = Array.from({ length: 13 }, (_, n) => at(n, POST_STEP))
+  .filter((x) => x > -30 && x <= MESH_END)
+  .map((x, i) => {
+    const f = fore(x);
+    return {
+      x: r2(x),
+      w: r2(26 * f),
+      capW: r2(38 * f),
+      capH: r2(10 * f),
+      top: r2(rail(NEAR.top, x) - 16 * f),
+      bottom: r2(rail(NEAR.bottom, x)),
+      delay: r2(0.06 + i * 0.07),
+    };
+  });
+
+/* ---------- mesh ---------- */
+/** Horizontal wires: horizontal in 3D, so every one converges on the VP. */
+const H_COUNT = 26;
+const hWires = Array.from({ length: H_COUNT }, (_, i) => {
+  const y0 = NEAR.top + ((NEAR.bottom - NEAR.top) * i) / (H_COUNT - 1);
+  return { y0, y1: r2(rail(y0, MESH_END)), delay: r2(0.2 + i * 0.018) };
+});
+
+/** Vertical wires: vertical in 3D, so they stay vertical and only foreshorten. */
+const V_STEP = 0.07;
+const vWires: { x: number; top: number; bottom: number; delay: number }[] = [];
+for (let n = 1; n < 120; n += 1) {
+  const x = at(n, V_STEP);
+  if (x > MESH_END) break;
+  /* Stop once the wires are closer together than a stroke width — past that
+     they stop reading as wires and start reading as a smudge. */
+  if (at(n + 1, V_STEP) - x < 5) break;
+  if (x < 4) continue;
+  vWires.push({
+    x: r2(x),
+    top: r2(rail(NEAR.top, x)),
+    bottom: r2(rail(NEAR.bottom, x)),
+    delay: r2(0.26 + n * 0.011),
+  });
+}
+
+/* ---------- ground ---------- */
+const ticks: { d: string; delay: number }[] = [];
+for (let n = 0; n < 60; n += 1) {
+  const x = at(n, 0.16);
+  if (x > MESH_END) break;
+  if (at(n + 1, 0.16) - x < 9) break;
+  if (x < -20) continue;
+  const f = fore(x);
+  const y = rail(NEAR.bottom, x);
+  ticks.push({
+    d: `M${r2(x)} ${r2(y)} L${r2(x - 30 * f)} ${r2(y + 17 * f)}`,
+    delay: r2(0.52 + n * 0.02),
+  });
+}
+
+/* ---------- the one red mark ----------
+   Built from two real vertical wires and two real horizontal wires, so it is
+   an actual cell of the mesh above rather than a quad placed by eye. */
+const cellI = Math.max(
+  0,
+  vWires.findIndex((v) => v.x > 250),
+);
+const cellA = vWires[cellI];
+const cellB = vWires[cellI + 1];
+const rowA = hWires[9].y0;
+const rowB = hWires[11].y0;
+const cellPath =
+  cellA && cellB
+    ? `M${cellA.x} ${r2(rail(rowA, cellA.x))} L${cellB.x} ${r2(rail(rowA, cellB.x))} ` +
+      `L${cellB.x} ${r2(rail(rowB, cellB.x))} L${cellA.x} ${r2(rail(rowB, cellA.x))} Z`
+    : '';
+const node = cellA ? { x: cellA.x, y: r2(rail(rowA, cellA.x)) } : null;
+---
+
+<div class:list={['hs', className]} role="img" aria-label={label}>
+  <svg
+    viewBox="0 0 1600 620"
+    preserveAspectRatio="xMinYMax slice"
+    class="h-full w-full"
+    aria-hidden="true"
+  >
+    <defs>
+      <pattern id="hs-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+        <path d="M64 0 H0 V64" fill="none" stroke="#ffffff" stroke-width="1"></path>
+      </pattern>
+      <linearGradient id="hs-grid-fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.16"></stop>
+        <stop offset="0.62" stop-color="#fff" stop-opacity="0.05"></stop>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+      </linearGradient>
+      <mask id="hs-grid-mask">
+        <rect x="0" y="0" width="1600" height="620" fill="url(#hs-grid-fade)"></rect>
+      </mask>
+
+      {/* The mesh dissolves toward the vanishing point instead of clumping. */}
+      <linearGradient id="hs-mesh-fade" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#fff" stop-opacity="1"></stop>
+        <stop offset="0.52" stop-color="#fff" stop-opacity="0.85"></stop>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+      </linearGradient>
+      <mask id="hs-mesh-mask">
+        <rect x="0" y="0" width={MESH_END} height="620" fill="url(#hs-mesh-fade)"></rect>
+      </mask>
+
+      <linearGradient id="hs-sweep-grad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#e4112a" stop-opacity="0"></stop>
+        <stop offset="0.78" stop-color="#e4112a" stop-opacity="0.5"></stop>
+        <stop offset="1" stop-color="#e4112a" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+
+    {/* drafting paper */}
+    <rect
+      class="hs-grid"
+      x="0"
+      y="0"
+      width="1600"
+      height="620"
+      fill="url(#hs-grid)"
+      mask="url(#hs-grid-mask)"></rect>
+
+    {/* horizon — the line every rail below converges onto */}
+    <line
+      class="hs-draw hs-horizon"
+      pathLength="100"
+      style="--d:0s"
+      x1="0"
+      y1={VP.y}
+      x2="1600"
+      y2={VP.y}></line>
+
+    {/* mesh */}
+    <g mask="url(#hs-mesh-mask)">
+      {
+        hWires.map((w) => (
+          <line
+            class="hs-draw hs-wire"
+            pathLength="100"
+            style={`--d:${w.delay}s`}
+            x1={NEAR.x}
+            y1={w.y0}
+            x2={MESH_END}
+            y2={w.y1}
+          />
+        ))
+      }
+      {
+        vWires.map((w) => (
+          <line
+            class="hs-draw hs-mid"
+            pathLength="100"
+            style={`--d:${w.delay}s`}
+            x1={w.x}
+            y1={w.top}
+            x2={w.x}
+            y2={w.bottom}
+          />
+        ))
+      }
+    </g>
+
+    {/* rails, top and bottom — drawn over the mesh so the panel edge reads */}
+    <line
+      class="hs-draw hs-rail"
+      pathLength="100"
+      style="--d:0.16s"
+      x1={NEAR.x}
+      y1={NEAR.top}
+      x2={r2(RUN_END)}
+      y2={r2(rail(NEAR.top, RUN_END))}></line>
+    <line
+      class="hs-draw hs-rail"
+      pathLength="100"
+      style="--d:0.2s"
+      x1={NEAR.x}
+      y1={NEAR.bottom}
+      x2={r2(RUN_END)}
+      y2={r2(rail(NEAR.bottom, RUN_END))}></line>
+
+    {/* ground */}
+    {
+      ticks.map((t) => (
+        <path class="hs-draw hs-ground" pathLength="100" style={`--d:${t.delay}s`} d={t.d} />
+      ))
+    }
+
+    {/* posts, near to far */}
+    {
+      posts.map((p) => (
+        <g>
+          <rect
+            class="hs-draw hs-post"
+            pathLength="100"
+            style={`--d:${p.delay}s`}
+            x={r2(p.x - p.w / 2)}
+            y={p.top}
+            width={p.w}
+            height={r2(p.bottom - p.top)}
+          />
+          <rect
+            class="hs-draw hs-post"
+            pathLength="100"
+            style={`--d:${r2(p.delay + 0.04)}s`}
+            x={r2(p.x - p.capW / 2)}
+            y={r2(p.top - p.capH)}
+            width={p.capW}
+            height={p.capH}
+          />
+        </g>
+      ))
+    }
+
+    {/* one aperture, called out */}
+    {cellPath && <path class="hs-draw hs-accent" pathLength="100" style="--d:1.15s" d={cellPath} />}
+    {node && <circle class="hs-node" cx={node.x} cy={node.y} r="5" />}
+
+    {/* a slow survey sweep down the run */}
+    <g class="hs-sweep">
+      <rect x="-420" y="0" width="420" height="620" fill="url(#hs-sweep-grad)"></rect>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .hs {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Stroke defaults are listed per class, never as a blanket
+     `.hs rect, .hs path { fill: none }`.
+     A blanket rule is still a CSS rule, and any CSS rule outranks an SVG
+     presentation attribute — so it silently erased `fill="url(#hs-grid)"` on
+     the drafting paper, `fill="url(#hs-sweep-grad)"` on the survey sweep, and,
+     fatally, the `fill="url(#…-fade)"` on the two `<rect>`s *inside* the
+     `<mask>` elements. A mask that paints nothing masks everything away, which
+     took the entire mesh with it. Keep intentional fills in CSS here, and keep
+     the reset off anything living in `<defs>`. */
+  .hs .hs-horizon,
+  .hs .hs-wire,
+  .hs .hs-mid,
+  .hs .hs-rail,
+  .hs .hs-post,
+  .hs .hs-ground {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hs .hs-grid {
+    fill: url(#hs-grid);
+    stroke: none;
+  }
+  .hs .hs-horizon {
+    stroke: #ffffff;
+    stroke-width: 1;
+    opacity: 0.18;
+  }
+  .hs .hs-wire {
+    stroke: #6f7378;
+    stroke-width: 1;
+  }
+  .hs .hs-mid {
+    stroke: #9aa0a6;
+    stroke-width: 1.1;
+  }
+  .hs .hs-rail {
+    stroke: #d7dade;
+    stroke-width: 1.6;
+  }
+  .hs .hs-post {
+    stroke: #ffffff;
+    stroke-width: 1.8;
+  }
+  .hs .hs-ground {
+    stroke: #55595e;
+    stroke-width: 1.2;
+  }
+  .hs .hs-accent {
+    fill: rgba(228, 17, 42, 0.14);
+    stroke: #e4112a;
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .hs .hs-node {
+    fill: #e4112a;
+    stroke: none;
+  }
+
+  /* --- motion ---
+     CSS only. `both` holds the pre-draw state through the delay, so nothing
+     needs arming and nothing needs JS; drop the animation (reduced motion) and
+     the default `stroke-dashoffset: 0` is already the finished drawing. */
+  .hs .hs-draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    animation: hs-draw 0.85s var(--d, 0s) both cubic-bezier(0.22, 0.7, 0.2, 1);
+  }
+
+  @keyframes hs-draw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .hs .hs-node {
+    animation:
+      hs-node-in 0.4s 1.35s both ease-out,
+      hs-pulse 2.8s 1.9s infinite ease-in-out;
+  }
+
+  @keyframes hs-node-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hs-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      r: 5;
+    }
+    50% {
+      opacity: 0.45;
+      r: 8;
+    }
+  }
+
+  /* A survey sweep running down the line — the only perpetual motion here,
+     kept slow and low-contrast because copy sits on top of it. */
+  .hs .hs-sweep {
+    animation: hs-sweep 9s 1.6s linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes hs-sweep {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(2100px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hs .hs-draw,
+    .hs .hs-node,
+    .hs .hs-sweep {
+      animation: none;
+    }
+    .hs .hs-sweep {
+      opacity: 0;
+    }
+  }
+</style>

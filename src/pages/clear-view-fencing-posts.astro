@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import PostPricing from '@components/sections/PostPricing.astro';
 import { CTA } from '@data/nav';
 
 /**
@@ -23,27 +24,31 @@ import { CTA } from '@data/nav';
  * build, so the text carries the content on narrower viewports.
  */
 
-const LENGTHS = [
-  { us: '6 ft', metric: '1.8 m' },
-  { us: '7 ft', metric: '2.1 m' },
-  { us: '8 ft', metric: '2.4 m' },
-  { us: '10 ft', metric: '3.0 m' },
-  { us: '12 ft', metric: '3.6 m' },
-];
-
 const FEATURES = [
-  { name: 'Reinforcing Rib', note: 'A fold-over rib profile down the shaft — stiffness without extra wall thickness.' },
-  { name: 'Anti-Tamper Protection Lip', note: 'A folded edge near the top of the shaft that resists prying at the fixture line.' },
-  { name: 'Anti-Push System Lip', note: 'A second folded edge lower down, resisting lateral force against the panel face.' },
-  { name: 'Mesh Securing Teeth', note: 'Formed into the post edge at regular intervals — the panel locks in without a separate bracket at every point.' },
-  { name: 'Clamp Securing Slots', note: 'Adjustable slots for the fixture clamps, so panel height can be fine-tuned on site.' },
-  { name: 'Solar Post Cap', note: 'Front and back lights, standard on the accessory cap — see Accessories for the full spec.' },
-];
-
-const SPEC_ROWS = [
-  { label: 'Center-to-center spacing', value: '3,000 mm (~9.8 ft)' },
-  { label: 'Embedded height (600 mm below grade)', value: '2,400 / 2,700 / 3,000 / 3,600 mm' },
-  { label: 'Default finish', value: 'Hot-Dip Galvanised' },
+  {
+    name: 'Reinforcing Rib',
+    note: 'A fold-over rib profile down the shaft — stiffness without extra wall thickness.',
+  },
+  {
+    name: 'Anti-Tamper Protection Lip',
+    note: 'A folded edge near the top of the shaft that resists prying at the fixture line.',
+  },
+  {
+    name: 'Anti-Push System Lip',
+    note: 'A second folded edge lower down, resisting lateral force against the panel face.',
+  },
+  {
+    name: 'Mesh Securing Teeth',
+    note: 'Formed into the post edge at regular intervals — the panel locks in without a separate bracket at every point.',
+  },
+  {
+    name: 'Clamp Securing Slots',
+    note: 'Adjustable slots for the fixture clamps, so panel height can be fine-tuned on site.',
+  },
+  {
+    name: 'Solar Post Cap',
+    note: 'Front and back lights, standard on the accessory cap — see Accessories for the full spec.',
+  },
 ];
 ---
 
@@ -91,52 +96,7 @@ const SPEC_ROWS = [
     </div>
   </section>
 
-  <!-- Lengths + spacing -->
-  <section class="bg-gm-black text-gm-white py-16 sm:py-20">
-    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Sizing</p>
-      <h2
-        class="font-display text-gm-white mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
-      >
-        Six Lengths. One Spacing.
-      </h2>
-
-      <div class="mt-10 grid gap-x-14 gap-y-10 lg:grid-cols-[1fr_1fr]">
-        <div>
-          <p class="text-gm-grey-400 font-mono text-[11px] tracking-[0.18em] uppercase">
-            Post Lengths
-          </p>
-          <div class="border-gm-grey-800 mt-4 border-t">
-            {
-              LENGTHS.map((l) => (
-                <div class="border-gm-grey-800 flex items-baseline justify-between border-b py-3.5">
-                  <span class="text-gm-white text-sm font-bold">{l.us}</span>
-                  <span class="text-gm-grey-500 font-mono text-[12px]">{l.metric}</span>
-                </div>
-              ))
-            }
-          </div>
-          <p class="text-gm-grey-500 mt-4 text-[13px] leading-relaxed">
-            Post height auto-suggests from your panel height in the estimator — you're never
-            guessing which length pairs with which panel.
-          </p>
-        </div>
-
-        <div class="border-gm-grey-800 border-t pt-4 lg:border-t-0 lg:pt-0">
-          {
-            SPEC_ROWS.map((row) => (
-              <div class="border-gm-grey-800 flex items-baseline justify-between gap-6 border-b py-4">
-                <span class="text-gm-grey-400 font-mono text-[11px] tracking-[0.14em] uppercase">
-                  {row.label}
-                </span>
-                <span class="text-gm-white text-right text-sm font-bold">{row.value}</span>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+  <PostPricing />
 
   <!-- Feature breakdown -->
   <section class="bg-gm-white text-gm-black py-16 sm:py-20">
@@ -151,8 +111,8 @@ const SPEC_ROWS = [
           Every Feature, Named
         </h2>
         <p class="text-gm-grey-600 mx-auto mt-6 max-w-xl text-base leading-relaxed">
-          A post is a folded steel profile, not a plain tube — every fold does a specific job.
-          These are the real features on the Guard Master post, from our own spec sheet.
+          A post is a folded steel profile, not a plain tube — every fold does a specific job. These
+          are the real features on the Guard Master post, from our own spec sheet.
         </p>
       </div>
 
@@ -164,7 +124,10 @@ const SPEC_ROWS = [
            ratio compresses enough at narrower widths that seven labels
            would crowd their own leader lines, and the FEATURES grid below
            already carries the full content on its own. -->
-      <div data-post-cutaway class="relative mx-auto mt-14 hidden aspect-[640/460] w-full max-w-4xl lg:mt-16 lg:block">
+      <div
+        data-post-cutaway
+        class="relative mx-auto mt-14 hidden aspect-[640/460] w-full max-w-4xl lg:mt-16 lg:block"
+      >
         <svg
           viewBox="0 0 640 460"
           class="h-full w-full"
@@ -172,12 +135,27 @@ const SPEC_ROWS = [
           aria-label="Cutaway of a Clear View post showing the reinforcing rib, anti-tamper and anti-push lips, mesh securing teeth, clamp securing slots, solar cap, and embedment depth below grade"
         >
           <!-- cap + solar lights -->
-          <rect x="295" y="20" width="50" height="26" rx="3" fill="#f7f7f7" stroke="#161616" stroke-width="2"></rect>
+          <rect
+            x="295"
+            y="20"
+            width="50"
+            height="26"
+            rx="3"
+            fill="#f7f7f7"
+            stroke="#161616"
+            stroke-width="2"></rect>
           <circle cx="309" cy="33" r="2.5" fill="#e4112a"></circle>
           <circle cx="331" cy="33" r="2.5" fill="#e4112a"></circle>
 
           <!-- shaft, above grade -->
-          <rect x="305" y="46" width="30" height="290" fill="#f7f7f7" stroke="#161616" stroke-width="2"></rect>
+          <rect
+            x="305"
+            y="46"
+            width="30"
+            height="290"
+            fill="#f7f7f7"
+            stroke="#161616"
+            stroke-width="2"></rect>
 
           <!-- reinforcing rib + fold-over rib -->
           <line x1="320" y1="55" x2="320" y2="325" stroke="#9a9a9a" stroke-width="1.5"></line>
@@ -191,22 +169,73 @@ const SPEC_ROWS = [
           }
 
           <!-- clamp securing slot -->
-          <rect x="308" y="175" width="16" height="8" rx="1" fill="none" stroke="#161616" stroke-width="1.2"></rect>
+          <rect
+            x="308"
+            y="175"
+            width="16"
+            height="8"
+            rx="1"
+            fill="none"
+            stroke="#161616"
+            stroke-width="1.2"></rect>
 
           <!-- anti-tamper lip (upper) + anti-push lip (lower), left edge -->
           <path d="M305 74 H296 V84 H305" fill="none" stroke="#161616" stroke-width="1.6"></path>
           <path d="M305 244 H296 V254 H305" fill="none" stroke="#161616" stroke-width="1.6"></path>
 
           <!-- leader lines, each independently scroll-drawn -->
-          <path class="draw" pathLength="100" d="M331 33 H420" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
-          <path class="draw" pathLength="100" d="M296 79 H60" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
-          <path class="draw" pathLength="100" d="M316 150 H440" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
-          <path class="draw" pathLength="100" d="M308 179 H60" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
-          <path class="draw" pathLength="100" d="M296 249 H440" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
-          <path class="draw" pathLength="100" d="M338 220 H60" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M331 33 H420"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M296 79 H60"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M316 150 H440"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M308 179 H60"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M296 249 H440"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M338 220 H60"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
 
           <!-- grade line + soil hatching -->
-          <line x1="40" y1="340" x2="600" y2="340" stroke="#161616" stroke-width="2" stroke-dasharray="7 4"></line>
+          <line
+            x1="40"
+            y1="340"
+            x2="600"
+            y2="340"
+            stroke="#161616"
+            stroke-width="2"
+            stroke-dasharray="7 4"></line>
           {
             [60, 100, 140, 180, 220, 260, 300, 340, 380, 420, 460, 500, 540, 580].map((x) => (
               <line x1={x} y1="344" x2={x - 10} y2="357" stroke="#4a4a4a" stroke-width="1.2" />
@@ -214,26 +243,51 @@ const SPEC_ROWS = [
           }
 
           <!-- buried portion of the shaft — dashed, since it's hidden below grade -->
-          <rect x="305" y="336" width="30" height="58" fill="#eeeeee" stroke="#8a8a8a" stroke-width="1.6" stroke-dasharray="4 3"></rect>
+          <rect
+            x="305"
+            y="336"
+            width="30"
+            height="58"
+            fill="#eeeeee"
+            stroke="#8a8a8a"
+            stroke-width="1.6"
+            stroke-dasharray="4 3"></rect>
 
           <!-- embedment dimension bracket + leader -->
-          <path d="M408 340 H420 M408 394 H420" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
+          <path d="M408 340 H420 M408 394 H420" fill="none" stroke="#9a9a9a" stroke-width="1.4"
+          ></path>
           <path d="M420 340 V394" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
-          <path class="draw" pathLength="100" d="M420 367 H480" fill="none" stroke="#c9c9c9" stroke-width="1"></path>
+          <path
+            class="draw"
+            pathLength="100"
+            d="M420 367 H480"
+            fill="none"
+            stroke="#c9c9c9"
+            stroke-width="1"></path>
         </svg>
 
         {
           [
             { top: '6.2%', left: '65.6%', align: 'left', text: 'Solar Cap · Front & Back Lights' },
             { top: '14.5%', left: '9.4%', align: 'right', text: 'Anti-Tamper Protection Lip' },
-            { top: '31%', left: '68.75%', align: 'left', text: 'Reinforcing Rib · Fold-Over Design' },
+            {
+              top: '31%',
+              left: '68.75%',
+              align: 'left',
+              text: 'Reinforcing Rib · Fold-Over Design',
+            },
             { top: '37.2%', left: '9.4%', align: 'right', text: 'Clamp Securing Slots' },
             { top: '51.7%', left: '68.75%', align: 'left', text: 'Anti-Push System Lip' },
             { top: '45.7%', left: '9.4%', align: 'right', text: 'Mesh Securing Teeth' },
-            { top: '80%', left: '75%', align: 'left', text: '600 mm (24 in) Embedment Below Grade' },
+            {
+              top: '80%',
+              left: '75%',
+              align: 'left',
+              text: '600 mm (24 in) Embedment Below Grade',
+            },
           ].map((l) => (
             <p
-              class="cutaway-label text-gm-grey-600 font-mono absolute max-w-[10rem] text-[10px] leading-tight tracking-[0.08em] uppercase"
+              class="cutaway-label text-gm-grey-600 absolute max-w-[10rem] font-mono text-[10px] leading-tight tracking-[0.08em] uppercase"
               style={`top:${l.top}; left:${l.left}; text-align:${l.align}; transform: translateY(-50%);`}
               aria-hidden="true"
             >
@@ -242,7 +296,7 @@ const SPEC_ROWS = [
           ))
         }
         <p
-          class="text-gm-grey-400 font-mono absolute text-[9px] tracking-[0.14em] uppercase"
+          class="text-gm-grey-400 absolute font-mono text-[9px] tracking-[0.14em] uppercase"
           style="left: 3%; top: 71%;"
           aria-hidden="true"
         >
@@ -250,7 +304,9 @@ const SPEC_ROWS = [
         </p>
       </div>
 
-      <div class="border-gm-grey-200 mt-12 grid gap-x-10 gap-y-10 border-t pt-10 sm:grid-cols-2 sm:gap-x-14 sm:gap-y-12 sm:pt-12 lg:grid-cols-3">
+      <div
+        class="border-gm-grey-200 mt-12 grid gap-x-10 gap-y-10 border-t pt-10 sm:grid-cols-2 sm:gap-x-14 sm:gap-y-12 sm:pt-12 lg:grid-cols-3"
+      >
         {
           FEATURES.map((f) => (
             <div>
@@ -266,8 +322,9 @@ const SPEC_ROWS = [
       <p class="text-gm-grey-500 mt-10 max-w-2xl text-sm leading-relaxed">
         Every layer of the perimeter is engineered in-house to fit the one before it — post, panel,
         fixture and cap, made together and shipped together. See how the post fits the rest of the
-        chain on the <a href="/#built-for" class="text-gm-red underline underline-offset-2">homepage's system overview</a>,
-        or configure your exact spec in the estimator.
+        chain on the <a href="/#built-for" class="text-gm-red underline underline-offset-2"
+          >homepage's system overview</a
+        >, or configure your exact spec in the estimator.
       </p>
     </div>
   </section>
@@ -368,8 +425,8 @@ const SPEC_ROWS = [
         Get The Right Post <span class="text-gm-red">On The First Try</span>
       </h2>
       <p class="text-gm-grey-300 mx-auto mt-5 max-w-lg text-base leading-relaxed">
-        The estimator auto-suggests post length and finish from your panel choice — no separate
-        spec sheet to cross-reference.
+        The estimator auto-suggests post length and finish from your panel choice — no separate spec
+        sheet to cross-reference.
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <a
@@ -441,7 +498,12 @@ const SPEC_ROWS = [
 
     draws.forEach((path, i) => {
       const pos = i * 0.9;
-      tl.fromTo(path, { strokeDashoffset: 100 }, { strokeDashoffset: 0, duration: 0.6, ease: 'none' }, pos);
+      tl.fromTo(
+        path,
+        { strokeDashoffset: 100 },
+        { strokeDashoffset: 0, duration: 0.6, ease: 'none' },
+        pos,
+      );
       const label = labels[i];
       if (label) {
         /* Opacity only — these labels already carry an inline
@@ -450,7 +512,12 @@ const SPEC_ROWS = [
            transform rather than composing with it, which would silently
            cancel that centering the moment this timeline first touches the
            label. */
-        tl.fromTo(label, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, pos + 0.2);
+        tl.fromTo(
+          label,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4, ease: 'power2.out' },
+          pos + 0.2,
+        );
       }
     });
   };

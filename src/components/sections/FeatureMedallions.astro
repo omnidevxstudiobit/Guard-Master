@@ -1,0 +1,77 @@
+---
+import FeatureDrawing from '@components/ui/FeatureDrawing.astro';
+
+/**
+ * Three circular medallions making the product's three arguments.
+ *
+ * The reference block this follows is a heading, a paragraph and three
+ * photographs in rings, captioned. The structure is kept because it works —
+ * one claim per circle, read in a glance — and the photographs are replaced
+ * with drawings that demonstrate the claim instead of illustrating it. See
+ * ui/FeatureDrawing.astro for why that swap is the point rather than a
+ * stylistic preference.
+ *
+ * Each medallion is a `<figure>` with the caption inside it, so the drawing and
+ * the sentence that explains it are one unit to a screen reader as well as to
+ * the eye. The drawings themselves are `aria-hidden` — the caption already says
+ * what they show, and announcing both would say it twice.
+ *
+ * Light section, and the section that follows it on the panels page (the
+ * aperture configurator) is dark, so designguide.md §4's alternation holds
+ * across the pair.
+ */
+
+interface Feature {
+  variant: 'anti-cut' | 'anti-climb' | 'cctv';
+  title: string;
+  body: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  /** Second half of the heading, set in the accent. */
+  titleAccent: string;
+  intro: string;
+  features: Feature[];
+}
+
+const { eyebrow, title, titleAccent, intro, features } = Astro.props;
+---
+
+<section class="bg-gm-white text-gm-black py-20 sm:py-28">
+  <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">{eyebrow}</p>
+      <h2
+        class="font-display text-gm-black mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl"
+      >
+        {title}
+        <span class="text-gm-red">{titleAccent}</span>
+      </h2>
+      <p class="text-gm-grey-600 mt-6 text-base leading-relaxed">{intro}</p>
+    </div>
+
+    <div class="mt-16 grid gap-12 sm:mt-20 sm:grid-cols-3 sm:gap-8 lg:gap-14">
+      {
+        features.map((feature) => (
+          <figure class="flex flex-col items-center text-center">
+            <div class="w-full max-w-[280px]">
+              <div class="aspect-square w-full">
+                <FeatureDrawing variant={feature.variant} />
+              </div>
+            </div>
+            <figcaption class="mt-7">
+              <p class="text-gm-black font-mono text-[13px] tracking-[0.22em] uppercase">
+                {feature.title}
+              </p>
+              <p class="text-gm-grey-600 mx-auto mt-3 max-w-[34ch] text-[14px] leading-relaxed">
+                {feature.body}
+              </p>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>

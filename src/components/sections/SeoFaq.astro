@@ -104,9 +104,7 @@ const FAQS: Faq[] = [
          below `lg`: at that width the wide aspect ratio compresses enough
          that the labels would start crowding their own leader lines, and
          the text grid below already carries the full content on its own. -->
-    <div
-      class="relative mx-auto mt-12 hidden aspect-[620/280] w-full max-w-3xl lg:mt-14 lg:block"
-    >
+    <div class="relative mx-auto mt-12 hidden aspect-[620/280] w-full max-w-3xl lg:mt-14 lg:block">
       <svg
         viewBox="0 0 620 280"
         class="h-full w-full"
@@ -122,18 +120,37 @@ const FAQS: Faq[] = [
         </defs>
 
         <!-- post + cap -->
-        <rect x="20" y="20" width="48" height="16" rx="2" fill="#f7f7f7" stroke="#161616" stroke-width="2"
-        ></rect>
+        <rect
+          x="20"
+          y="20"
+          width="48"
+          height="16"
+          rx="2"
+          fill="#f7f7f7"
+          stroke="#161616"
+          stroke-width="2"></rect>
         <rect x="34" y="36" width="20" height="200" fill="#f7f7f7" stroke="#161616" stroke-width="2"
         ></rect>
 
         <!-- panel: 5 columns × 10 rows of the real 76.2×12.7mm tile -->
-        <rect x="90" y="60" width="381" height="127" fill="url(#explainer-mesh)" stroke="#d6d6d6" stroke-width="1.5"
-        ></rect>
+        <rect
+          x="90"
+          y="60"
+          width="381"
+          height="127"
+          fill="url(#explainer-mesh)"
+          stroke="#d6d6d6"
+          stroke-width="1.5"></rect>
 
         <!-- one aperture, called out -->
-        <rect x="242.4" y="110.8" width="76.2" height="12.7" fill="rgba(228,17,42,0.07)" stroke="#e4112a" stroke-width="2"
-        ></rect>
+        <rect
+          x="242.4"
+          y="110.8"
+          width="76.2"
+          height="12.7"
+          fill="rgba(228,17,42,0.07)"
+          stroke="#e4112a"
+          stroke-width="2"></rect>
 
         <!-- weld-node leader -->
         <path d="M242.4 110.8 L 190 78" fill="none" stroke="#9a9a9a" stroke-width="1.4"></path>
@@ -145,13 +162,8 @@ const FAQS: Faq[] = [
           fill="none"
           stroke="#c9c9c9"
           stroke-width="1"
-          stroke-dasharray="3 3"
-        ></path>
-        <path
-          d="M242.4 202 V 210 H 318.6 V 202"
-          fill="none"
-          stroke="#6e6e6e"
-          stroke-width="1.4"
+          stroke-dasharray="3 3"></path>
+        <path d="M242.4 202 V 210 H 318.6 V 202" fill="none" stroke="#6e6e6e" stroke-width="1.4"
         ></path>
 
         <!-- height dimension (12.7mm) -->
@@ -160,32 +172,27 @@ const FAQS: Faq[] = [
           fill="none"
           stroke="#c9c9c9"
           stroke-width="1"
-          stroke-dasharray="3 3"
-        ></path>
-        <path
-          d="M392 110.8 H 400 V 123.5 H 392"
-          fill="none"
-          stroke="#6e6e6e"
-          stroke-width="1.4"
+          stroke-dasharray="3 3"></path>
+        <path d="M392 110.8 H 400 V 123.5 H 392" fill="none" stroke="#6e6e6e" stroke-width="1.4"
         ></path>
       </svg>
 
       <p
-        class="text-gm-grey-600 font-mono absolute text-[10px] tracking-[0.16em] uppercase"
+        class="text-gm-grey-600 absolute font-mono text-[10px] tracking-[0.16em] uppercase"
         style="left: 15%; top: 20%;"
         aria-hidden="true"
       >
         Welded node
       </p>
       <p
-        class="text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+        class="text-gm-red absolute font-mono text-[10px] font-bold tracking-[0.1em] uppercase"
         style="left: 45%; top: 79%; transform: translateX(-50%);"
         aria-hidden="true"
       >
         76.2 mm
       </p>
       <p
-        class="text-gm-red font-mono absolute text-[10px] font-bold tracking-[0.1em] uppercase"
+        class="text-gm-red absolute font-mono text-[10px] font-bold tracking-[0.1em] uppercase"
         style="left: 66%; top: 41%;"
         aria-hidden="true"
       >

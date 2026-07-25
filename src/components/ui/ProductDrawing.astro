@@ -1,0 +1,578 @@
+---
+/**
+ * Technical drawings, one per product family.
+ *
+ * The range section originally showed the client's photography — studio
+ * renders and yard shots straight out of the "Products 2026" drop. Photographs
+ * of four different products, shot by four different people in four different
+ * conditions, never sit together as one system no matter how they're cropped:
+ * one is a white-background render, one a dark macro, one a warehouse
+ * interior, one a phone snap of a yard. Drawing all four instead makes them a
+ * set, and puts them in the same language as the rest of this site — the
+ * aperture cutaway in SeoFaq, the post cutaway in SystemAssembly and the
+ * perimeter schematics on /projects are all line drawings already.
+ *
+ * **No dimensions, no annotation.** An earlier pass carried proper engineering
+ * callouts — 76.2 mm and 12.7 mm on the aperture, coil diameter and pitch on
+ * the concertina. They're gone by request: this is the homepage, where these
+ * drawings are doing an at-a-glance job, and a dimensioned drawing asks to be
+ * read instead of seen. The numbers still live where someone actually shopping
+ * will want them — the spec chips on each tile, and the product pages. Keep
+ * this file free of `<text>`; if a drawing needs explaining, the tile's copy is
+ * the place.
+ *
+ * The geometry is still drawn to the real numbers even though it no longer
+ * says so:
+ *
+ * - **clear-view** — the 358 aperture is 76.2 × 12.7 mm, a 6:1 ratio, so the
+ *   vertical wires sit at exactly 6× the horizontal wire pitch (72 and 12 user
+ *   units). That ratio *is* the product: draw it 3:1 and you have drawn a
+ *   different, climbable fence. The panel also starts exactly at the post's
+ *   outer face, so the two read as fixed together rather than as two objects
+ *   near each other.
+ * - **razor-mesh** — a 45° welded lattice. Every blade glyph and the
+ *   highlighted diamond sit on true lattice intersections, solved from the two
+ *   line families rather than eyeballed, so nothing floats between strands.
+ * - **concertina** — eight loops at a 36-unit pitch against a 56-unit loop
+ *   width. An earlier pass used ten loops at 26 against 60, which overlapped so
+ *   heavily the coil rendered as one solid tube and the individual loops — the
+ *   whole idea of a concertina — disappeared.
+ * - **temporary** — two free-standing braced panels on weighted feet, joined by
+ *   a coupler: no groundworks, which is the entire point of the product.
+ *
+ * **Motion.** Each drawing strokes itself in when it scrolls into view.
+ * `pathLength="100"` normalises every shape to the same 0–100 dash scale, so
+ * one CSS rule drives lines, rects and paths alike, with a per-element delay
+ * building the object up in assembly order — post, then mesh, then topping.
+ * The concertina additionally expands: its loops start stacked on the first one
+ * and slide out to pitch, which is what a concertina coil physically does.
+ *
+ * Static-first, like the rest of the site. With no JS the drawings render
+ * complete, because `.draw` defaults to a dashoffset of 0. The script only adds
+ * `is-armed`, which is what *hides* them ready to be drawn — so a failed script
+ * leaves finished artwork, never blank frames. Under `prefers-reduced-motion`
+ * they're never armed and the idle pulse is dropped too.
+ */
+
+interface Props {
+  variant: 'clear-view' | 'razor-mesh' | 'concertina' | 'temporary';
+  /** Text alternative — these drawings are content, not decoration. */
+  label: string;
+  class?: string;
+}
+
+const { variant, label, class: className } = Astro.props;
+
+/* ---------- clear-view ---------- */
+const CV = {
+  postX: 12,
+  postW: 16,
+  panelX0: 28,
+  panelX1: 388,
+  panelY0: 62,
+  panelY1: 230,
+  ground: 266,
+  /** Horizontal wire pitch. The vertical pitch is exactly 6× this. */
+  hPitch: 12,
+  vPitch: 72,
+};
+const cvRows = Array.from(
+  { length: (CV.panelY1 - CV.panelY0) / CV.hPitch + 1 },
+  (_, i) => CV.panelY0 + i * CV.hPitch,
+);
+const cvCols = Array.from(
+  { length: (CV.panelX1 - CV.panelX0) / CV.vPitch + 1 },
+  (_, i) => CV.panelX0 + i * CV.vPitch,
+);
+const cvSpikes = Array.from(
+  { length: (CV.panelX1 - CV.panelX0) / 18 },
+  (_, i) => CV.panelX0 + 9 + i * 18,
+);
+/** One real cell of the grid above, picked out in red. */
+const cvCell = { x: 172, y: 146, w: CV.vPitch, h: CV.hPitch };
+
+/* ---------- razor-mesh ----------
+   Two families of 45° lines: y = x + c for c in rmDown, y = -x + c for c in
+   rmUp. Solving them gives the lattice nodes at x = 170 + 22k, y = -130 + 22m
+   where k and m share a parity — every blade and the highlighted diamond below
+   is placed on one of those solved nodes, so no glyph ever floats between
+   strands the way hand-picked coordinates did. */
+const RM = { x0: 46, y0: 46, x1: 354, y1: 254 };
+const rmDown = Array.from({ length: 16 }, (_, i) => -300 + i * 44);
+const rmUp = Array.from({ length: 16 }, (_, i) => 40 + i * 44);
+const rmBlades: [number, number][] = [
+  [82, 134],
+  [126, 90],
+  [170, 222],
+  [214, 222],
+  [236, 68],
+  [258, 90],
+  [302, 134],
+  [280, 200],
+];
+/** Four nodes around (192, 156), one full diamond of the lattice. */
+const rmCell = 'M192 112 L236 156 L192 200 L148 156 Z';
+
+/* ---------- concertina ---------- */
+const COIL = { rx: 28, ry: 74, cy: 150, x0: 76, pitch: 36, count: 8, ground: 266 };
+const coilLoops = Array.from({ length: COIL.count }, (_, i) => ({
+  cx: COIL.x0 + i * COIL.pitch,
+  delay: i * 0.07,
+}));
+const coilBlades: [number, number][] = [
+  [COIL.x0, COIL.cy - COIL.ry],
+  [COIL.x0 + COIL.rx, COIL.cy],
+  [COIL.x0, COIL.cy + COIL.ry],
+  [COIL.x0 - COIL.rx, COIL.cy],
+];
+
+/* ---------- temporary ---------- */
+const TF = { y0: 68, y1: 214, foot: 244, ground: 262 };
+const tfPanels = [
+  { x: 44, w: 150 },
+  { x: 206, w: 150 },
+];
+---
+
+<div data-drawing class:list={['pd', `pd-${variant}`, className]} role="img" aria-label={label}>
+  <svg viewBox="0 0 400 300" class="h-full w-full" aria-hidden="true">
+    {
+      variant === 'clear-view' && (
+        <g>
+          <line
+            class="draw pd-faint"
+            pathLength="100"
+            style="--d:0s"
+            x1="8"
+            y1={CV.ground}
+            x2="392"
+            y2={CV.ground}
+          />
+
+          {/* post cap, then shaft */}
+          <rect
+            class="draw pd-heavy"
+            pathLength="100"
+            style="--d:0.04s"
+            x="8"
+            y="44"
+            width="24"
+            height="14"
+            rx="2"
+          />
+          <rect
+            class="draw pd-heavy"
+            pathLength="100"
+            style="--d:0.08s"
+            x={CV.postX}
+            y="58"
+            width={CV.postW}
+            height={CV.ground - 58}
+          />
+
+          {/* 358 mesh: dense horizontals, sparse verticals, at a true 6:1 */}
+          {cvRows.map((y, i) => (
+            <line
+              class="draw pd-wire"
+              pathLength="100"
+              style={`--d:${(0.14 + i * 0.012).toFixed(3)}s`}
+              x1={CV.panelX0}
+              y1={y}
+              x2={CV.panelX1}
+              y2={y}
+            />
+          ))}
+          {cvCols.map((x, i) => (
+            <line
+              class="draw pd-mid"
+              pathLength="100"
+              style={`--d:${(0.18 + i * 0.05).toFixed(3)}s`}
+              x1={x}
+              y1={CV.panelY0}
+              x2={x}
+              y2={CV.panelY1}
+            />
+          ))}
+
+          {/* shark-tooth topping */}
+          {cvSpikes.map((x, i) => (
+            <path
+              class="draw pd-heavy"
+              pathLength="100"
+              style={`--d:${(0.42 + i * 0.015).toFixed(3)}s`}
+              d={`M${x - 9} ${CV.panelY0} L${x} ${CV.panelY0 - 17} L${x + 9} ${CV.panelY0}`}
+            />
+          ))}
+
+          <rect
+            class="draw pd-accent"
+            pathLength="100"
+            style="--d:0.72s"
+            x={cvCell.x}
+            y={cvCell.y}
+            width={cvCell.w}
+            height={cvCell.h}
+          />
+          <circle class="pd-node" cx={cvCell.x} cy={cvCell.y} r="3" />
+        </g>
+      )
+    }
+
+    {
+      variant === 'razor-mesh' && (
+        <g>
+          <defs>
+            <clipPath id="pd-rm-clip">
+              <rect x={RM.x0} y={RM.y0} width={RM.x1 - RM.x0} height={RM.y1 - RM.y0} />
+            </clipPath>
+          </defs>
+
+          <rect
+            class="draw pd-mid"
+            pathLength="100"
+            style="--d:0s"
+            x={RM.x0}
+            y={RM.y0}
+            width={RM.x1 - RM.x0}
+            height={RM.y1 - RM.y0}
+          />
+
+          <g clip-path="url(#pd-rm-clip)">
+            {rmDown.map((c, i) => (
+              <line
+                class="draw pd-wire"
+                pathLength="100"
+                style={`--d:${(0.1 + i * 0.03).toFixed(3)}s`}
+                x1="0"
+                y1={c}
+                x2="400"
+                y2={c + 400}
+              />
+            ))}
+            {rmUp.map((c, i) => (
+              <line
+                class="draw pd-wire"
+                pathLength="100"
+                style={`--d:${(0.16 + i * 0.03).toFixed(3)}s`}
+                x1="0"
+                y1={c}
+                x2="400"
+                y2={c - 400}
+              />
+            ))}
+          </g>
+
+          {/* blades, welded on true lattice nodes */}
+          {rmBlades.map(([x, y], i) => (
+            <g class="pd-blade" style={`--d:${(0.62 + i * 0.05).toFixed(3)}s`}>
+              <path
+                class="pd-heavy"
+                d={`M${x - 7} ${y} L${x} ${y - 5} L${x + 7} ${y} L${x} ${y + 5} Z`}
+              />
+              <path
+                class="pd-mid"
+                d={`M${x - 7} ${y} L${x - 13} ${y - 4} M${x + 7} ${y} L${x + 13} ${y + 4}`}
+              />
+            </g>
+          ))}
+
+          <path class="draw pd-accent" pathLength="100" style="--d:0.9s" d={rmCell} />
+          <circle class="pd-node" cx="192" cy="112" r="3" />
+        </g>
+      )
+    }
+
+    {
+      variant === 'concertina' && (
+        <g>
+          <line
+            class="draw pd-faint"
+            pathLength="100"
+            style="--d:0s"
+            x1="8"
+            y1={COIL.ground}
+            x2="392"
+            y2={COIL.ground}
+          />
+
+          {/* end brackets, set clear of the coil's extremes */}
+          <path
+            class="draw pd-heavy"
+            pathLength="100"
+            style="--d:0.05s"
+            d={`M34 ${COIL.ground} V${COIL.cy} M24 ${COIL.cy} H44`}
+          />
+          <path
+            class="draw pd-heavy"
+            pathLength="100"
+            style="--d:0.1s"
+            d={`M366 ${COIL.ground} V${COIL.cy} M356 ${COIL.cy} H376`}
+          />
+
+          {/* the coil: one loop, repeated at pitch, sliding out from stacked */}
+          {coilLoops.map((loop) => (
+            <ellipse
+              class="pd-loop"
+              style={`--d:${loop.delay.toFixed(2)}s; --x:${loop.cx - COIL.x0}px`}
+              cx={COIL.x0}
+              cy={COIL.cy}
+              rx={COIL.rx}
+              ry={COIL.ry}
+            />
+          ))}
+
+          {/* blades on the leading loop */}
+          {coilBlades.map(([x, y], i) => (
+            <g class="pd-blade" style={`--d:${(0.75 + i * 0.06).toFixed(2)}s`}>
+              <path
+                class="pd-heavy"
+                d={`M${x - 6} ${y} L${x} ${y - 4} L${x + 6} ${y} L${x} ${y + 4} Z`}
+              />
+            </g>
+          ))}
+
+          <circle class="pd-node" cx={COIL.x0} cy={COIL.cy - COIL.ry} r="3" />
+        </g>
+      )
+    }
+
+    {
+      variant === 'temporary' && (
+        <g>
+          <line
+            class="draw pd-faint"
+            pathLength="100"
+            style="--d:0s"
+            x1="8"
+            y1={TF.ground}
+            x2="392"
+            y2={TF.ground}
+          />
+
+          {tfPanels.map((panel, p) => (
+            <g>
+              <rect
+                class="draw pd-heavy"
+                pathLength="100"
+                style={`--d:${(0.06 + p * 0.35).toFixed(2)}s`}
+                x={panel.x}
+                y={TF.y0}
+                width={panel.w}
+                height={TF.y1 - TF.y0}
+                rx="4"
+              />
+              {Array.from({ length: 11 }, (_, i) => panel.x + 15 + i * 12).map((x, i) => (
+                <line
+                  class="draw pd-wire"
+                  pathLength="100"
+                  style={`--d:${(0.16 + p * 0.35 + i * 0.02).toFixed(3)}s`}
+                  x1={x}
+                  y1={TF.y0 + 8}
+                  x2={x}
+                  y2={TF.y1 - 8}
+                />
+              ))}
+              {[TF.y0 + 42, TF.y0 + 84, TF.y0 + 118].map((y, i) => (
+                <line
+                  class="draw pd-mid"
+                  pathLength="100"
+                  style={`--d:${(0.24 + p * 0.35 + i * 0.04).toFixed(3)}s`}
+                  x1={panel.x + 8}
+                  y1={y}
+                  x2={panel.x + panel.w - 8}
+                  y2={y}
+                />
+              ))}
+              {/* free-standing foot — the whole point: no groundworks */}
+              <line
+                class="draw pd-heavy"
+                pathLength="100"
+                style={`--d:${(0.4 + p * 0.35).toFixed(2)}s`}
+                x1={panel.x + panel.w / 2}
+                y1={TF.y1}
+                x2={panel.x + panel.w / 2}
+                y2={TF.foot}
+              />
+              <rect
+                class="draw pd-heavy"
+                pathLength="100"
+                style={`--d:${(0.46 + p * 0.35).toFixed(2)}s`}
+                x={panel.x + panel.w / 2 - 50}
+                y={TF.foot}
+                width="100"
+                height="10"
+                rx="2"
+              />
+            </g>
+          ))}
+
+          {/* coupler joining the two panels */}
+          <g class="pd-blade" style="--d:0.86s">
+            <circle class="pd-accent" cx="200" cy={TF.y0 + 42} r="6" fill="rgba(228,17,42,0.09)" />
+            <circle class="pd-accent" cx="200" cy={TF.y0 + 118} r="6" fill="rgba(228,17,42,0.09)" />
+          </g>
+          <circle class="pd-node" cx="200" cy={TF.y0 + 42} r="3" />
+        </g>
+      )
+    }
+  </svg>
+</div>
+
+<style>
+  .pd {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Everything is unfilled unless a *rule* below says otherwise. The comment
+     that used to sit here claimed the `fill` attribute on the accent cells
+     "still wins" — it does not. An SVG presentation attribute ranks below any
+     CSS declaration, so this blanket reset was quietly erasing the translucent
+     red tint inside each highlighted aperture and leaving a bare outline.
+     Intentional fills live in CSS from here on. */
+  .pd line,
+  .pd path,
+  .pd rect,
+  .pd circle,
+  .pd ellipse {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .pd .pd-heavy {
+    stroke: #161616;
+    stroke-width: 2;
+  }
+  .pd .pd-mid {
+    stroke: #6e6e6e;
+    stroke-width: 1.3;
+  }
+  .pd .pd-wire {
+    stroke: #bababa;
+    stroke-width: 1;
+  }
+  .pd .pd-faint {
+    stroke: #d6d6d6;
+    stroke-width: 1;
+  }
+  .pd .pd-accent {
+    fill: rgba(228, 17, 42, 0.09);
+    stroke: #e4112a;
+    stroke-width: 2;
+  }
+  .pd .pd-node {
+    fill: #e4112a;
+    stroke: none;
+  }
+  .pd .pd-blade .pd-heavy {
+    fill: #161616;
+  }
+
+  /* --- motion ---
+     Default state is FINISHED artwork. `is-armed` (added by the script only
+     when motion is allowed) is what resets shapes to their pre-draw state, so
+     no-JS and reduced-motion visitors get the complete drawing, never a blank
+     frame. */
+  .pd .draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .pd.is-armed .draw {
+    stroke-dashoffset: 100;
+  }
+  .pd.is-armed.is-in .draw {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.75s ease-out;
+    transition-delay: var(--d, 0s);
+  }
+
+  .pd.is-armed .pd-blade {
+    opacity: 0;
+    transform: scale(0.4);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .pd.is-armed.is-in .pd-blade {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+    transition-delay: var(--d, 0s);
+  }
+
+  /* The coil's loops start stacked on the first one and slide out to pitch —
+     the motion the product is named for. */
+  .pd .pd-loop {
+    stroke: #161616;
+    stroke-width: 1.3;
+    stroke-dasharray: 3 7;
+    transform: translateX(var(--x, 0));
+  }
+  .pd.is-armed .pd-loop {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  .pd.is-armed.is-in .pd-loop {
+    opacity: 1;
+    transform: translateX(var(--x, 0));
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+    transition-delay: var(--d, 0s);
+  }
+
+  /* Idle pulse on the one red mark in each drawing, so a drawing that has
+     finished animating still has a heartbeat. Only ever runs post-draw. */
+  .pd.is-armed.is-in .pd-node {
+    animation: pd-pulse 2.6s ease-in-out 1.4s infinite;
+  }
+  @keyframes pd-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      r: 3;
+    }
+    50% {
+      opacity: 0.5;
+      r: 4.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pd .pd-node {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const drawings = Array.from(document.querySelectorAll<HTMLElement>('[data-drawing]'));
+
+  if (drawings.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    /* Arming is what hides the artwork, so it only ever happens once we know
+       we can also un-hide it. Everything below this point is enhancement. */
+    drawings.forEach((drawing) => drawing.classList.add('is-armed'));
+
+    /* Flush the armed (hidden) state to the compositor before anything can add
+       `is-in`. Without this, a drawing already in view at load gets both
+       classes inside one frame, the browser never sees the pre-draw state as a
+       starting value, and the stroke animation is skipped entirely — the
+       drawing just appears. Reading a layout property forces that boundary. */
+    void document.documentElement.offsetHeight;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.25 },
+    );
+
+    drawings.forEach((drawing) => observer.observe(drawing));
+  }
+</script>

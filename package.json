@@ -12,6 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "images": "node scripts/build-product-images.mjs",
     "format": "prettier --write \"src/**/*.{astro,ts,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{astro,ts,css,md}\""
   },

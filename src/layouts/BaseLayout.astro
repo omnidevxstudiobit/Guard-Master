@@ -2,6 +2,7 @@
 import '@styles/global.css';
 import NavCenterSplit from '@components/nav/NavCenterSplit.astro';
 import Footer from '@components/layout/Footer.astro';
+import QuoteBar from '@components/layout/QuoteBar.astro';
 
 interface Props {
   title: string;
@@ -29,20 +30,21 @@ const {
  * seoguide.md Appendix B1 — Organization, site-wide. Only fields that are
  * actually known go in: name, legalName and description are established
  * facts used throughout the site; url reuses astro.config.mjs's own
- * (already TODO-flagged) placeholder domain. `telephone` is the client's
- * real "International / Export Sales" number from their own reference site
- * (fencing-supplier.com) — see Footer.astro's matching note for why that
- * number specifically, not one of the South Africa sales lines on the same
- * page.
+ * (already TODO-flagged) placeholder domain.
+ *
+ * `telephone` and `address` are the client's real general sales line and
+ * their real factory, both published on their own reference site
+ * (fencing-supplier.com). This used to carry the +1 export number and no
+ * address at all, on the reasoning that a US-market site shouldn't schema a
+ * South African address — that framing is retired, so the primary contact
+ * details are now the ones the business actually trades on. The export line
+ * is still surfaced in the footer, just not as *the* organization number.
  *
  * Still deliberately omitted rather than filled with placeholders: `logo`
- * (no exported logo file exists yet — Logo.astro is inline SVG, not a URL),
- * `sameAs` (no real social profiles to link), and the whole LocalBusiness
- * block from B1 (no real US address — the reference site's only address is
- * the Benoni, South Africa factory, not relevant here). A missing field is
- * silently incomplete; a fabricated one is silently wrong and search
- * engines will index it as fact. Fill these in once the client supplies a
- * logo file and a US address.
+ * (no exported logo file exists yet — Logo.astro is inline SVG, not a URL)
+ * and `sameAs` (no real social profiles to link). A missing field is
+ * silently incomplete; a fabricated one is silently wrong and search engines
+ * will index it as fact.
  */
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -51,14 +53,23 @@ const organizationJsonLd = {
   name: 'Guard Master',
   legalName: 'Wire Ventures CC t/a Guard Master Fencing Solutions',
   url: Astro.site?.href ?? Astro.url.origin,
-  telephone: '+1-954-756-5216',
+  telephone: '+27-11-437-8903',
+  email: 'info@fencing-supplier.com',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '10 Burnley Street',
+    addressLocality: 'Benoni South Extn.',
+    addressRegion: 'Gauteng',
+    postalCode: '1501',
+    addressCountry: 'ZA',
+  },
   description:
-    'Manufacturer-direct premium clear view 358 anti-climb high-security perimeter fencing.',
+    'South African manufacturer of clear view 358 anti-climb high-security perimeter fencing, razor wire and rapid deployment barriers.',
 };
 ---
 
 <!doctype html>
-<html lang="en-US">
+<html lang="en-ZA">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -73,5 +84,6 @@ const organizationJsonLd = {
       <slot />
     </main>
     <Footer />
+    <QuoteBar />
   </body>
 </html>
