@@ -54,12 +54,11 @@ import { CTA } from '@data/nav';
  * canvas-drawn), and the `gm-pose-air` rig (its blend factor is 0 in all ten
  * phases). Their behaviour is unchanged by their absence.
  *
- * The caption card below the scene is this site's own, not the design's — it
- * is wired to the design's phase tag/title/sub and progress bar. It sits over
- * the panel, so the canvas stage is inset above it (`--ia-card-h`, measured
- * live) instead of being drawn behind it: everything the story does stays
- * visible, which was the whole point of the earlier version's bottom-edge
- * pinning.
+ * There is no caption panel narrating the phases, matching the design: the
+ * scene fills the whole panel and the only overlays are the design's own —
+ * the attempt tabs, the stamp and the callout. The section's left column
+ * already says in prose what the story shows, so nothing is only conveyed by
+ * the (aria-hidden) animation.
  */
 
 type Phase = {
@@ -76,96 +75,49 @@ type Phase = {
     | 'spiked';
   dur: number;
   hud: 0 | 1;
-  tag: string;
-  title: string;
-  sub: string;
   stamp?: string;
   callout?: string;
 };
 
+/* The design's phases also carry a tag/title/sub caption. There is no caption
+   panel here, so those three fields are dropped rather than serialised into
+   the page and never read — the phase comments below say the same thing to a
+   reader of the source. */
 const PHASES: Phase[] = [
-  {
-    mode: 'enter',
-    dur: 4800,
-    hud: 0,
-    tag: '02:14 — Perimeter',
-    title: 'A thief walks the fence line.',
-    sub: 'After dark. Hood up, drill in hand, looking for a weak point. There isn’t one.',
-  },
-  {
-    mode: 'kneel',
-    dur: 1700,
-    hud: 0,
-    tag: 'Attempt 01 — Setup',
-    title: 'He kneels to the weld.',
-    sub: 'Braced on one knee, both hands on the drill, weight over the bit.',
-  },
-  {
-    mode: 'drill',
-    dur: 6000,
-    hud: 0,
-    tag: 'Attempt 01 — Drilling',
-    title: 'Three goes at one weld.',
-    sub: 'The bit chatters, walks off the wire and kicks the drill back at him each time.',
-  },
+  // A thief walks the fence line: hood up, drill in hand, looking for a weak
+  // point. There isn't one.
+  { mode: 'enter', dur: 4800, hud: 0 },
+  // He kneels to the weld — braced on one knee, weight over the bit.
+  { mode: 'kneel', dur: 1700, hud: 0 },
+  // Three goes at one weld. The bit chatters, walks off the wire and kicks
+  // the drill back at him each time.
+  { mode: 'drill', dur: 6000, hud: 0 },
+  // The weld won't give: 500–650 MPa wire welded at 80% of parent steel.
   {
     mode: 'fail',
     dur: 3200,
     hud: 0,
-    tag: 'Attempt 01 — Denied',
-    title: 'The weld won’t give.',
-    sub: '500–650 MPa high-tensile wire welded at 80% of parent steel. The bit dulls first.',
     stamp: 'WON’T CUT',
     callout:
       'Ø 3.5–5.6 mm wire · 500–650 MPa · welded at 80% of parent steel — the bit dulls first.',
   },
-  {
-    mode: 'hatoff',
-    dur: 3200,
-    hud: 0,
-    tag: 'Attempt 01 — Over',
-    title: 'The drill goes into the dirt.',
-    sub: 'Flung away. Nothing handheld is getting through this mesh.',
-  },
-  {
-    mode: 'exit',
-    dur: 4400,
-    hud: 1,
-    tag: 'Attempt 02 — Regroup',
-    title: 'He walks off for another way over.',
-    sub: 'If he can’t go through it, the only way left is over the top.',
-  },
-  {
-    mode: 'rope',
-    dur: 5000,
-    hud: 1,
-    tag: 'Attempt 02 — Rope',
-    title: 'He comes back with a grapple.',
-    sub: 'A coil of line and a three-prong hook — the classic way over a fence.',
-  },
-  {
-    mode: 'throw',
-    dur: 2400,
-    hud: 1,
-    tag: 'Attempt 02 — The Throw',
-    title: 'He throws the hook over.',
-    sub: 'One swing and the grapple arcs up and bites on the top rail.',
-  },
-  {
-    mode: 'climb',
-    dur: 6600,
-    hud: 1,
-    tag: 'Attempt 02 — The Climb',
-    title: 'He climbs the line.',
-    sub: 'Knees up, feet clamped, drive and pull — hand over hand up the rope.',
-  },
+  // The drill goes into the dirt. Nothing handheld is getting through.
+  { mode: 'hatoff', dur: 3200, hud: 0 },
+  // He walks off for another way over.
+  { mode: 'exit', dur: 4400, hud: 1 },
+  // He comes back with a coil of line and a three-prong hook.
+  { mode: 'rope', dur: 5000, hud: 1 },
+  // One swing and the grapple arcs up and bites on the top rail.
+  { mode: 'throw', dur: 2400, hud: 1 },
+  // He climbs the line — knees up, feet clamped, hand over hand. Longer than
+  // the design's 6600: the corrected cycle needs eight pulls rather than six
+  // (see PULLS in the script), and at 6600 they read as a scramble.
+  { mode: 'climb', dur: 8000, hud: 1 },
+  // The spikes stop him dead: nothing to grab, no way to swing a leg over.
   {
     mode: 'spiked',
     dur: 4400,
     hud: 1,
-    tag: 'Attempt 02 — Denied',
-    title: 'The spikes stop him dead.',
-    sub: 'Nothing to grab, no way to swing a leg over — he slides straight back down.',
     stamp: 'NO WAY OVER',
     callout: 'Anti-climb spike topping on a 3 m panel — no grip, no landing, nothing to stand on.',
   },
@@ -256,7 +208,7 @@ const REST_Y = GY - RIG_H;
     <figure class="m-0">
       <div
         data-scene
-        class="relative h-[520px] overflow-hidden rounded-md border border-white/10 sm:h-[600px] lg:h-[620px] xl:h-[760px]"
+        class="relative overflow-hidden rounded-md border border-white/10"
         style="background: linear-gradient(180deg, #0b0d16 0%, #0d0a10 45%, #09090b 100%);"
       >
         {
@@ -277,12 +229,8 @@ const REST_Y = GY - RIG_H;
         <div class="ia-star" style="top:26%; left:8%; animation-delay:1.8s;" aria-hidden="true">
         </div>
 
-        {
-          /* The stage — everything the story draws. Its bottom edge stops at
-            the caption card's top edge (--ia-card-h, measured live by the
-            script) so nothing the animation does is hidden behind the card. */
-        }
-        <div data-stage-area class="absolute inset-x-0 top-0">
+        {/* The stage — everything the story draws, filling the whole panel. */}
+        <div data-stage-area class="absolute inset-0">
           {
             /* Shake wrapper: the design's #gm-shake, which takes the impact
               jolt for the canvas, the rig, the stamp and the callout together. */
@@ -749,37 +697,6 @@ const REST_Y = GY - RIG_H;
             >
           </div>
         </div>
-
-        <!-- Caption card. Not part of the design's panel — this site's own
-             narration of the same phases. Flush to the panel's own edges (the
-             panel clips it to its rounded corners), so there's no dead margin
-             between the scene and the copy; the stage above measures it
-             (--ia-card-h) and stops at its top edge, so the story never plays
-             behind it. -->
-        <div
-          data-caption-card
-          class="absolute inset-x-0 bottom-0 z-[3] overflow-hidden border-t border-white/12 bg-black/70 p-4 backdrop-blur-md sm:p-5"
-        >
-          <div data-phase-bar class="bg-gm-red absolute top-0 left-0 h-[2px]" style="width: 100%;">
-          </div>
-          <div class="mb-2 flex items-center gap-2.5 sm:mb-2.5">
-            <span
-              data-phase-tag
-              class="text-gm-red font-mono text-[11px] tracking-[0.2em] whitespace-nowrap uppercase"
-              >{RESTING.tag}</span
-            >
-            <span class="h-px flex-1 bg-white/15"></span>
-          </div>
-          <p
-            data-phase-title
-            class="font-display text-gm-white text-base leading-none font-black uppercase sm:text-lg"
-          >
-            {RESTING.title}
-          </p>
-          <p data-phase-sub class="text-gm-grey-300 mt-2 text-[13px] leading-relaxed">
-            {RESTING.sub}
-          </p>
-        </div>
       </div>
     </figure>
   </div>
@@ -788,15 +705,34 @@ const REST_Y = GY - RIG_H;
 </section>
 
 <style>
+  /* Panel height. From `lg` up the section is two columns side by side, so the
+     whole thing is meant to read in one screen — the height is therefore capped
+     against the viewport rather than fixed, leaving room for the section's own
+     py-28 above and below. The cap matters more than the ceiling: on a short
+     laptop the vh term wins and the panel shrinks to fit; on a tall monitor the
+     px ceiling stops it growing into a wall.
+
+     Nothing in the scene needs to know about this. The script scales the whole
+     picture by S = stageHeight / frameHeight, so a shorter panel is the same
+     frame zoomed out, and `fit()` already re-runs on resize. */
   [data-intrusion] [data-scene] {
     isolation: isolate;
+    height: 420px;
   }
-
-  /* The stage stops where the caption card starts. The script measures the
-     card and writes --ia-card-h; the fallback covers the no-JS case, where the
-     card's height is whatever three lines of caption come to. */
-  [data-intrusion] [data-stage-area] {
-    bottom: var(--ia-card-h, 140px);
+  @media (min-width: 640px) {
+    [data-intrusion] [data-scene] {
+      height: 480px;
+    }
+  }
+  @media (min-width: 1024px) {
+    [data-intrusion] [data-scene] {
+      height: min(66vh, 560px);
+    }
+  }
+  @media (min-width: 1280px) {
+    [data-intrusion] [data-scene] {
+      height: min(68vh, 600px);
+    }
   }
 
   [data-intrusion] .ia-solar-pulse {
@@ -936,9 +872,6 @@ const REST_Y = GY - RIG_H;
       | 'spiked';
     dur: number;
     hud: 0 | 1;
-    tag: string;
-    title: string;
-    sub: string;
     stamp?: string;
     callout?: string;
   };
@@ -950,12 +883,10 @@ const REST_Y = GY - RIG_H;
   const ctx = cv?.getContext('2d') ?? null;
   const thief = section?.querySelector<HTMLElement>('[data-thief]');
   const thiefIn = section?.querySelector<HTMLElement>('[data-thief-in]');
-  const card = section?.querySelector<HTMLElement>('[data-caption-card]');
-
   const reduce =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (section && dataEl && scene && cv && ctx && thief && thiefIn && card && !reduce) {
+  if (section && dataEl && scene && cv && ctx && thief && thiefIn && !reduce) {
     const PHASES = JSON.parse(dataEl.textContent || '[]') as Phase[];
 
     const q = <T extends Element>(sel: string) => section.querySelector<T>(sel);
@@ -975,10 +906,6 @@ const REST_Y = GY - RIG_H;
     const callout = q<HTMLElement>('[data-callout]');
     const calloutTxt = q<HTMLElement>('[data-callout-text]');
     const hud = [q<HTMLElement>('[data-hud-tab="0"]'), q<HTMLElement>('[data-hud-tab="1"]')];
-    const barEl = q<HTMLElement>('[data-phase-bar]');
-    const tagEl = q<HTMLElement>('[data-phase-tag]');
-    const titleEl = q<HTMLElement>('[data-phase-title]');
-    const subEl = q<HTMLElement>('[data-phase-sub]');
 
     // Hand off from the static resting frame to the live one.
     restingScene?.remove();
@@ -993,11 +920,11 @@ const REST_Y = GY - RIG_H;
     const DESIGN_H = 760; // the design's own panel height
     const RAIL = Math.round(DESIGN_H * 0.2); // top rail, at its design height
     const GROUND = Math.round(DESIGN_H * 0.86); // ground line, ditto
-    const FOREGROUND = 18; // dirt kept below the ground line
-    // The design leaves ~106 units of empty foreground under its ground line
-    // with nothing beneath it. Here the caption card is beneath it, and the two
-    // stacked read as a gap — so the visible frame ends just past the ground
-    // line. Only empty dirt is cropped; every other height is the design's.
+    // The design leaves ~106 units of empty foreground under its ground line.
+    // That much dead space at the bottom of the panel reads as a gap, so the
+    // visible frame ends just past the ground line instead. Only empty dirt is
+    // cropped; every other height is the design's.
+    const FOREGROUND = 18;
     const VH = GROUND + FOREGROUND;
     let S = 1;
     let VW = 660;
@@ -1012,12 +939,6 @@ const REST_Y = GY - RIG_H;
       ctx.setTransform(dpr * S, 0, 0, dpr * S, 0, 0);
       thief.style.transform = `scale(${S})`;
     };
-
-    // The stage stops at the caption card's top edge, so the whole scene stays
-    // visible above it however the card's copy wraps.
-    const measureCard = () => scene.style.setProperty('--ia-card-h', card.offsetHeight + 'px');
-    measureCard();
-    if ('ResizeObserver' in window) new ResizeObserver(measureCard).observe(card);
 
     fit();
 
@@ -1064,21 +985,15 @@ const REST_Y = GY - RIG_H;
     window.addEventListener('resize', () => {
       fit();
       layout();
-      measureCard();
     });
 
-    /* ---- captions, stamp, callout ---------------------------------------- */
+    /* ---- HUD, stamp, callout ---------------------------------------------- */
     let pi = -1;
     let phaseStart = 0;
 
-    const setCaption = (p: Phase) => {
-      [tagEl, titleEl, subEl].forEach((el) => el && (el.style.opacity = '0'));
-      window.setTimeout(() => {
-        if (tagEl) tagEl.textContent = p.tag;
-        if (titleEl) titleEl.textContent = p.title;
-        if (subEl) subEl.textContent = p.sub;
-        [tagEl, titleEl, subEl].forEach((el) => el && (el.style.opacity = '1'));
-      }, 200);
+    // The design's setCaption also wrote a tag/title/sub caption; this section
+    // shows no caption panel, so only the attempt tabs change.
+    const setHud = (p: Phase) => {
       hud.forEach((el, i) => el?.classList.toggle('is-active', i === p.hud));
     };
 
@@ -1306,8 +1221,25 @@ const REST_Y = GY - RIG_H;
       ctx.restore();
     };
 
-    // Canvas climber: the hands really grip the rope, the feet clamp it, the
-    // body hangs between them.
+    /* ---- rope-climb rig ---------------------------------------------------
+       The technique being drawn is the standard foot-lock: hang from an
+       overhead grip, pull the knees up so the feet slide up the line and
+       re-clamp, then stand on the clamped feet to drive the shoulders up to
+       the hands, and only then reach one hand past the other for the next
+       grip.
+
+       The hands are the anchor through the tuck and the drive — they hold
+       still in world space while the body moves relative to them. The
+       geometry has to leave enough arm for that: a body that rises by more
+       than one arm-length per pull would finish the drive with its hands
+       BELOW its shoulders, which is the one thing a body hanging from a rope
+       cannot do. Hence eight pulls rather than six — REACH_HI is the ceiling
+       on how much height a single pull can buy. */
+    const PULLS = 8; // pulls from the ground to the rail
+    const REACH_HI = 58; // upper hand above the shoulders, arm extended
+    const REACH_LO = 44; // lower hand — the staggered grip
+    const FOOT_DROP = 124; // feet below the shoulders, legs straight
+
     type Climber = {
       ropeX: number;
       sx: number;
@@ -1320,7 +1252,7 @@ const REST_Y = GY - RIG_H;
     };
     const paintClimber = (st: Climber) => {
       const { sx, sy, hands, feetY, tuck } = st;
-      const hipX = sx + 6 + (st.hipSwing || 0);
+      const hipX = sx + 4 + (st.hipSwing || 0);
       const hipY = sy + 44;
       ctx.save();
       ctx.globalAlpha = st.alpha ?? 1;
@@ -1333,8 +1265,10 @@ const REST_Y = GY - RIG_H;
       ).forEach(([dx, dy, col, boot]) => {
         const fx2 = st.ropeX + dx * 0.4;
         const fy2 = feetY + dy;
-        const kx = hipX + 20 + tuck * 17 + dx;
-        const ky = (hipY + fy2) / 2 - tuck * 12;
+        // A straight leg wants a control point close to the hip–foot line;
+        // the knee only swings forward as the tuck comes up.
+        const kx = hipX + 8 + tuck * 30 + dx;
+        const ky = (hipY + fy2) / 2 - tuck * 14;
         ctx.strokeStyle = col;
         ctx.lineWidth = 13;
         ctx.beginPath();
@@ -1364,8 +1298,13 @@ const REST_Y = GY - RIG_H;
       hands.forEach(([hx2, hy2], idx) => {
         const shX = sx + (idx ? 5 : -5);
         const shY = sy + 2;
-        const ex = (shX + hx2) / 2 + (idx ? 7 : -7);
-        const ey = (shY + hy2) / 2 + 5;
+        // An extended arm is near-straight; a pulling one flares its elbow out
+        // and down. Driving that off the hand's actual height above the
+        // shoulder means the arms bend because he pulled, not on a timer.
+        const bend = clamp01(1 - (shY - hy2) / REACH_HI);
+        const side = idx ? 1 : -1;
+        const ex = (shX + hx2) / 2 + side * (5 + bend * 22);
+        const ey = (shY + hy2) / 2 + bend * 12;
         ctx.strokeStyle = idx ? '#2f313d' : '#23252e';
         ctx.lineWidth = 11;
         ctx.beginPath();
@@ -1442,13 +1381,11 @@ const REST_Y = GY - RIG_H;
       if (pi < 0 || t - phaseStart > PHASES[pi]!.dur) {
         pi = (pi + 1) % PHASES.length;
         phaseStart = t;
-        setCaption(PHASES[pi]!);
+        setHud(PHASES[pi]!);
         setScene(PHASES[pi]!, pi);
       }
       const p = PHASES[pi]!;
       const local = t - phaseStart;
-      const prog = Math.min(1, local / p.dur);
-      if (barEl) barEl.style.width = (prog * 100).toFixed(1) + '%';
 
       const w = VW;
       const h = VH;
@@ -1624,19 +1561,26 @@ const REST_Y = GY - RIG_H;
         rope.hookY = anchorY;
         rope.hookRot = 2.6;
         const grab = easeInOut(clamp01(local / 800));
-        const k = clamp01((local - 800) / 5400);
+        const k = clamp01((local - 800) / 7200);
         worker.x = lerp(throwX, anchorX - 72, grab);
         const startSh = groundTop + 62;
         const endSh = TR + 44;
-        const PULLS = 6;
         const h2 = (startSh - endSh) / PULLS;
         const seg = k * PULLS;
         const i = Math.min(PULLS - 1, Math.floor(seg));
         const f = seg - i;
-        const tuckE = f < 0.42 ? easeInOut(f / 0.42) : 1;
-        const driveE = f < 0.42 ? 0 : easeInOut(Math.min(1, (f - 0.42) / 0.4));
         const Si = startSh - i * h2;
-        const sink = f < 0.42 ? tuckE * 4 : (1 - driveE) * 4;
+        // One pull, in the order a body actually does it:
+        //   tuck  (0 → 0.36) knees to chest, feet slide up the line and clamp;
+        //                    the shoulders do not move, the hands do not move
+        //   drive (0.36 → 0.74) stand on the clamped feet — the shoulders rise
+        //                    a full h2 up to the still-fixed hands
+        //   reach (0.74 → 1) one hand crosses past the other to the next grip
+        const tuckE = easeInOut(clamp01(f / 0.36));
+        const driveE = easeInOut(clamp01((f - 0.36) / 0.38));
+        const tucking = f < 0.36;
+        // He hangs a little as the legs unload, and settles as they take over.
+        const sink = tucking ? tuckE * 3 : (1 - driveE) * 3;
         const sy = k <= 0 ? startSh : Si - h2 * driveE + sink;
         worker.y = sy - 62;
         // He reaches for the line and the rig crossfades onto it — no pop.
@@ -1649,44 +1593,47 @@ const REST_Y = GY - RIG_H;
           rope.hookY = anchorY;
           rope.hookRot = 0.16;
           rope.handX = lerp(wx(56), anchorX, grab);
-          rope.handY = lerp(wy(112), startSh - 46, grab);
+          rope.handY = lerp(wy(112), startSh - REACH_HI, grab);
           rope.sag = lerp(12, 2, grab);
           if (alphaIn > 0) {
+            // Feet still on the ground, arms already overhead on the line.
             climber = {
               ropeX: anchorX,
-              sx: anchorX + 8,
+              sx: anchorX + 7,
               sy: startSh,
-              feetY: startSh + 104,
+              feetY: startSh + FOOT_DROP,
               tuck: 0,
               hipSwing: 0,
               alpha: alphaIn,
               hands: [
-                [anchorX, startSh - 20],
-                [anchorX, startSh - 46],
+                [anchorX, startSh - REACH_LO],
+                [anchorX, startSh - REACH_HI],
               ],
             };
           }
         }
         if (k > 0) {
-          // The feet clamp the rope in world space and stay put while the body
-          // rises past them.
-          const feetY = f < 0.42 ? lerp(Si + 104, Si + 52, tuckE) : Si + 52;
-          // Hand over hand: the low hand crosses over high (big reach), then
-          // the other shifts up.
-          const m1 = f < 0.62 ? 0 : f < 0.8 ? easeInOut((f - 0.62) / 0.18) : 1;
-          const m2 = f < 0.8 ? 0 : easeInOut((f - 0.8) / 0.2);
-          const lowY = lerp(Si - 20, Si - h2 - 46, m1);
-          const highY = lerp(Si - 46, Si - h2 - 20, m2);
+          // The feet slide up the line during the tuck and then clamp: fixed in
+          // WORLD space for the whole drive, so the body rises past them.
+          const feetY = Si + FOOT_DROP - h2 * (tucking ? tuckE : 1);
+          // Hand over hand. The lower hand crosses past the higher one to take
+          // the top grip, then the other follows into the staggered position —
+          // which swaps their roles, so the pair alternates every pull.
+          const m1 = easeInOut(clamp01((f - 0.74) / 0.14));
+          const m2 = easeInOut(clamp01((f - 0.86) / 0.14));
+          const lowY = lerp(Si - REACH_LO, Si - h2 - REACH_HI, m1);
+          const highY = lerp(Si - REACH_HI, Si - h2 - REACH_LO, m2);
           const lowX = anchorX + Math.sin(m1 * Math.PI) * 8;
           const highX = anchorX + Math.sin(m2 * Math.PI) * 7;
           const even = i % 2 === 0;
           climber = {
             ropeX: anchorX,
-            sx: anchorX + 8,
+            sx: anchorX + 7,
             sy,
             feetY,
-            tuck: tuckE * (f < 0.42 ? 1 : 1 - driveE),
-            hipSwing: Math.sin(seg * Math.PI) * 2.2,
+            tuck: tucking ? tuckE : 1 - driveE,
+            // Knees up pushes the hips back off the line.
+            hipSwing: (tucking ? tuckE : 1 - driveE) * 5,
             hands: even
               ? [
                   [lowX, lowY],
@@ -1697,6 +1644,7 @@ const REST_Y = GY - RIG_H;
                   [lowX, lowY],
                 ],
           };
+          // Grit off the wire where the boots bite, on the drive only.
           if (driveE > 0.2 && driveE < 0.9 && Math.random() > 0.85) {
             spark(anchorX + (Math.random() - 0.5) * 14, feetY + 4, 2, 3);
           }
@@ -1724,13 +1672,15 @@ const REST_Y = GY - RIG_H;
           const reachY = lerp(topSh - 20, TR - 26, bite);
           climber = {
             ropeX: anchorX,
-            sx: anchorX + 8 + bite * 3,
+            sx: anchorX + 7 + bite * 3,
             sy,
-            feetY: topSh + 52,
-            tuck: 0.35,
+            // Half-tucked on the line — one hand still gripping, the other off
+            // the rope, so the legs carry him while he reaches.
+            feetY: topSh + FOOT_DROP - 22,
+            tuck: 0.5,
             hipSwing: cyc * 2,
             hands: [
-              [anchorX, topSh - 46],
+              [anchorX, topSh - REACH_HI],
               [reachX, reachY],
             ],
           };
@@ -1747,16 +1697,17 @@ const REST_Y = GY - RIG_H;
           worker.x = anchorX - 72;
           worker.y = sy - 62;
           thief.style.opacity = '0';
+          // Both hands back on the line above him, legs long, letting it run.
           climber = {
             ropeX: anchorX,
-            sx: anchorX + 8,
+            sx: anchorX + 7,
             sy,
-            feetY: sy + 96 + slide * 8,
+            feetY: sy + FOOT_DROP + slide * 8,
             tuck: 0.1,
             hipSwing: Math.sin(t / 140) * 1.4,
             hands: [
-              [anchorX, sy - 40],
-              [anchorX + 2, sy - 22],
+              [anchorX, sy - REACH_LO],
+              [anchorX + 2, sy - REACH_LO + 18],
             ],
           };
           if (k > 0.08 && k < 0.98 && Math.random() > 0.6) {
