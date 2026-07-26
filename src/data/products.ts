@@ -158,7 +158,7 @@ export const PRODUCTS: Product[] = [
       },
       {
         name: 'Spikes, Gates & Toppings',
-        href: '/accessories',
+        href: '/clear-fencing-accessories',
         note: 'Shark-tooth and wall spikes · gates · solar caps',
         priceFrom: 108.1,
         unit: null,
@@ -171,7 +171,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     slug: 'razor-wire-mesh',
-    href: '/quote-estimator',
+    href: '/clear-fencing-estimator',
     hasPage: false,
     name: 'Razor Wire Mesh',
     shortName: 'Razor Wire Mesh',
@@ -204,7 +204,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     slug: 'concertina-razor-wire',
-    href: '/quote-estimator',
+    href: '/clear-fencing-estimator',
     hasPage: false,
     name: 'Concertina Razor Wire',
     shortName: 'Concertina Razor Wire',
@@ -251,7 +251,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     slug: 'temporary-fencing',
-    href: '/quote-estimator',
+    href: '/clear-fencing-estimator',
     hasPage: false,
     name: 'Temporary Fencing',
     shortName: 'Temporary Fencing',
@@ -286,6 +286,71 @@ export const PRODUCTS: Product[] = [
 
 /** Real installation photography — perimeters, not products. */
 export const PROJECT_IMAGES: ProductImage[] = images('projects');
+
+/** Residential renders after dark — the sightline argument, shown. */
+export const AFTER_DARK_IMAGES: ProductImage[] = images('clear-view-after-dark');
+
+/**
+ * The gallery albums — every Clear View frame in the manifest, arranged by
+ * which source folder it came out of.
+ *
+ * The manifest is organised by *where an image is used* (panels page, posts
+ * page, fixtures, accessories, projects), because that is what the product
+ * pages need to look things up by. /gallery wants the opposite axis: the two
+ * physical drops, shown whole. Rather than duplicate the entries under a
+ * third set of slugs, the albums are composed here from the groups that came
+ * out of each folder — so adding an image to any product group puts it in the
+ * library automatically, and nothing can appear in one place and not the
+ * other.
+ *
+ * `ALBUM_SOURCES` mirrors the `folder:` fields in
+ * scripts/build-product-images.mjs. If a group is added there against one of
+ * these two folders, add its slug here too.
+ */
+const ALBUM_SOURCES = {
+  panels: [
+    'clear-view-fencing-panels',
+    'clear-view-after-dark',
+    'accessories',
+    'fixtures-and-screws',
+    'projects',
+  ],
+  posts: ['clear-view-fencing-posts', 'accessories-caps'],
+} as const;
+
+export interface Album {
+  id: string;
+  title: string;
+  note: string;
+  images: ProductImage[];
+}
+
+/* Deduped by id: `projects` and `clear-view-fencing-panels` both draw on the
+   Clear View Panels folder and a file listed in two groups would otherwise
+   appear twice in one album. */
+const album = (slugs: readonly string[]): ProductImage[] => {
+  const seen = new Set<string>();
+  return slugs.flatMap(images).filter((image) => {
+    if (seen.has(image.src)) return false;
+    seen.add(image.src);
+    return true;
+  });
+};
+
+export const ALBUMS: Album[] = [
+  {
+    id: 'panels',
+    title: 'Clear View Panels',
+    note: 'Mesh, apertures, finishes and the boundaries they end up on — studio renders, factory photography and site frames in one place.',
+    images: album(ALBUM_SOURCES.panels),
+  },
+  {
+    id: 'posts',
+    title: 'Clear View Posts',
+    note: 'The folded profile, the caps that close it and the fixings that hang a panel off it, from rolling line to finished head.',
+    images: album(ALBUM_SOURCES.posts),
+  },
+].filter((a) => a.images.length > 0);
 
 /**
  * Pull one specific shot out of a group. Sections that need a particular

@@ -1,9 +1,10 @@
 ---
 import { POST_RATES, FIXINGS, BASE_PLATES } from '@data/clear-view-estimator';
 import { PANEL_WIDTH_MM, VAT_RATE } from '@data/clear-view-panels';
-import { formatRand } from '@data/products';
+import { formatRand, findImage } from '@data/products';
 import { CTA } from '@data/nav';
 import PostSection from '@components/ui/PostSection.astro';
+import RevealFrame from '@components/ui/RevealFrame.astro';
 
 /**
  * Clear View posts — priced the way they are actually sold: by the metre.
@@ -43,6 +44,14 @@ import PostSection from '@components/ui/PostSection.astro';
 
 type Rate = (typeof POST_RATES)[number];
 
+/** The assembled post head, over the clamp and bracket lists at the foot of
+    the section. `findImage` by id, so a missing manifest entry drops the
+    figure instead of rendering a broken `<img>`. */
+const FITTED = findImage(
+  'clear-view-fencing-posts',
+  'clear-view-post-head-cap-clamps-spike-topping',
+);
+
 const PROFILES = [
   {
     id: 't100' as const,
@@ -67,6 +76,48 @@ const PROFILES = [
 /** The panel heights, so a per-metre rate can be read as a post price. */
 const STANDARD_M = [1.8, 2.4, 3.0, 3.6];
 const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) / 100;
+
+/**
+ * Clamps, plates and brackets — the per-piece hardware, now addable to the
+ * basket a row at a time rather than being a price list you had to phone in.
+ *
+ * **Per row, not a dropdown.** Everywhere else on this page (and in
+ * AntiClimbOptions) the add control is a `select` plus a quantity, because
+ * those rows are variants of one product — a T-Post 100 × 60 in nine
+ * finish/wall combinations — and collapsing them keeps one product to one
+ * control. These rows aren't variants. Each line here is its own part, the
+ * price is already printed beside it, and a real order needs several of them
+ * at once: flat clamps *and* spider clamps, a base plate *and* its anchor
+ * bolts. A dropdown would make you re-select for each and would reprint
+ * prices the list already shows, so the control goes on the row itself.
+ *
+ * `group` is what the basket page groups by, so it names the part rather
+ * than the card it came from — "Base plate 8mm + anchor bolts" filed under
+ * Brackets & Anchors is clearer in a quote than under Posts.
+ */
+const FIXING_BLOCKS = [
+  {
+    id: 'fix',
+    group: 'Clamps & Fixings',
+    title: 'Clamp Kits & Base Plates',
+    note: 'Per clamp. The panel table says how many a given height needs — 8 a side at 1.8 m, 14 at 3 m.',
+    items: FIXINGS,
+  },
+  {
+    id: 'anch',
+    group: 'Brackets & Anchors',
+    title: 'Brackets & Anchors',
+    note: 'For posts that bolt down to concrete or steel instead of setting into it.',
+    items: BASE_PLATES,
+  },
+];
+
+/** Label → id fragment, so each row's input gets a stable, unique `for`. */
+const slug = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 ---
 
 <section class="bg-gm-black text-gm-white py-20 sm:py-28">
@@ -299,39 +350,97 @@ const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) /
       </div>
     </div>
 
-    {/* What goes on the post. Priced per piece, so they sit as plain lists. */}
-    <div class="mt-16 grid gap-10 border-t border-white/10 pt-12 sm:mt-20 lg:grid-cols-2 lg:gap-16">
+    {
+      /* What goes on the post. Priced per piece, so they sit as plain lists.
+        Two changes here, both for the same reason: these two blocks were bare
+        columns of text floating on the section background, which read as a
+        footnote to the rate tables rather than as products of their own.
+
+        They are now bordered cards, and they lead with the one photograph in
+        the client's set that shows this hardware assembled — cap, clamp discs
+        and spike topping at the head of a single post. Every line item below
+        is somewhere in that frame, which is worth more than any of the
+        individual clamp thumbnails: those show a part in isolation, this
+        shows where the part ends up.
+
+        Full-bleed above both cards rather than inside one of them. It belongs
+        to both lists, and the frame is 40:21 — dropping that into a half
+        column would shrink the very detail that makes it useful. */
+    }
+    <div class="mt-16 border-t border-white/10 pt-12 sm:mt-20">
       {
-        [
-          {
-            title: 'Clamp Kits & Base Plates',
-            note: 'Per clamp. The panel table says how many a given height needs — 8 a side at 1.8 m, 14 at 3 m.',
-            items: FIXINGS,
-          },
-          {
-            title: 'Brackets & Anchors',
-            note: 'For posts that bolt down to concrete or steel instead of setting into it.',
-            items: BASE_PLATES,
-          },
-        ].map((block) => (
-          <div>
-            <h3 class="font-display text-gm-white text-lg font-bold tracking-tight uppercase">
-              {block.title}
-            </h3>
-            <p class="text-gm-grey-500 mt-2 text-[13px] leading-relaxed">{block.note}</p>
-            <dl class="border-gm-grey-800 mt-5 border-t">
-              {block.items.map((item) => (
-                <div class="border-gm-grey-800 flex items-baseline justify-between gap-6 border-b py-3">
-                  <dt class="text-gm-grey-300 text-[13px]">{item.label}</dt>
-                  <dd class="text-gm-white shrink-0 font-mono text-[13px] tabular-nums">
-                    {formatRand(item.price)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ))
+        FITTED && (
+          <RevealFrame
+            image={FITTED}
+            kicker="Assembled"
+            title="Everything Below, Fitted"
+            body="The cap that closes the shaft, the clamps that hold the panel off it, and the spike topping that finishes the run — priced separately in the two lists under this, shown here in the positions they actually end up in."
+            sizes="(min-width: 1400px) 1336px, 100vw"
+            ratio="40 / 21"
+          />
+        )
       }
+
+      <div data-fixcalc class="mt-10 grid gap-6 sm:mt-12 lg:grid-cols-2 lg:gap-8">
+        {
+          FIXING_BLOCKS.map((block) => (
+            <div class="border border-white/10 p-6 sm:p-8">
+              <h3 class="font-display text-gm-white text-lg font-bold tracking-tight uppercase">
+                {block.title}
+              </h3>
+              <p class="text-gm-grey-500 mt-2 text-[13px] leading-relaxed">{block.note}</p>
+              <dl class="border-gm-grey-800 mt-5 border-t">
+                {block.items.map((item) => {
+                  const key = `${block.id}-${slug(item.label)}`;
+                  return (
+                    <div
+                      data-fix-row
+                      data-label={item.label}
+                      data-group={block.group}
+                      data-price={item.price}
+                      data-kg={item.kg ?? 0}
+                      class="border-gm-grey-800 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2 border-b py-3 last:border-b-0 last:pb-0"
+                    >
+                      <dt class="text-gm-grey-300 min-w-[10rem] flex-1 text-[13px]">
+                        {item.label}
+                      </dt>
+                      <dd class="flex items-center gap-3">
+                        <span class="text-gm-white shrink-0 font-mono text-[13px] tabular-nums">
+                          {formatRand(item.price)}
+                        </span>
+                        {/* JS-only, and hidden until the script runs — the list
+                            is the content and reads complete without it. */}
+                        <span class="fix-add items-center gap-1.5">
+                          <label class="sr-only" for={`fix-qty-${key}`}>
+                            Quantity — {item.label}
+                          </label>
+                          <input
+                            id={`fix-qty-${key}`}
+                            data-fix-qty
+                            type="number"
+                            min="1"
+                            step="1"
+                            value="1"
+                            inputmode="numeric"
+                            class="calc-field fix-qty"
+                          />
+                          <button
+                            type="button"
+                            data-fix-add
+                            class="fix-btn tap-target border-gm-grey-800 text-gm-white hover:border-gm-red hover:text-gm-red border font-mono text-[10px] font-bold tracking-[0.1em] uppercase transition-colors"
+                          >
+                            Add
+                          </button>
+                        </span>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </div>
+          ))
+        }
+      </div>
     </div>
 
     <div
@@ -370,7 +479,18 @@ const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) /
     display: block;
   }
 
-  [data-postcalc] .calc-field {
+  /* The per-row add controls on the fixings cards. Same no-JS contract as
+     the calculators above: hidden until the script marks the block live, so
+     the price lists render complete and nothing dead is ever shown. */
+  [data-fixcalc] .fix-add {
+    display: none;
+  }
+  [data-fixcalc].is-live .fix-add {
+    display: inline-flex;
+  }
+
+  [data-postcalc] .calc-field,
+  [data-fixcalc] .calc-field {
     height: 2.75rem;
     padding: 0 0.75rem;
     border: 1px solid #35353d;
@@ -379,9 +499,31 @@ const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) /
     font-size: 13px;
     line-height: 1.2;
   }
-  [data-postcalc] .calc-field:focus-visible {
+  [data-postcalc] .calc-field:focus-visible,
+  [data-fixcalc] .calc-field:focus-visible {
     outline: 2px solid var(--color-gm-red);
     outline-offset: 1px;
+  }
+
+  /* Twelve of these sit in two columns, so they run shorter than the
+     calculator fields above — full 2.75rem controls on every row would turn
+     a price list into a form. The tap target is restored via padding on the
+     button and a 2.25rem minimum on both, which clears the 24px AA target
+     without the rows growing apart. */
+  [data-fixcalc] .fix-qty {
+    height: 2.25rem;
+    width: 3.5rem;
+    padding: 0 0.4rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  [data-fixcalc] .fix-btn {
+    height: 2.25rem;
+    padding: 0 0.75rem;
+  }
+  [data-fixcalc] .fix-btn.is-added {
+    border-color: var(--color-gm-red);
+    color: var(--color-gm-red);
   }
   [data-postcalc] select.calc-field {
     max-width: 100%;
@@ -437,17 +579,20 @@ const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) /
 <script>
   import { add } from '@/lib/quote-cart';
 
+  /* Module scope — the rate calculator and the per-piece fixings rows below
+     both print prices, and one formatter means they cannot disagree about
+     what R 12.50 looks like. */
+  const rand = (v: number): string =>
+    `R ${new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(v)}`;
+
   const root = document.querySelector<HTMLElement>('[data-postcalc]');
 
   if (root) {
     const VAT = 0.15;
     const PANEL_W = Number(root.dataset.panelWidth) || 3;
-
-    const rand = (v: number): string =>
-      `R ${new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(v)}`;
 
     const heightEl = root.querySelector<HTMLInputElement>('[data-calc-height]');
     const perimeterEl = root.querySelector<HTMLInputElement>('[data-calc-perimeter]');
@@ -581,5 +726,64 @@ const rateAt = (rate: number, m: number): number => Math.round(rate * m * 100) /
       });
     });
     recalc();
+  }
+
+  /* ---------- per-piece fixings ---------- */
+
+  /* Independent of the calculator above on purpose: a clamp costs what it
+     costs whether or not a post height has been entered, so these rows must
+     not inherit the height/perimeter gating that (correctly) disables the
+     post rows. One delegated listener rather than twelve, so the cost is the
+     same whatever the two lists grow to. */
+  const fixRoot = document.querySelector<HTMLElement>('[data-fixcalc]');
+
+  if (fixRoot) {
+    fixRoot.classList.add('is-live');
+
+    fixRoot.addEventListener('click', (event) => {
+      const btn = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(
+        '[data-fix-add]',
+      );
+      if (!btn) return;
+
+      const row = btn.closest<HTMLElement>('[data-fix-row]');
+      const qtyEl = row?.querySelector<HTMLInputElement>('[data-fix-qty]');
+      if (!row || !qtyEl) return;
+
+      const label = row.dataset.label ?? '';
+      const unitEx = Number(row.dataset.price) || 0;
+      const kg = Number(row.dataset.kg) || 0;
+      /* A blank or junk box means one, not zero — the row is only ever
+         clicked by someone who wants at least one of the thing. */
+      const qty = Math.max(1, Math.floor(Number(qtyEl.value) || 1));
+      if (!unitEx || !label) return;
+
+      add({
+        /* One row is always one basket line: the basket merges on id + unit
+           price, and unlike a post (which varies by height) these parts have
+           a single fixed price, so clicking Add twice increments rather than
+           listing the same clamp twice. */
+        id: `fixing:${label}`,
+        group: row.dataset.group ?? 'Fixings',
+        label,
+        unitEx,
+        qty,
+        /* No `detail`. The basket already prints "qty × label @ unit", and
+           the label here is the whole specification — anything this field
+           could say would either duplicate that or, if it mentioned the
+           quantity, go stale the moment two adds merged into one line. */
+        kg,
+      });
+
+      /* Same confirmation idiom as the post rows above. `is-added` only
+         recolours — the button keeps its box, so the row doesn't reflow
+         under the pointer mid-click. */
+      btn.textContent = 'Added';
+      btn.classList.add('is-added');
+      window.setTimeout(() => {
+        btn.textContent = 'Add';
+        btn.classList.remove('is-added');
+      }, 1600);
+    });
   }
 </script>

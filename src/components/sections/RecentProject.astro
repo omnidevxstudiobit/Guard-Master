@@ -28,13 +28,17 @@ import { findImage } from '@data/products';
 
 type Shot = { slug: string; id: string; sector: string; caption: string };
 
+/**
+ * The lead used to be `dji-20240903-084123-886`, captioned "Aerial · A
+ * completed clear view run, seen from above". It is neither: the file is a
+ * ground-level photograph of palletised mesh against the factory wall, and
+ * the caption had been written from the `DJI_` filename rather than from the
+ * photograph. Both it and the image's alt text are corrected, and the frame
+ * has moved out of the lead slot — under a heading that says "Real
+ * Perimeters", the biggest frame on the page should be a perimeter. It stays
+ * in the mosaic because dispatch is real work and the grid wants five.
+ */
 const SHOTS: Shot[] = [
-  {
-    slug: 'projects',
-    id: 'dji-20240903-084123-886',
-    sector: 'Aerial',
-    caption: 'A completed clear view run, seen from above',
-  },
   {
     slug: 'projects',
     id: '14',
@@ -49,6 +53,12 @@ const SHOTS: Shot[] = [
     caption: 'Remote line with electric topping',
   },
   { slug: 'projects', id: '33', sector: 'Commercial', caption: 'Marina and moorings' },
+  {
+    slug: 'projects',
+    id: 'dji-20240903-084123-886',
+    sector: 'Dispatch',
+    caption: 'Palletised mesh at our factory, ready to load',
+  },
 ];
 
 const SHOWN = SHOTS.map((shot) => ({ ...shot, image: findImage(shot.slug, shot.id) })).filter(

@@ -1,5 +1,5 @@
 ---
-import { CTA } from '@data/nav';
+import { CONFIGURE } from '@data/nav';
 
 /**
  * Section 3 — "Built As One System".
@@ -14,9 +14,9 @@ import { CTA } from '@data/nav';
  * layout ba card ba besi grid use kora jabe na"). A plain tile grid of product
  * icons is the most common AI-generated landing-page pattern, so this section
  * is built around a sequence instead — the same reasoning that shaped
- * Proof358 (an interactive demonstration, not a feature grid).
+ * an interactive demonstration, not a feature grid.
  *
- * Light section: hero (light) → Proof358 (dark spec-lab) → here (light) —
+ * Light section: hero (light) → here (light) —
  * the deliberate rhythm from designguide.md §4.
  *
  * All copy, specs and icons are static DOM, fully visible with no JS —
@@ -361,7 +361,7 @@ const NODES: Node[] = [
 
     <div class="mt-16 flex flex-wrap justify-center gap-3 lg:mt-20">
       <a
-        href={CTA.href}
+        href={CONFIGURE.href}
         class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
       >
         Configure Your System
@@ -397,7 +397,7 @@ const NODES: Node[] = [
     transform-origin: top;
   }
 
-  /* Weld-joint dot at the link's midpoint — the same mark used in Proof358's
+  /* Weld-joint dot at the link's midpoint — the same mark used in the panel
      mesh pattern. Same variable-with-fallback approach: --joint-scale is
      scrubbed in once its link has drawn most of the way in; the fallback of 1
      keeps it visible with no JS or under reduced motion. */

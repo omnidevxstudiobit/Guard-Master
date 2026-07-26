@@ -1,0 +1,437 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
+import RevealFrame from '@components/ui/RevealFrame.astro';
+import { findImage, AFTER_DARK_IMAGES } from '@data/products';
+import { CTA } from '@data/nav';
+
+/**
+ * /projects/clear-fencing — Clear View fencing, seen in place.
+ *
+ * A child route of /projects, which stays what it is: sector scope, run
+ * lengths and specs, drawn as schematics. This page is the visual half of
+ * that story for one product line.
+ *
+ * **The honesty rule from /projects and RecentProject.astro carries over
+ * unchanged, and it is the reason this page is split into two bands.** That
+ * page says in as many words that the project photography is still being
+ * built out, and the imagery in this drop is genuinely two different kinds
+ * of thing:
+ *
+ *   - **From Site** — five real frames. Three phone shots from one black
+ *     powder-coated job (panels laid out, clamp brackets fitted, the run on
+ *     the wall) and the drone shot of a completed perimeter. These are
+ *     photographs of work that happened.
+ *   - **Visualised** — the 640 × 640 series and the residential renders.
+ *     Every one of them is a composite: a real location with fencing placed
+ *     into it. They are useful — they show the product at scales and in
+ *     sectors nobody has photographed yet — and they are not evidence that
+ *     Guard Master fenced a container port.
+ *
+ * Mixing those two into one gallery would quietly convert the second kind
+ * into the first, which is the exact failure /projects was written to avoid.
+ * So they sit in separate bands, each says which it is in its own heading
+ * and footnote, and no frame anywhere on this page carries a client name, a
+ * site address, a completion date or a linear-metre figure — none of that
+ * came with the images.
+ *
+ * Captions state only what is visible in their own frame. Where a render is
+ * of a sector, the caption describes the sector, not a job.
+ *
+ * Motion is RevealFrame's: CSS-only hover, gated to pointer devices, off
+ * under reduced motion, zero JS on the page.
+ */
+
+type Frame = { id: string; kicker: string; title: string; body: string };
+
+/**
+ * Real photography — and specifically, what it actually shows.
+ *
+ * Every caption below was written after opening the file, which turned out to
+ * matter. A first pass at this page described `img-5225` as a finished run on
+ * a boundary wall and `dji-20240903…` as an aerial of a completed perimeter,
+ * both read off filenames and thumbnails. Neither is true: 5225 is panels
+ * stacked on the ground with someone stepping over them, and the DJI file is
+ * palletised mesh against the factory wall.
+ *
+ * Which leaves a fact this band has to state rather than paper over — **there
+ * is no photograph of a finished clear view installation in this drop.** What
+ * there is is one black powder-coated job caught between delivery and lift,
+ * plus the factory that supplied it. That is genuinely worth showing (real
+ * coating, real hardware, real people, on a real day) and it is not a
+ * completed-perimeter gallery, so the heading and the footnote say so.
+ */
+const SITE: Frame[] = [
+  {
+    id: 'img-5227',
+    kicker: 'Delivered',
+    title: 'Off The Truck, Onto The Ground',
+    body: 'Black powder-coated panels laid out where they will be lifted from. Coated in our own factory and delivered as one load, with the installers’ vehicles parked in the same frame.',
+  },
+  {
+    id: 'img-5225',
+    kicker: 'Staged',
+    title: 'Stacked In Working Order',
+    body: 'The same stack from along its length. Panels sit flat and nested until the posts are set — the mesh is stiff enough to take being walked over without deforming.',
+  },
+  {
+    id: 'img-5228',
+    kicker: 'Detail',
+    title: 'Brackets On, Ready To Hang',
+    body: 'Clamp brackets already bolted through the rail, one per fixing point. Hanging the panel is the last thing that happens on site, not the first.',
+  },
+  {
+    id: 'dji-20240903-084123-886',
+    kicker: 'Dispatch',
+    title: 'Palletised At The Factory',
+    body: 'Six pallets of galvanised mesh against the factory wall with post stock alongside — the point in the chain where manufacturer-direct stops being a claim and starts being a loading bay.',
+  },
+];
+
+/** Composites: real locations, fencing placed in. Labelled as such. */
+const VISUALISED: Frame[] = [
+  {
+    id: '14',
+    kicker: 'Industrial',
+    title: 'Petrochemical Plant',
+    body: 'Process plant boundaries need a fence that keeps sightlines open for patrols and cameras without giving anyone a foothold near live plant.',
+  },
+  {
+    id: '15',
+    kicker: 'Logistics',
+    title: 'Container Terminal',
+    body: 'Long, straight, and watched. At port scale the perimeter is measured in kilometres, which is where a manufacturer-direct rate stops being a rounding error.',
+  },
+  {
+    id: '25',
+    kicker: 'Utility',
+    title: 'Remote Line, Electric Topping',
+    body: '358 mesh with an electrified topping on the same uprights — the standard answer where the nearest response is a long way off.',
+  },
+  {
+    id: '41',
+    kicker: 'Infrastructure',
+    title: 'Along A Cut Embankment',
+    body: 'Ground that moves is what posts are engineered for. The run follows the cut instead of bridging it, which is a post-spacing decision, not a panel one.',
+  },
+  {
+    id: '33',
+    kicker: 'Commercial',
+    title: 'Marina And Moorings',
+    body: 'Salt air is the hard part. This is where the heavier coatings — Plascoat over hot-dip galvanised — earn their price difference.',
+  },
+  {
+    id: '51',
+    kicker: 'Education',
+    title: 'School Boundary',
+    body: 'A perimeter nobody climbs that still lets staff see out and parents see in. The aperture does both jobs at once.',
+  },
+  {
+    id: '9',
+    kicker: 'Residential',
+    title: 'Hillside Boundary',
+    body: 'One post, one panel, on a slope. Panels stay square and the posts take the fall — which is why post length is specified per run, not per order.',
+  },
+  {
+    id: '24',
+    kicker: 'Remote',
+    title: 'Tracking A Ridge',
+    body: 'Terrain fencing, where the shortest line and the buildable line are not the same line.',
+  },
+];
+
+const resolve = (frames: Frame[]) =>
+  frames
+    .map((frame) => ({ ...frame, image: findImage('projects', frame.id) }))
+    .filter((frame): frame is Frame & { image: NonNullable<typeof frame.image> } =>
+      Boolean(frame.image),
+    );
+
+const SITE_SHOWN = resolve(SITE);
+const VISUALISED_SHOWN = resolve(VISUALISED);
+const [siteLead, ...siteRest] = SITE_SHOWN;
+
+/** The residential renders, shared with the panels page's After Dark
+    section — the same three frames, carrying a sector here rather than the
+    sightline argument they make there. */
+const AFTER_DARK: Record<string, { kicker: string; title: string; body: string }> = {
+  'clear-view-residential-boundary-after-dark': {
+    kicker: 'Residential · Night',
+    title: 'Driveway In View',
+    body: 'The approach, the door and the car all stay visible from inside the boundary once the lights are on.',
+  },
+  'clear-view-residential-sightline-through-mesh-dusk': {
+    kicker: 'Residential · Dusk',
+    title: 'Through The Line',
+    body: 'Read along the run and the mesh stops being a screen — planting and lighting come straight through it.',
+  },
+  'clear-view-residential-frontage-dusk': {
+    kicker: 'Residential · Dusk',
+    title: 'Full Frontage',
+    body: 'Continuous and anti-climb across every metre, and the house is still the thing you see.',
+  },
+};
+---
+
+<BaseLayout
+  title="Clear View Fencing Projects & Installations | Guard Master"
+  description="Clear View 358 fencing in place — real installation photography from our own jobs, plus sector visualisations across industrial, logistics, utility, marine, education and residential perimeters."
+>
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Projects', href: '/projects' },
+      { label: 'Clear View Fencing', href: '/projects/clear-fencing' },
+    ]}
+  />
+
+  <!-- Header -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+          Projects · Clear View Fencing
+        </p>
+        <h1
+          class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
+        >
+          Clear View, <span class="text-gm-red">In Place</span>
+        </h1>
+        <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
+          Two kinds of picture, kept apart on purpose. First our own photography — a black
+          powder-coated job from delivery through to the finished run. Then the sectors we build
+          for, visualised, because we would rather show you the scale honestly than dress a render
+          up as a case study.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href={CTA.href}
+            class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+          >
+            {CTA.label}
+          </a>
+          <a
+            href="/projects"
+            class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+          >
+            Scope By Sector
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- From site: the real photography -->
+  {
+    siteLead && (
+      <section class="bg-gm-black text-gm-white py-20 sm:py-28">
+        <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+          <div class="flex flex-wrap items-end justify-between gap-8">
+            <div class="max-w-2xl">
+              <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">From Site</p>
+              <h2 class="font-display text-gm-white mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl">
+                Our Own Photographs.
+              </h2>
+              <p class="text-gm-grey-400 mt-6 text-base leading-relaxed">
+                One black powder-coated job between delivery and lift, plus the factory that
+                supplied it. Nothing here is a render and nothing is staged — which is also why
+                there are four frames and not forty.
+              </p>
+            </div>
+          </div>
+
+          {/* The delivery frame leads at full width — it is the only one of
+              the four with people, vehicles and the whole stack in it, so it
+              carries the "this is a real day" job on its own. Portrait phone
+              shot, so from 1024px up it takes a 3:2 band rather than running
+              metres tall; 16:9 was tried first and cropped to an abstract
+              wall of mesh with the vehicles and the ground both gone. */}
+          <RevealFrame
+            image={siteLead.image}
+            kicker={siteLead.kicker}
+            title={siteLead.title}
+            body={siteLead.body}
+            sizes="(min-width: 1400px) 1336px, 100vw"
+            ratio="4 / 5"
+            ratioLg="3 / 2"
+            position="50% 0%"
+            class="mt-12 sm:mt-16"
+          />
+
+          <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {siteRest.map((frame) => (
+              <RevealFrame
+                image={frame.image}
+                kicker={frame.kicker}
+                title={frame.title}
+                body={frame.body}
+                sizes="(min-width: 1024px) 430px, (min-width: 640px) 50vw, 100vw"
+                ratio="4 / 5"
+              />
+            ))}
+          </div>
+
+          <p class="text-gm-grey-500 mt-8 max-w-2xl text-[11px] leading-relaxed">
+            No client names, addresses, dates or run lengths are given, because none of that came
+            with the photographs. Each caption states only what is visible in its own frame.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Visualised: composites, and said to be -->
+  {
+    VISUALISED_SHOWN.length > 0 && (
+      <section class="bg-gm-grey-50 text-gm-black py-20 sm:py-28">
+        <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+          <div class="max-w-2xl">
+            <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Visualised</p>
+            <h2 class="font-display text-gm-black mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl">
+              The Sectors We <span class="text-gm-red">Build For.</span>
+            </h2>
+            <p class="text-gm-grey-600 mt-6 text-base leading-relaxed">
+              These are visualisations — real locations with our fencing placed into them. We use
+              them because they show the product at scales and in sectors nobody has photographed
+              yet. They are not photographs of completed jobs, and we are not going to imply they
+              are.
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-5 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
+            {VISUALISED_SHOWN.map((frame) => (
+              <RevealFrame
+                image={frame.image}
+                kicker={frame.kicker}
+                title={frame.title}
+                body={frame.body}
+                sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Residential, after dark -->
+  {
+    AFTER_DARK_IMAGES.length > 0 && (
+      <section class="bg-gm-black text-gm-white py-20 sm:py-28">
+        <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+          <div class="max-w-2xl">
+            <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">
+              Residential · After Dark
+            </p>
+            <h2 class="font-display text-gm-white mt-5 text-3xl leading-[1.02] font-black tracking-tight uppercase sm:text-4xl lg:text-5xl">
+              When The Lights Go On.
+            </h2>
+            <p class="text-gm-grey-400 mt-6 text-base leading-relaxed">
+              Night is when a boundary either works or gets in the way. Also visualisations — same
+              rule as the band above.
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-6 sm:mt-16 lg:grid-cols-3">
+            {AFTER_DARK_IMAGES.map((image) => (
+              <RevealFrame
+                image={image}
+                kicker={AFTER_DARK[image.id]?.kicker}
+                title={AFTER_DARK[image.id]?.title}
+                body={AFTER_DARK[image.id]?.body}
+                sizes="(min-width: 1024px) 430px, 100vw"
+                ratio="4 / 3"
+              />
+            ))}
+          </div>
+
+          <p class="text-gm-grey-500 mt-8 max-w-2xl text-[11px] leading-relaxed">
+            Panel aperture, height and finish are specified from the tables on the{' '}
+            <a
+              href="/clear-view-fencing-panels"
+              class="text-gm-grey-300 underline underline-offset-2"
+            >
+              panels page
+            </a>
+            , not from these frames.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Complete the system -->
+  <section class="bg-gm-white text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Specify It</p>
+      <h2
+        class="font-display text-gm-black mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Every Part Of What You Just Looked At
+      </h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        {
+          [
+            {
+              name: 'Clear View Panels',
+              href: '/clear-view-fencing-panels',
+              note: '358 mesh · 3 apertures · sized to your run',
+            },
+            {
+              name: 'Clear View Posts',
+              href: '/clear-view-fencing-posts',
+              note: 'Three profiles · priced by the metre',
+            },
+            {
+              name: 'Fixtures & Screws',
+              href: '/fixtures-and-screws',
+              note: 'Flat or Spider clamp · HDG / powder / PVC',
+            },
+          ].map((p) => (
+            <a
+              href={p.href}
+              class="tap-target group border-gm-grey-200 hover:border-gm-black block border p-6 transition-colors"
+            >
+              <span class="font-display text-gm-black text-lg font-bold tracking-tight uppercase">
+                {p.name}
+              </span>
+              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{p.note}</p>
+              <span class="text-gm-red mt-4 inline-flex items-center text-[12px] font-bold tracking-[0.08em] uppercase">
+                See Options →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="bg-gm-black text-gm-white py-20 text-center sm:py-24">
+    <div class="mx-auto max-w-2xl px-6">
+      <h2
+        class="font-display text-gm-white text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        Your Perimeter, <span class="text-gm-red">Priced Properly</span>
+      </h2>
+      <p class="text-gm-grey-300 mx-auto mt-5 max-w-lg text-base leading-relaxed">
+        Tell us the run and the site, and the estimator prices panels, posts and fixings together —
+        the way they actually ship.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/clear-fencing-estimator"
+          class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+        >
+          Start Your Estimate
+        </a>
+        <a
+          href="/projects"
+          class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+        >
+          All Projects
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

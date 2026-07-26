@@ -2,7 +2,9 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
 import PostPricing from '@components/sections/PostPricing.astro';
-import { CTA } from '@data/nav';
+import RevealFrame from '@components/ui/RevealFrame.astro';
+import { CTA, CONFIGURE } from '@data/nav';
+import { findImage } from '@data/products';
 
 /**
  * /clear-view-fencing-posts — the Posts product page.
@@ -22,7 +24,38 @@ import { CTA } from '@data/nav';
  * for. The FEATURES text grid further down repeats the same six facts in
  * prose — the diagram is `hidden lg:block` like every other cutaway in this
  * build, so the text carries the content on narrower viewports.
+ *
+ * Three photographs, each answering a question the drawings can't. Until now
+ * this page was entirely drawn — a cutaway, a set of cross-sections and two
+ * rate tables — which explains how the post works but never once shows what
+ * one actually looks like. Each frame is chosen for what it makes legible,
+ * not for decoration:
+ *
+ *   HERO     `35` — two finished posts, isolated, silver galvanised beside
+ *            graphite powder coat. The header's job is "this is the product",
+ *            and one clean frame does it faster than the paragraph beside it.
+ *   PROFILE  `5bfcf5b7…` — the sections stacked end-on, so the folded profile
+ *            reads as real steel. This is the important one: the section
+ *            below argues that a post is a folded profile rather than a plain
+ *            tube, and this photograph is the evidence for that sentence. It
+ *            runs at every width, unlike the cutaway it sits above, so the
+ *            claim survives on mobile where the diagram is hidden.
+ *   FINISHES `img-4742` — six posts in six finishes in a row. The finish
+ *            section listed three options as text and showed none of them.
+ *
+ * The last two also appear on the homepage (FactoryDirect's floor strip).
+ * That's deliberate reuse of the client's two clearest post photographs, not
+ * an oversight — someone landing here from search has seen neither.
+ *
+ * Each is looked up by id through `findImage`, so a manifest entry that
+ * disappears degrades to no figure rather than a broken `<img>`, and each
+ * carries the alt text from that manifest rather than a second description
+ * written here that could drift from it.
  */
+
+const HERO = findImage('clear-view-fencing-posts', '35');
+const PROFILE = findImage('clear-view-fencing-posts', '5bfcf5b7-b5c7-4941-ab24-88a74b552970');
+const FINISHES = findImage('clear-view-fencing-posts', 'img-4742');
 
 const FEATURES = [
   {
@@ -66,32 +99,54 @@ const FEATURES = [
   <!-- Header -->
   <section class="bg-gm-white text-gm-black py-16 sm:py-20">
     <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-      <div class="max-w-3xl">
-        <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Clear View Posts</p>
-        <h1
-          class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
-        >
-          Engineered Posts, <span class="text-gm-red">Not Just Cut To Length</span>
-        </h1>
-        <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
-          Six real lengths, a folded profile with built-in stiffening ribs, and a set of features
-          most resellers never mention because they didn't engineer the post — they bought it from
-          whoever was cheapest that month.
-        </p>
-        <div class="mt-9 flex flex-wrap gap-3">
-          <a
-            href={CTA.href}
-            class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+      <div class="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-16">
+        <div class="max-w-2xl">
+          <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Clear View Posts</p>
+          <h1
+            class="font-display text-gm-black mt-5 text-4xl leading-[0.95] font-black tracking-tight uppercase sm:text-5xl lg:text-6xl"
           >
-            {CTA.label}
-          </a>
-          <a
-            href="/quote-estimator"
-            class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
-          >
-            Configure Your System
-          </a>
+            Engineered Posts, <span class="text-gm-red">Not Just Cut To Length</span>
+          </h1>
+          <p class="text-gm-grey-600 mt-6 max-w-2xl text-base leading-relaxed">
+            Six real lengths, a folded profile with built-in stiffening ribs, and a set of features
+            most resellers never mention because they didn't engineer the post — they bought it from
+            whoever was cheapest that month.
+          </p>
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a
+              href={CTA.href}
+              class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
+            >
+              {CTA.label}
+            </a>
+            <a
+              href={CONFIGURE.href}
+              class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
+            >
+              Configure Your System
+            </a>
+          </div>
         </div>
+
+        {
+          /* The product, shown. Square source, square frame, so the caps —
+             the whole point of the shot — are never cropped. Eager, because
+             it is above the fold on every viewport this page has. */
+        }
+        {
+          HERO && (
+            <RevealFrame
+              image={HERO}
+              kicker="Two Finishes"
+              title="The Same Post, Twice"
+              body="Hot-dip galvanised beside graphite powder coat, both closed with the solar cap. The profile underneath is identical — only the coating changes."
+              sizes="(min-width: 1024px) 480px, (min-width: 640px) 28rem, 100vw"
+              ratio="1 / 1"
+              loading="eager"
+              class="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none"
+            />
+          )
+        }
       </div>
     </div>
   </section>
@@ -115,6 +170,32 @@ const FEATURES = [
           are the real features on the Guard Master post, from our own spec sheet.
         </p>
       </div>
+
+      {
+        /* The sentence above claims a post is a folded profile, not a plain
+          tube. This is that claim, photographed: the sections stacked end-on
+          in the factory, so the folds read as real steel rather than as lines
+          in a diagram. It sits above the cutaway rather than beside it because
+          the cutaway is `hidden lg:block` — the photograph runs at every
+          width, so the argument still lands on a phone where the diagram
+          never appears.
+
+          The caption describes only what is actually in frame — the rib and
+          the return lips are visible on these ends; the securing teeth are
+          not, so they are left to the drawing and the grid below. */
+      }
+      {
+        PROFILE && (
+          <RevealFrame
+            image={PROFILE}
+            kicker="Section"
+            title="The Profile Itself, End-On"
+            body="Roll-formed from a single strip rather than cut from tube — the rib pressed down the face and the lips returned along each edge read straight off the cut ends. Those folds are the features named below; the drawing under this labels them one by one."
+            sizes="(min-width: 1024px) 896px, 100vw"
+            class="mx-auto mt-12 max-w-4xl sm:mt-14"
+          />
+        )
+      }
 
       <!-- Cutaway — the bigger, scroll-animated sibling of SystemAssembly's
            homepage diagram. Same geometry (cap, shaft, rib, teeth, slot,
@@ -347,24 +428,47 @@ const FEATURES = [
             reads as one coherent build, not mismatched parts.
           </p>
         </div>
-        <div class="border-gm-grey-200 bg-white p-8">
-          <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
-            Post Finish Options
-          </p>
-          <ul class="text-gm-grey-700 mt-4 space-y-3 text-sm">
-            <li class="border-gm-grey-200 flex items-center justify-between border-b pb-3">
-              <span class="font-bold">Hot-Dip Galvanised</span>
-              <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Default</span>
-            </li>
-            <li class="border-gm-grey-200 flex items-center justify-between border-b pb-3">
-              <span class="font-bold">Powder Coated</span>
-              <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Optional</span>
-            </li>
-            <li class="flex items-center justify-between">
-              <span class="font-bold">Plascoat Zam310</span>
-              <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Optional</span>
-            </li>
-          </ul>
+        <div>
+          {
+            /* Finishes, shown. This block listed three options as text and
+              showed none of them, which is the one place on the page where a
+              photograph carries information no drawing can: colour. The
+              client's own sample line-up is the honest version of it — real
+              posts under real light, which is also why the note beneath asks
+              for a physical sample before anyone specifies a colour. */
+          }
+          {
+            FINISHES && (
+              <RevealFrame
+                image={FINISHES}
+                kicker="Samples"
+                title="Six Finishes, One Profile"
+                body="Finish samples on our own floor. Colour reproduction shifts with light and screen — ask for a physical sample before you specify one."
+                sizes="(min-width: 1024px) 640px, 100vw"
+                ratio="4 / 3"
+                class="mb-5"
+              />
+            )
+          }
+          <div class="border-gm-grey-200 border bg-white p-8">
+            <p class="text-gm-grey-500 font-mono text-[11px] tracking-[0.18em] uppercase">
+              Post Finish Options
+            </p>
+            <ul class="text-gm-grey-700 mt-4 space-y-3 text-sm">
+              <li class="border-gm-grey-200 flex items-center justify-between border-b pb-3">
+                <span class="font-bold">Hot-Dip Galvanised</span>
+                <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Default</span>
+              </li>
+              <li class="border-gm-grey-200 flex items-center justify-between border-b pb-3">
+                <span class="font-bold">Powder Coated</span>
+                <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Optional</span>
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="font-bold">Plascoat Zam310</span>
+                <span class="text-gm-grey-500 font-mono text-[11px] uppercase">Optional</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -394,7 +498,7 @@ const FEATURES = [
             },
             {
               name: 'Accessories & Toppings',
-              href: '/accessories',
+              href: '/clear-fencing-accessories',
               note: 'Caps, gates, razor & spike topping',
             },
           ].map((p) => (
@@ -430,7 +534,7 @@ const FEATURES = [
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <a
-          href="/quote-estimator"
+          href="/clear-fencing-estimator"
           class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
         >
           Start Your Estimate

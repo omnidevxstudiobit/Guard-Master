@@ -119,6 +119,22 @@
       "width": 640,
       "height": 640,
       "srcset": "/images/products/clear-view-fencing-panels/17-480.webp 480w, /images/products/clear-view-fencing-panels/17-640.webp 640w"
+    },
+    {
+      "id": "18",
+      "alt": "Welded mesh sheet laid flat, lit to show every weld in the grid",
+      "src": "/images/products/clear-view-fencing-panels/18-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/18-480.webp 480w, /images/products/clear-view-fencing-panels/18-640.webp 640w"
+    },
+    {
+      "id": "5",
+      "alt": "Isolated render of four horizontal wires crossing two verticals at the weld",
+      "src": "/images/products/clear-view-fencing-panels/5-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-panels/5-480.webp 480w, /images/products/clear-view-fencing-panels/5-640.webp 640w"
     }
   ],
   "clear-view-fencing-posts": [
@@ -185,6 +201,54 @@
       "width": 1600,
       "height": 2844,
       "srcset": "/images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-480.webp 480w, /images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-960.webp 960w, /images/products/clear-view-fencing-posts/d8e851de-f908-4f6b-8961-f6fbb22056b7-1600.webp 1600w"
+    },
+    {
+      "id": "clear-view-post-head-cap-clamps-spike-topping",
+      "alt": "Top of a powder-coated clear view post: moulded cap, clamp fixings and shark-tooth spike topping over 358 mesh",
+      "src": "/images/products/clear-view-fencing-posts/clear-view-post-head-cap-clamps-spike-topping-1600.webp",
+      "width": 1600,
+      "height": 840,
+      "srcset": "/images/products/clear-view-fencing-posts/clear-view-post-head-cap-clamps-spike-topping-480.webp 480w, /images/products/clear-view-fencing-posts/clear-view-post-head-cap-clamps-spike-topping-960.webp 960w, /images/products/clear-view-fencing-posts/clear-view-post-head-cap-clamps-spike-topping-1600.webp 1600w"
+    },
+    {
+      "id": "36",
+      "alt": "Capped clear view post carrying spike-topped 358 mesh, standing against open field",
+      "src": "/images/products/clear-view-fencing-posts/36-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/36-480.webp 480w, /images/products/clear-view-fencing-posts/36-640.webp 640w"
+    },
+    {
+      "id": "56",
+      "alt": "Galvanised post and panel meeting at a corner under shark-tooth spike topping",
+      "src": "/images/products/clear-view-fencing-posts/56-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/56-480.webp 480w, /images/products/clear-view-fencing-posts/56-640.webp 640w"
+    },
+    {
+      "id": "58",
+      "alt": "Dark green powder-coated post and 358 panel beneath spike topping",
+      "src": "/images/products/clear-view-fencing-posts/58-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/clear-view-fencing-posts/58-480.webp 480w, /images/products/clear-view-fencing-posts/58-640.webp 640w"
+    },
+    {
+      "id": "dji-20250930-103035-128",
+      "alt": "Galvanised post stock and base plates stacked in the factory yard beside coiled wire",
+      "src": "/images/products/clear-view-fencing-posts/dji-20250930-103035-128-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/clear-view-fencing-posts/dji-20250930-103035-128-480.webp 480w, /images/products/clear-view-fencing-posts/dji-20250930-103035-128-960.webp 960w, /images/products/clear-view-fencing-posts/dji-20250930-103035-128-1600.webp 1600w"
+    },
+    {
+      "id": "img-5089",
+      "alt": "Post samples in galvanised and graphite finishes stood on a desk for comparison",
+      "src": "/images/products/clear-view-fencing-posts/img-5089-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/clear-view-fencing-posts/img-5089-480.webp 480w, /images/products/clear-view-fencing-posts/img-5089-960.webp 960w, /images/products/clear-view-fencing-posts/img-5089-1600.webp 1600w"
     }
   ],
   "razor-wire-mesh": [
@@ -521,6 +585,22 @@
   ],
   "accessories-caps": [
     {
+      "id": "solar-post-caps-lit-four-finishes",
+      "alt": "Four solar post caps lit after dark, two bronze and two black, each throwing light from a full-width lens",
+      "src": "/images/products/accessories-caps/solar-post-caps-lit-four-finishes-1200.webp",
+      "width": 1200,
+      "height": 1000,
+      "srcset": "/images/products/accessories-caps/solar-post-caps-lit-four-finishes-480.webp 480w, /images/products/accessories-caps/solar-post-caps-lit-four-finishes-960.webp 960w, /images/products/accessories-caps/solar-post-caps-lit-four-finishes-1200.webp 1200w"
+    },
+    {
+      "id": "solar-post-caps-on-fence-run-night",
+      "alt": "Two capped posts on a clear view run at night, solar caps lit above the mesh and rail",
+      "src": "/images/products/accessories-caps/solar-post-caps-on-fence-run-night-1200.webp",
+      "width": 1200,
+      "height": 1000,
+      "srcset": "/images/products/accessories-caps/solar-post-caps-on-fence-run-night-480.webp 480w, /images/products/accessories-caps/solar-post-caps-on-fence-run-night-960.webp 960w, /images/products/accessories-caps/solar-post-caps-on-fence-run-night-1200.webp 1200w"
+    },
+    {
       "id": "img-5084",
       "alt": "Solar post cap mounted on a clear view post",
       "src": "/images/products/accessories-caps/img-5084-1600.webp",
@@ -535,6 +615,32 @@
       "width": 1600,
       "height": 2133,
       "srcset": "/images/products/accessories-caps/img-5053-480.webp 480w, /images/products/accessories-caps/img-5053-960.webp 960w, /images/products/accessories-caps/img-5053-1600.webp 1600w"
+    }
+  ],
+  "clear-view-after-dark": [
+    {
+      "id": "clear-view-residential-boundary-after-dark",
+      "alt": "Clear view fencing along a residential driveway at night, the lit stone house and parked car visible straight through the mesh",
+      "src": "/images/products/clear-view-after-dark/clear-view-residential-boundary-after-dark-1174.webp",
+      "width": 1174,
+      "height": 670,
+      "srcset": "/images/products/clear-view-after-dark/clear-view-residential-boundary-after-dark-480.webp 480w, /images/products/clear-view-after-dark/clear-view-residential-boundary-after-dark-960.webp 960w, /images/products/clear-view-after-dark/clear-view-residential-boundary-after-dark-1174.webp 1174w"
+    },
+    {
+      "id": "clear-view-residential-sightline-through-mesh-dusk",
+      "alt": "Looking along a clear view fence line at dusk, garden uplighting and the house behind read clearly through the 358 mesh",
+      "src": "/images/products/clear-view-after-dark/clear-view-residential-sightline-through-mesh-dusk-1174.webp",
+      "width": 1174,
+      "height": 670,
+      "srcset": "/images/products/clear-view-after-dark/clear-view-residential-sightline-through-mesh-dusk-480.webp 480w, /images/products/clear-view-after-dark/clear-view-residential-sightline-through-mesh-dusk-960.webp 960w, /images/products/clear-view-after-dark/clear-view-residential-sightline-through-mesh-dusk-1174.webp 1174w"
+    },
+    {
+      "id": "clear-view-residential-frontage-dusk",
+      "alt": "Full frontage of a home behind clear view fencing at dusk, the planting and driveway unobstructed by the perimeter",
+      "src": "/images/products/clear-view-after-dark/clear-view-residential-frontage-dusk-1174.webp",
+      "width": 1174,
+      "height": 670,
+      "srcset": "/images/products/clear-view-after-dark/clear-view-residential-frontage-dusk-480.webp 480w, /images/products/clear-view-after-dark/clear-view-residential-frontage-dusk-960.webp 960w, /images/products/clear-view-after-dark/clear-view-residential-frontage-dusk-1174.webp 1174w"
     }
   ],
   "projects": [
@@ -596,11 +702,59 @@
     },
     {
       "id": "dji-20240903-084123-886",
-      "alt": "Aerial view of a completed clear view perimeter installation",
+      "alt": "Pallets of galvanised clear view mesh panels stacked against the factory wall, with post stock alongside",
       "src": "/images/products/projects/dji-20240903-084123-886-1600.webp",
       "width": 1600,
       "height": 2133,
       "srcset": "/images/products/projects/dji-20240903-084123-886-480.webp 480w, /images/products/projects/dji-20240903-084123-886-960.webp 960w, /images/products/projects/dji-20240903-084123-886-1600.webp 1600w"
+    },
+    {
+      "id": "41",
+      "alt": "Clear view fence line running along a cut embankment under open sky",
+      "src": "/images/products/projects/41-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/41-480.webp 480w, /images/products/projects/41-640.webp 640w"
+    },
+    {
+      "id": "9",
+      "alt": "Capped clear view post and panel on a green hillside boundary",
+      "src": "/images/products/projects/9-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/9-480.webp 480w, /images/products/projects/9-640.webp 640w"
+    },
+    {
+      "id": "7",
+      "alt": "Clear view mesh seen close, against a treeline behind it",
+      "src": "/images/products/projects/7-640.webp",
+      "width": 640,
+      "height": 640,
+      "srcset": "/images/products/projects/7-480.webp 480w, /images/products/projects/7-640.webp 640w"
+    },
+    {
+      "id": "img-5225",
+      "alt": "Black powder-coated clear view fencing installed along a boundary wall on a completed site",
+      "src": "/images/products/projects/img-5225-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/projects/img-5225-480.webp 480w, /images/products/projects/img-5225-960.webp 960w, /images/products/projects/img-5225-1600.webp 1600w"
+    },
+    {
+      "id": "img-5227",
+      "alt": "Black powder-coated clear view panels laid out on site ahead of installation",
+      "src": "/images/products/projects/img-5227-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/projects/img-5227-480.webp 480w, /images/products/projects/img-5227-960.webp 960w, /images/products/projects/img-5227-1600.webp 1600w"
+    },
+    {
+      "id": "img-5228",
+      "alt": "Clamp brackets bolted to the rails of stacked black clear view panels, ready to hang",
+      "src": "/images/products/projects/img-5228-1600.webp",
+      "width": 1600,
+      "height": 2133,
+      "srcset": "/images/products/projects/img-5228-480.webp 480w, /images/products/projects/img-5228-960.webp 960w, /images/products/projects/img-5228-1600.webp 1600w"
     }
   ]
 }

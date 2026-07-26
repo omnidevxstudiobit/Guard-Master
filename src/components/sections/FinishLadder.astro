@@ -1,5 +1,5 @@
 ---
-import { CTA } from '@data/nav';
+import { CONFIGURE } from '@data/nav';
 
 /**
  * Section 4 — "The Finish Ladder".
@@ -13,11 +13,11 @@ import { CTA } from '@data/nav';
  * makes that literal — an ascending staircase of the four finishes, each
  * tier taller than the last, the top one carrying the 10-year warranty.
  *
- * Same reasoning as Proof358 and SystemAssembly: animationguide.md §0 rules
+ * Same reasoning as SystemAssembly: animationguide.md §0 rules
  * out generic card/grid layouts, so this is a chart with real hierarchy
  * (heights encode "better"), not four equal-weight tiles.
  *
- * Dark section — hero (light) → Proof358 (dark) → SystemAssembly (light) →
+ * Dark section — hero (light) → SystemAssembly (light) →
  * here (dark), continuing the rhythm from designguide.md §4.
  *
  * All copy and tier data are static DOM; the section is complete with no JS.
@@ -147,7 +147,7 @@ const TIERS: Tier[] = [
 
     <div class="mt-16 flex flex-wrap justify-center gap-3 lg:mt-20">
       <a
-        href={CTA.href}
+        href={CONFIGURE.href}
         class="tap-target bg-gm-red text-gm-white inline-flex items-center px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
       >
         Configure Your System

@@ -1,5 +1,6 @@
 ---
-import { PRODUCTS } from '@data/products';
+import { findImage } from '@data/products';
+import RevealFrame from '@components/ui/RevealFrame.astro';
 
 /**
  * Clear View panels, photographed — the last section on the product page.
@@ -19,17 +20,78 @@ import { PRODUCTS } from '@data/products';
  * the section reading as the stock "gallery grid" animationguide.md §0 rules
  * out.
  *
- * Captions come from each image's own alt text in the generated manifest, so
- * they cannot drift from the file they describe. Where the manifest has nothing
- * useful, the frame carries no caption rather than an invented one.
+ * **The frames are named, not sliced.** This used to take `images.slice(0, 9)`
+ * off the panels group, which was wrong in a way that showed: that array is
+ * ordered render-first on purpose (the homepage range card renders
+ * `images[0]` at full size), so the first nine entries are eight white-
+ * background studio renders and one photograph. The section directly above
+ * them promised "our own photography — the panel as it lands on a site", and
+ * every actual boundary photograph in the group sits at index 9 or later,
+ * outside the slice. It also simply looked broken: white cut-outs floating on
+ * a grey section, with the isolated post render contributing a tile that was
+ * about 80% empty.
  *
- * Zero JavaScript: a scroll-margin mosaic of `<img>` with lazy loading. No
- * lightbox — a lightbox on a product page is a detour, and every one of these
- * is already served at 1600 px.
+ * So the five real in-context photographs are named by id instead. Naming
+ * them fixes the picture and the sentence at the same time — the copy above
+ * is now true rather than aspirational — and it survives the manifest being
+ * reordered, which a slice never could.
+ *
+ * Five is also exactly what the mosaic wants: the lead spans 2 × 2 of a
+ * four-column grid, and four singles fill the rest with no ragged tail.
+ *
+ * Zero JavaScript. Motion is RevealFrame's CSS-only hover — gated to pointer
+ * devices, off under reduced motion. No lightbox: a lightbox on a product
+ * page is a detour, and these are already served at their full width.
  */
 
-const family = PRODUCTS.find((product) => product.slug === 'clear-view-fencing');
-const images = (family?.images ?? []).slice(0, 9);
+/** In-context photographs only, lead first. Renders live in the sections
+    above this one, where they are labelled as drawings. */
+const SHOTS = [
+  {
+    id: 'clear-view-fencing-anti-cut-anti-climb-high-visibility',
+    kicker: 'Open Ground',
+    title: 'Sightline Kept',
+    body: 'A galvanised run across open ground — the treeline and the hills behind it stay legible straight through the mesh.',
+  },
+  {
+    id: 'clear-view-fencing-commercial-property-high-security-fencing-600x442',
+    kicker: 'Commercial',
+    title: 'Boundary And Access',
+    body: 'Black powder coat along a commercial frontage, taken right up to the boom. The perimeter and the controlled entry are one continuous line.',
+  },
+  {
+    id: 'clear-view-fencing-private-property-powder-coated-option-anti-climb-600x442',
+    kicker: 'Private Property',
+    title: 'The Garden Still Reads',
+    body: 'Dark powder coat down a domestic boundary — lawn, planting, roofline and the trees beyond all come through the mesh from where this was taken.',
+  },
+  {
+    id: '52',
+    kicker: 'Office',
+    title: 'Against The Building Line',
+    body: 'Black 358 along a landscaped office boundary — anti-climb the whole way, and close to invisible from the building.',
+  },
+  /* Last frame is deliberately not a boundary. The obvious fifth candidate
+     was `8` — a clean galvanised run against sky — but that file belongs to
+     the same 640 × 640 composite series as the sector visualisations, and
+     one render in a set introduced by "every frame is our own photography"
+     is exactly the quiet untruth this component was just rewritten to
+     remove. This is a real photograph of the real product instead. */
+  {
+    id: 'clear-view-high-security-anti-climb-fencing-panels-plain-galv',
+    kicker: 'Plain Galvanised',
+    title: 'Before It Goes Up',
+    body: 'The same panel in plain galvanised, stacked at depth before installation — the curved stiffening ribs run through every sheet in the pile.',
+  },
+];
+
+const images = SHOTS.map((shot) => ({
+  ...shot,
+  image: findImage('clear-view-fencing-panels', shot.id),
+})).filter((shot): shot is (typeof SHOTS)[number] & { image: NonNullable<typeof shot.image> } =>
+  Boolean(shot.image),
+);
+
 const [lead, ...rest] = images;
 ---
 
@@ -57,32 +119,26 @@ const [lead, ...rest] = images;
         </div>
 
         <div class="mt-14 grid gap-4 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
-          <figure class="gal gal--lead sm:col-span-2 lg:row-span-2">
-            <img
-              src={lead.src}
-              srcset={lead.srcset}
-              sizes="(min-width: 1024px) 700px, 100vw"
-              width={lead.width}
-              height={lead.height}
-              alt={lead.alt}
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
+          <RevealFrame
+            image={lead.image}
+            kicker={lead.kicker}
+            title={lead.title}
+            body={lead.body}
+            sizes="(min-width: 1024px) 700px, 100vw"
+            ratio="4 / 3"
+            ratioLg="auto"
+            class="sm:col-span-2 lg:row-span-2"
+          />
 
-          {rest.map((image) => (
-            <figure class="gal">
-              <img
-                src={image.src}
-                srcset={image.srcset}
-                sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
-                width={image.width}
-                height={image.height}
-                alt={image.alt}
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
+          {rest.map((shot) => (
+            <RevealFrame
+              image={shot.image}
+              kicker={shot.kicker}
+              title={shot.title}
+              body={shot.body}
+              sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
+              ratio="4 / 3"
+            />
           ))}
         </div>
 
@@ -94,38 +150,3 @@ const [lead, ...rest] = images;
     </section>
   )
 }
-
-<style>
-  .gal {
-    position: relative;
-    overflow: hidden;
-    border-radius: 2px;
-    background: var(--color-gm-grey-100, #eee);
-    aspect-ratio: 4 / 3;
-  }
-  .gal--lead {
-    aspect-ratio: 4 / 3;
-  }
-  @media (min-width: 1024px) {
-    .gal--lead {
-      aspect-ratio: auto;
-    }
-  }
-  .gal img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .gal:hover img {
-    transform: scale(1.04);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .gal img,
-    .gal:hover img {
-      transition: none;
-      transform: none;
-    }
-  }
-</style>

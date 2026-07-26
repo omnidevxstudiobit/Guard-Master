@@ -99,6 +99,14 @@ const GROUPS = [
       },
       { file: '8.png', alt: 'Clear view fence line curving away under open sky' },
       { file: '17.png', alt: 'Flat sample of 358 welded mesh showing the narrow aperture pattern' },
+
+      /* Also for /gallery. 19.png and 6.png are the same two subjects from a
+         few degrees round and are left out. */
+      { file: '18.png', alt: 'Welded mesh sheet laid flat, lit to show every weld in the grid' },
+      {
+        file: '5.png',
+        alt: 'Isolated render of four horizontal wires crossing two verticals at the weld',
+      },
     ],
   },
   {
@@ -121,6 +129,44 @@ const GROUPS = [
       {
         file: 'D8E851DE-F908-4F6B-8961-F6FBB22056B7.JPG',
         alt: 'Bundled square post stock in the factory yard',
+      },
+      /* The only file in this manifest that did not arrive in the client's
+         2026 drop — supplied separately, and the sole wide (1714 × 900)
+         frame of an assembled post head. It is the one shot that shows the
+         cap, the clamp discs, the spike topping and the mesh meeting at the
+         top of a post all at once, which is exactly the hardware the Posts
+         page prices per piece. Worth confirming its origin before this goes
+         to production: everything else here is the client's own photography,
+         and this one's provenance is not on record. */
+      {
+        file: 'clear-view-post-head-cap-clamps-spike-topping.png',
+        alt: 'Top of a powder-coated clear view post: moulded cap, clamp fixings and shark-tooth spike topping over 358 mesh',
+      },
+
+      /* Added for /gallery, which shows this folder as a whole rather than
+         the handful the product pages need. Near-duplicates are still left
+         out — IMG_4741/4743 repeat the 4742 sample line-up, DJI_…037 repeats
+         …035 from a step to the left, and IMG_5061/5076 repeat 5089 — so the
+         album stays a library rather than a camera roll. */
+      {
+        file: '36.PNG',
+        alt: 'Capped clear view post carrying spike-topped 358 mesh, standing against open field',
+      },
+      {
+        file: '56.PNG',
+        alt: 'Galvanised post and panel meeting at a corner under shark-tooth spike topping',
+      },
+      {
+        file: '58.PNG',
+        alt: 'Dark green powder-coated post and 358 panel beneath spike topping',
+      },
+      {
+        file: 'DJI_20250930_103035_128.JPG',
+        alt: 'Galvanised post stock and base plates stacked in the factory yard beside coiled wire',
+      },
+      {
+        file: 'IMG_5089.JPG',
+        alt: 'Post samples in galvanised and graphite finishes stood on a desk for comparison',
       },
     ],
   },
@@ -284,8 +330,50 @@ const GROUPS = [
     slug: 'accessories-caps',
     folder: 'Clear View Posts',
     images: [
+      /* Supplied separately, and the two frames that finally show what the
+         Solar Post Cap actually does. The accessories page used to argue this
+         with a drawn day/night SVG because there was no photograph of a lit
+         cap; there is now. Same provenance caveat as the other supplied
+         files — confirm their origin before production. */
+      {
+        file: 'solar-post-caps-lit-four-finishes.png',
+        alt: 'Four solar post caps lit after dark, two bronze and two black, each throwing light from a full-width lens',
+      },
+      {
+        file: 'solar-post-caps-on-fence-run-night.png',
+        alt: 'Two capped posts on a clear view run at night, solar caps lit above the mesh and rail',
+      },
       { file: 'IMG_5084.JPG', alt: 'Solar post cap mounted on a clear view post' },
       { file: 'IMG_5053.JPG', alt: 'Detail of the solar cap lens and housing' },
+    ],
+  },
+
+  /* Residential renders at dusk, supplied separately from the 2026 drop.
+     Their own group rather than more entries on `clear-view-fencing-panels`,
+     because they argue something none of that group's frames do: these are
+     homes, shot after dark, and every one of them is composed so you read
+     the lit garden *through* the mesh. That is the sightline claim the rest
+     of the panels page only asserts, which is why they drive a section of
+     their own instead of joining the gallery mosaic.
+
+     Same provenance caveat as the post-head render — these did not come from
+     the client's asset drop, so confirm their origin before production. */
+  {
+    slug: 'clear-view-after-dark',
+    folder: 'Clear View Panels',
+    images: [
+      {
+        file: 'clear-view-residential-boundary-after-dark.png',
+        alt: 'Clear view fencing along a residential driveway at night, the lit stone house and parked car visible straight through the mesh',
+      },
+      {
+        file: 'clear-view-residential-sightline-through-mesh-dusk.png',
+        alt: 'Looking along a clear view fence line at dusk, garden uplighting and the house behind read clearly through the 358 mesh',
+      },
+      {
+        file: 'clear-view-residential-frontage-dusk.png',
+        alt: 'Full frontage of a home behind clear view fencing at dusk, the planting and driveway unobstructed by the perimeter',
+      },
     ],
   },
 
@@ -303,9 +391,51 @@ const GROUPS = [
       { file: '33.png', alt: 'Clear view fencing securing a marina and its moorings' },
       { file: '51.png', alt: 'Clear view fencing around a school playground' },
       { file: '24.png', alt: 'Fence line tracking a ridge across remote terrain' },
+      /* The alt on this one used to read "Aerial view of a completed clear
+         view perimeter installation", which was written from the `DJI_`
+         filename rather than from the file. It is not an aerial and there is
+         no perimeter in it: it is a ground-level shot of six pallets of
+         galvanised mesh stacked against the factory wall, with post stock on
+         the left. Corrected here, and the caption that repeated the claim on
+         the homepage was corrected with it. */
       {
         file: 'DJI_20240903_084123_886.JPG',
-        alt: 'Aerial view of a completed clear view perimeter installation',
+        alt: 'Pallets of galvanised clear view mesh panels stacked against the factory wall, with post stock alongside',
+      },
+
+      /* Three more context frames, same series as the seven above. */
+      {
+        file: '41.png',
+        alt: 'Clear view fence line running along a cut embankment under open sky',
+      },
+      {
+        file: '9.png',
+        alt: 'Capped clear view post and panel on a green hillside boundary',
+      },
+      { file: '7.png', alt: 'Clear view mesh seen close, against a treeline behind it' },
+
+      /* Genuine site photography, and the only frames in this group that are
+         unambiguously that. Shot on a phone at a black powder-coated job —
+         panels laid out and clamp-bracketed before they go up, and the run
+         itself once it's on the wall. The reason they matter more than the
+         rest of this group: /projects says in as many words that the project
+         photography is still being built out, and these are it.
+
+         All five source frames carry EXIF orientation 6; the pipeline calls
+         `.rotate()` before resizing, so they land upright. IMG_5226 and
+         IMG_5229 are near-identical repeats of 5227 and 5228 and are left
+         out rather than shipped as two more of the same. */
+      {
+        file: 'IMG_5225.JPG',
+        alt: 'Black powder-coated clear view fencing installed along a boundary wall on a completed site',
+      },
+      {
+        file: 'IMG_5227.JPG',
+        alt: 'Black powder-coated clear view panels laid out on site ahead of installation',
+      },
+      {
+        file: 'IMG_5228.JPG',
+        alt: 'Clamp brackets bolted to the rails of stacked black clear view panels, ready to hang',
       },
     ],
   },

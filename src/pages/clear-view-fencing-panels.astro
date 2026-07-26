@@ -5,6 +5,7 @@ import ProductHero from '@components/sections/ProductHero.astro';
 import FeatureMedallions from '@components/sections/FeatureMedallions.astro';
 import PanelSpecDrawing from '@components/sections/PanelSpecDrawing.astro';
 import PanelPricing from '@components/sections/PanelPricing.astro';
+import AfterDark from '@components/sections/AfterDark.astro';
 import PanelGallery from '@components/sections/PanelGallery.astro';
 import { CTA } from '@data/nav';
 import { formatRand } from '@data/products';
@@ -17,8 +18,8 @@ import { PANEL_FROM_EX_VAT } from '@data/clear-view-panels';
  * strings for this exact page, reused verbatim rather than reworded.
  *
  * Every spec below is a fact already established elsewhere in this codebase
- * (businessguide.md §5, Proof358's preset data, the client's verified spec
- * sheet used in Proof358/IntrusionAttempt/SystemAssembly) — not new numbers
+ * (businessguide.md §5, the client's verified spec sheet used in
+ * IntrusionAttempt/SystemAssembly) — not new numbers
  * invented for this page. Product JSON-LD (Appendix B2) still omits `image`,
  * because no product photo has been chosen as *the* canonical one for this
  * page, but it now carries `offers`: the earlier note here said pricing
@@ -98,7 +99,7 @@ const FEATURES = [
     price={`From ${formatRand(PANEL_FROM_EX_VAT)} per panel, excl. VAT`}
     stats={['76 × 12.7 mm aperture', '3 m × 1.8–3.0 m panels', '500–650 MPa', '10-Year Warranty']}
     primary={{ label: CTA.label, href: CTA.href }}
-    secondary={{ label: 'Configure This Panel', href: '/quote-estimator' }}
+    secondary={{ label: 'Configure This Panel', href: '#panel-pricing' }}
     sceneLabel="Perspective drawing of a Clear View fence run seen from the end of the line: capped posts carrying 358 welded mesh panels, converging into the distance, with one aperture of the mesh picked out."
   />
 
@@ -113,6 +114,52 @@ const FEATURES = [
   <PanelSpecDrawing />
 
   <PanelPricing />
+
+  <!-- Complete the system -->
+  <section class="bg-gm-grey-50 text-gm-black py-16 sm:py-20">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
+      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Complete The System</p>
+      <h2
+        class="font-display text-gm-black mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
+      >
+        A Panel Is Only Part Of The System
+      </h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        {
+          [
+            {
+              name: 'Clear View Posts',
+              href: '/clear-view-fencing-posts',
+              note: 'Anti-tamper lip · 3 000 mm centres · HDG, powder or Plascoat',
+            },
+            {
+              name: 'Fixtures & Screws',
+              href: '/fixtures-and-screws',
+              note: 'Flat or Spider clamp · HDG / powder / PVC',
+            },
+            {
+              name: 'Accessories & Toppings',
+              href: '/clear-fencing-accessories',
+              note: 'Caps, gates, razor & spike topping',
+            },
+          ].map((p) => (
+            <a
+              href={p.href}
+              class="tap-target group border-gm-grey-200 hover:border-gm-black block border bg-white p-6 transition-colors"
+            >
+              <span class="font-display text-gm-black text-lg font-bold tracking-tight uppercase">
+                {p.name}
+              </span>
+              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{p.note}</p>
+              <span class="text-gm-red mt-4 inline-flex items-center text-[12px] font-bold tracking-[0.08em] uppercase">
+                See Options →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 
   <!-- Long-form copy -->
   <section class="bg-gm-white text-gm-black py-16 sm:py-20">
@@ -197,51 +244,7 @@ const FEATURES = [
     </div>
   </section>
 
-  <!-- Complete the system -->
-  <section class="bg-gm-grey-50 text-gm-black py-16 sm:py-20">
-    <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
-      <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Complete The System</p>
-      <h2
-        class="font-display text-gm-black mt-5 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight uppercase sm:text-4xl"
-      >
-        A Panel Is Only Part Of The System
-      </h2>
-      <div class="mt-10 grid gap-6 sm:grid-cols-3">
-        {
-          [
-            {
-              name: 'Clear View Posts',
-              href: '/clear-view-fencing-posts',
-              note: 'Anti-tamper lip · 3 000 mm centres · HDG, powder or Plascoat',
-            },
-            {
-              name: 'Fixtures & Screws',
-              href: '/fixtures-and-screws',
-              note: 'Flat or Spider clamp · HDG / powder / PVC',
-            },
-            {
-              name: 'Accessories & Toppings',
-              href: '/accessories',
-              note: 'Caps, gates, razor & spike topping',
-            },
-          ].map((p) => (
-            <a
-              href={p.href}
-              class="tap-target group border-gm-grey-200 hover:border-gm-black block border bg-white p-6 transition-colors"
-            >
-              <span class="font-display text-gm-black text-lg font-bold tracking-tight uppercase">
-                {p.name}
-              </span>
-              <p class="text-gm-grey-600 mt-2 text-[13px] leading-relaxed">{p.note}</p>
-              <span class="text-gm-red mt-4 inline-flex items-center text-[12px] font-bold tracking-[0.08em] uppercase">
-                See Options →
-              </span>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+  <AfterDark />
 
   <PanelGallery />
 
@@ -259,13 +262,18 @@ const FEATURES = [
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <a
-          href="/quote-estimator"
+          href="/clear-fencing-estimator"
           class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
         >
           Start Your Estimate
         </a>
+        <!-- "Real applications" means photographs, so this goes to the Clear
+             View project page rather than to /projects, which is by design a
+             page of sector schematics and says so in its own first
+             paragraph. The links labelled "Scope By Sector" still point
+             there — that is exactly what that page delivers. -->
         <a
-          href="/projects"
+          href="/projects/clear-fencing"
           class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
         >
           See Real Applications

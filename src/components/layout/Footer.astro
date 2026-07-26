@@ -1,6 +1,6 @@
 ---
 import Logo from '@components/ui/Logo.astro';
-import { NAV_ITEMS, CTA } from '@data/nav';
+import { NAV_LINKS, CTA } from '@data/nav';
 
 /**
  * The "fat footer" — seoguide.md §6: "Top nav = six product/content items +
@@ -27,8 +27,13 @@ import { NAV_ITEMS, CTA } from '@data/nav';
 
 const year = new Date().getFullYear();
 
-const productLinks = NAV_ITEMS.slice(0, 4); // Panels, Posts, Fixtures, Accessories
+/* The four product destinations. Reads off NAV_LINKS — the flattened nav —
+   rather than NAV_ITEMS, which is now the *grouped* bar (Products, Gallery,
+   Projects, Warranties) and whose first four entries are no longer products
+   at all. Flattening keeps this column in step with the nav automatically. */
+const productLinks = NAV_LINKS.slice(0, 4);
 const companyLinks = [
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Warranties', href: '/warranties-and-guarantees' },
   { label: 'Projects', href: '/projects' },
   { label: 'Who We Protect', href: '/#built-for' },
@@ -39,7 +44,7 @@ const companyLinks = [
    estimator page, and the homepage's own contact section. */
 const getStartedLinks = [
   { label: 'Get a Quote', href: CTA.href },
-  { label: 'Instant Estimate', href: '/quote-estimator' },
+  { label: 'Instant Estimate', href: '/clear-fencing-estimator' },
   { label: 'Contact Us', href: '/#contact' },
 ];
 const legalLinks = [

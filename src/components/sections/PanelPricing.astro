@@ -90,7 +90,15 @@ const METHODS = [
 ];
 ---
 
-<section class="bg-gm-black text-gm-white py-20 sm:py-28">
+{
+  /* `panel-pricing` is the target of every "Configure Your System" button on
+    the site — see CONFIGURE in @data/nav. The scroll-margin clears the fixed
+    header, which would otherwise cover the section heading on arrival. */
+}
+<section
+  id="panel-pricing"
+  class="bg-gm-black text-gm-white scroll-mt-16 py-20 sm:py-28 lg:scroll-mt-20"
+>
   <div class="mx-auto max-w-[1400px] px-6 lg:px-8">
     <div class="max-w-3xl">
       <p class="text-gm-red font-mono text-xs tracking-[0.34em] uppercase">Panel Pricing</p>
@@ -368,7 +376,7 @@ const METHODS = [
           {CTA.label}
         </a>
         <a
-          href="/quote-estimator"
+          href="/clear-fencing-estimator"
           class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
         >
           Estimate A Full Run

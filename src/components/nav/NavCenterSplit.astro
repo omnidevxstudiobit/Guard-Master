@@ -1,6 +1,7 @@
 ---
 import Logo from '@components/ui/Logo.astro';
-import { NAV_ITEMS, CTA } from '@data/nav';
+import { NAV_ITEMS, NAV_LINKS, CTA } from '@data/nav';
+import NavLink from '@components/nav/NavLink.astro';
 
 /**
  * Variant A — centre logo, nav split left/right.
@@ -33,8 +34,11 @@ interface Props {
 }
 const { assumeDarkBg = false } = Astro.props;
 
-const left = NAV_ITEMS.slice(0, 3);
-const right = NAV_ITEMS.slice(3);
+/* Two a side. The split was 3/3 when there were six flat items; with four it
+   balances either side of the centre logo instead of stacking three against
+   one. */
+const left = NAV_ITEMS.slice(0, 2);
+const right = NAV_ITEMS.slice(2);
 ---
 
 <input id="nav-toggle" type="checkbox" class="peer sr-only" aria-label="Toggle menu" />
@@ -54,18 +58,7 @@ const right = NAV_ITEMS.slice(3);
       <div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 lg:h-20">
         <!-- LEFT — desktop links / mobile menu trigger -->
         <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
-          {
-            left.map((item) => (
-              <a
-                href={item.href}
-                data-nav-item
-                class="group text-gm-grey-200 hover:text-gm-white relative text-[13px] font-semibold tracking-[0.14em] uppercase transition-colors"
-              >
-                {item.label}
-                <span class="bg-gm-red absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-              </a>
-            ))
-          }
+          {left.map((item) => <NavLink item={item} />)}
         </nav>
 
         <label
@@ -95,18 +88,7 @@ const right = NAV_ITEMS.slice(3);
              just the icon logo, so the CTA lives inside the overlay. -->
         <div class="flex items-center justify-end gap-7">
           <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
-            {
-              right.map((item) => (
-                <a
-                  href={item.href}
-                  data-nav-item
-                  class="group text-gm-grey-200 hover:text-gm-white relative text-[13px] font-semibold tracking-[0.14em] uppercase transition-colors"
-                >
-                  {item.label}
-                  <span class="bg-gm-red absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-                </a>
-              ))
-            }
+            {right.map((item) => <NavLink item={item} />)}
           </nav>
           <a
             href={CTA.href}
@@ -147,7 +129,7 @@ const right = NAV_ITEMS.slice(3);
 
   <nav class="flex flex-col" aria-label="Mobile">
     {
-      NAV_ITEMS.map((item) => (
+      NAV_LINKS.map((item) => (
         <a
           href={item.href}
           data-menu-link

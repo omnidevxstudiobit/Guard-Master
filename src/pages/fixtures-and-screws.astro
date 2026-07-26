@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Breadcrumbs from '@components/ui/Breadcrumbs.astro';
-import { CTA } from '@data/nav';
+import { CTA, CONFIGURE } from '@data/nav';
 
 /**
  * /fixtures-and-screws — the fixings product page.
@@ -64,7 +64,7 @@ const FINISHES = ['Hot-Dip Galvanised', 'Powder Coated', 'PVC'];
             {CTA.label}
           </a>
           <a
-            href="/quote-estimator"
+            href={CONFIGURE.href}
             class="tap-target border-gm-grey-300 text-gm-black hover:border-gm-black inline-flex items-center border px-6 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
           >
             Configure Your System
@@ -243,7 +243,7 @@ const FINISHES = ['Hot-Dip Galvanised', 'Powder Coated', 'PVC'];
             },
             {
               name: 'Accessories & Toppings',
-              href: '/accessories',
+              href: '/clear-fencing-accessories',
               note: 'Caps, gates, razor & spike topping',
             },
           ].map((p) => (
@@ -278,13 +278,13 @@ const FINISHES = ['Hot-Dip Galvanised', 'Powder Coated', 'PVC'];
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <a
-          href="/quote-estimator"
+          href="/clear-fencing-estimator"
           class="tap-target bg-gm-red text-gm-white inline-flex items-center px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors hover:bg-[#c50e24]"
         >
           Start Your Estimate
         </a>
         <a
-          href="/projects"
+          href="/projects/clear-fencing"
           class="tap-target text-gm-white hover:border-gm-white inline-flex items-center border border-white/25 px-7 text-[13px] font-bold tracking-[0.08em] uppercase transition-colors"
         >
           See Real Projects
