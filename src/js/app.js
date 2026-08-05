@@ -101,7 +101,7 @@ export function initCart () {
 export function initFenceFooter () {
   const band = document.getElementById('fenceBand')
   if (!band) return
-  const MIN = 0.08                       // cap tips peek above the floor at rest
+  const MIN = 0                          // fully below the floor until the reveal begins
   let travel = 0
   const measure = () => {
     travel = document.documentElement.scrollHeight - window.innerHeight

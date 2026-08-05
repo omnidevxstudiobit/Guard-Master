@@ -1527,7 +1527,7 @@ body.scrolling .arc-ship, body.scrolling .city--home::after{animation-play-state
   position:fixed; left:0; right:0; bottom:0; height:44vh;
   z-index:60;                 /* above content, below the nav (80) */
   pointer-events:none; will-change:transform;
-  transform:translateY(92%);  /* matches the JS resting reveal */
+  transform:translateY(100%); /* hidden until the end-of-page reveal */
 }
 .fence-band svg{width:100%; height:100%; display:block}
 
