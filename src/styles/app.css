@@ -1276,6 +1276,57 @@ body[data-bgfollow]{
 .gv-dots i{width:6px; height:6px; border-radius:50%; background:var(--hair-2); cursor:pointer; transition:all .4s var(--ease)}
 .gv-dots i.on{background:var(--a,var(--ink)); width:20px; border-radius:3px}
 
+/* ── USA page: dot map, crossing arc, why cards ───────────────── */
+.sa-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:clamp(28px,5vw,64px); align-items:center}
+@media(max-width:920px){.sa-grid{grid-template-columns:1fr}}
+.sa-map{position:relative; width:100%; max-width:640px; margin:0 auto}
+.sa-map svg{width:100%; height:auto; display:block}
+.city{
+  position:absolute; width:26px; height:26px; padding:0; border:0; cursor:pointer;
+  background:none; transform:translate(-50%,-50%); display:grid; place-items:center;
+}
+.city i{
+  width:11px; height:11px; border-radius:50%; background:var(--p);
+  box-shadow:0 0 0 3px rgba(118,44,229,.18); transition:transform .35s var(--ease);
+}
+.city:hover i, .city[aria-pressed="true"] i{transform:scale(1.45); box-shadow:0 0 0 5px rgba(118,44,229,.22)}
+.city:focus-visible{outline:2px solid var(--p); outline-offset:2px; border-radius:50%}
+.city--home i{background:var(--y); box-shadow:0 0 0 3px rgba(249,226,27,.35)}
+.city--home::after{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  border:2px solid rgba(249,226,27,.65); animation:city-pulse 2.2s ease-out infinite;
+}
+@keyframes city-pulse{from{transform:scale(.5); opacity:1} to{transform:scale(1.6); opacity:0}}
+.city-info{margin-top:26px; padding:20px 22px; min-height:7.2em}
+.city-info b{display:block; font-size:16.5px; font-weight:800; letter-spacing:-.02em}
+.city-info p{margin:6px 0 0; font-size:14px; color:var(--muted); line-height:1.6}
+
+.arc-panel{padding:clamp(26px,4vw,48px); overflow:hidden}
+.arc-stage{position:relative; margin-top:10px}
+.arc-stage svg{width:100%; height:auto; display:block}
+.arc-dash{animation:arc-march 1.4s linear infinite}
+@keyframes arc-march{to{stroke-dashoffset:-12}}
+.arc-ship{
+  position:absolute; width:12px; height:12px; border-radius:50%;
+  background:var(--p); box-shadow:0 0 0 4px rgba(118,44,229,.2); top:0; left:0;
+  offset-path:path('M60 200 Q400 -30 740 200'); offset-rotate:0deg;
+  animation:arc-fly 6s cubic-bezier(.45,0,.55,1) infinite;
+}
+@keyframes arc-fly{0%{offset-distance:0%; opacity:0} 8%{opacity:1} 92%{opacity:1} 100%{offset-distance:100%; opacity:0}}
+.arc-lbl{
+  position:absolute; bottom:-6px; font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+}
+.arc-lbl b{display:block; font-family:"Archivo",sans-serif; font-size:14px; font-weight:800;
+  letter-spacing:-.02em; text-transform:none; color:var(--ink); margin-top:2px}
+
+.why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+@media(max-width:860px){.why-grid{grid-template-columns:1fr}}
+.why-grid .card{padding:28px}
+.why-n{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--p)}
+.why-grid h3{margin:10px 0 8px; font-size:18px; font-weight:800; letter-spacing:-.025em}
+.why-grid p{margin:0; font-size:14px; color:var(--muted); line-height:1.65}
+
 /* ── policies page ────────────────────────────────────────────── */
 .draft-note{
   margin:22px 0 8px; padding:13px 18px; border-radius:14px; font-size:13.5px;
