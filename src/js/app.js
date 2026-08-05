@@ -90,6 +90,36 @@ export function initCart () {
   initCurtain()  // branded preloader, where the page carries one
   initPromoBar() // dismissible announcement, per the brief
   initAnchors()  // in-page anchors must go through Lenis, or it fights the jump
+  initFenceFooter() // the fence rises from the floor at the end of the page
+}
+
+/* ── fence footer — a viewport-pinned fence rises out of the floor
+      over the last band-height of scroll, standing fully at the end
+      of the page. Mechanic adapted from the Ruixen gradient footer
+      (scroll-remaining → progress → transform); rendered as our own
+      Clear View line-art instead of a glow. Transform-only. ──────── */
+export function initFenceFooter () {
+  const band = document.getElementById('fenceBand')
+  if (!band) return
+  const MIN = 0.08                       // cap tips peek above the floor at rest
+  let travel = 0
+  const measure = () => {
+    travel = document.documentElement.scrollHeight - window.innerHeight
+  }
+  let queued = false
+  const update = () => {
+    queued = false
+    const h = band.offsetHeight || 1
+    const leftToScroll = travel - (window.scrollY || 0)
+    const t = Math.max(0, Math.min(1, (h - leftToScroll) / h))
+    const p = MIN + (1 - MIN) * t
+    band.style.transform = `translateY(${((1 - p) * 100).toFixed(2)}%)`
+  }
+  const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update) } }
+  measure(); update()
+  addEventListener('scroll', onScroll, { passive: true })
+  addEventListener('resize', () => { measure(); onScroll() }, { passive: true })
+  addEventListener('load', () => { measure(); onScroll() })   // late images change page height
 }
 
 /* ── same-page anchors — Lenis reverts native hash jumps, so drive

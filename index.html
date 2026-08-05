@@ -467,7 +467,7 @@
     </section>
 
     <!-- ── contact / footer ─────────────────────────────────────── -->
-    <section id="contact" style="padding-top:0">
+    <section id="contact" class="fence-foot" style="padding-top:0">
       <footer class="foot glass">
         <div class="rv" style="display:flex;align-items:center;gap:16px;margin-bottom:28px;flex-wrap:wrap">
           <span style="font-size:13.5px;color:var(--muted)">Follow the factory</span>
@@ -512,6 +512,30 @@
           <span><a href="/policies/">Warranty, returns &amp; privacy</a> · Benoni South, Gauteng</span>
         </div>
       </footer>
+
+      <!-- the fence: pinned to the viewport floor, pulled up over the
+           last stretch of scroll. Cap tips peek at rest. -->
+      <div class="fence-band" id="fenceBand" aria-hidden="true">
+        <svg viewBox="0 0 1440 420" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="ffMesh" width="34" height="8" patternUnits="userSpaceOnUse">
+              <path d="M0 4h34" stroke="rgba(20,18,26,.32)" stroke-width="1.1"/>
+              <path d="M6 0v8" stroke="rgba(20,18,26,.32)" stroke-width="1.1"/>
+            </pattern>
+            <pattern id="ffSpike" width="22" height="18" patternUnits="userSpaceOnUse">
+              <path d="M0 18 11 2 22 18" stroke="rgba(20,18,26,.42)" stroke-width="1.6" stroke-linejoin="round"/>
+            </pattern>
+            <pattern id="ffPost" width="240" height="420" patternUnits="userSpaceOnUse">
+              <rect x="112" y="24" width="12" height="396" rx="2" fill="rgba(20,18,26,.5)"/>
+              <rect x="105" y="15" width="26" height="10" rx="3" fill="#f9e21b"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="44" width="1440" height="376" fill="url(#ffMesh)"/>
+          <rect x="0" y="26" width="1440" height="18" fill="url(#ffSpike)"/>
+          <path d="M0 44h1440" stroke="rgba(20,18,26,.5)" stroke-width="2.4"/>
+          <rect x="0" y="0" width="1440" height="420" fill="url(#ffPost)"/>
+        </svg>
+      </div>
     </section>
   </main>
 </div>
