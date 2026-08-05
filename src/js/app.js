@@ -89,6 +89,25 @@ export function initCart () {
   initImgFade()  // shimmer under every product image until it lands
   initCurtain()  // branded preloader, where the page carries one
   initPromoBar() // dismissible announcement, per the brief
+  initAnchors()  // in-page anchors must go through Lenis, or it fights the jump
+}
+
+/* ── same-page anchors — Lenis reverts native hash jumps, so drive
+      the scroll through it (with a native fallback) ─────────────── */
+export function initAnchors () {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"], a[href^="/#"]')
+    if (!a) return
+    const href = a.getAttribute('href')
+    if (href.startsWith('/#') && location.pathname !== '/') return   // cross-page: navigate normally
+    const id = href.replace(/^\/?#/, '')
+    const el = id && document.getElementById(id)
+    if (!el) return
+    e.preventDefault()
+    history.pushState(null, '', '#' + id)
+    if (window.lenis) window.lenis.scrollTo(el, { offset: -100 })    // clear the sticky nav
+    else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
 }
 
 /* ── announcement bar: dismissible, remembered ────────────────── */
