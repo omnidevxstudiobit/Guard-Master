@@ -24,7 +24,7 @@ const FNS = ['Plain Galvanised', 'Dipped', 'Powder Coated', 'Plascoat / 10yr']
 const FROM = 550.85   // published "From:" price, the cheapest configuration
 const unitFor = () => panelUnit({ wire: sel.wr, aperture: sel.ap, size: sel.sz, finish: sel.fn })
 
-const sel = { ap: APS[0].v, sz: SZS[0], wr: WRS[0], fn: FNS[0] }
+const sel = { ap: APS[0].v, sz: SZS[0].v, wr: WRS[0], fn: FNS[0] }
 let qty = 1
 
 const $ = s => document.querySelector(s)
