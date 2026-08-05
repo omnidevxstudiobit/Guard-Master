@@ -69,22 +69,30 @@ export function panelUnit ({ wire, aperture, size, finish }) {
   return ex ? inclVat(ex) : null
 }
 
+/* ── assembly constants, from the manufacturer's dimensioned drawing ──
+   panel height → post length (balance sits below grade), and spider
+   clamps per panel ("8 × 2" on the drawing = eight a side). */
+export const POST_LENGTH_MM = { 1800: 2400, 2100: 2700, 2400: 3000, 3000: 3600 }
+export const CLAMPS_PER_PANEL = { 1800: 16, 2100: 20, 2400: 24, 3000: 28 }
+
 /* ── posts — sold by the metre; unit = rate × length × VAT ─────── */
-const POST_RATES = {
+export const POST_RATES = {
   'T-Post 100mm × 60mm': { 'Pre-galvanized': 143, 'Powder-Coated': 189, 'Plascoat': 197 },
   'T-Post 76mm × 40mm': { 'Pre-galvanized': 105, 'Powder-Coated': 141, 'Plascoat': 153 },
   'SQ Post 76mm × 76mm': { 'HDG': 150 },
 }
 
 /* ── per-unit line items, ex VAT ───────────────────────────────── */
-const FIXINGS = {
+export const FIXINGS = {
   'Flat Clamp Kit HDG': 7, 'Flat Clamp Kit Powder Coated': 9.5, 'Flat Clamp Kit PVC': 12.5,
 }
-const SPIKES = {
+export const SPIKES = {
   'Without Fixators': { 'Raw': 94, 'HDG': 127, 'Pre Galv': 99, 'Powder Coated': 132, 'Plascoat / 10 years warranty': 176 },
   'With fixators': { 'Raw': 105, 'HDG': 138, 'Pre Galv': 110, 'Powder Coated': 143, 'Plascoat / 10 years warranty': 187 },
 }
-const COILS = { 'Ø450mm': 315, 'Ø730mm': 462, 'Ø980mm': 713 }
+/* concertina coils cover 8 / 10 / 13 m per unit respectively */
+export const COILS = { 'Ø450mm': 315, 'Ø730mm': 462, 'Ø980mm': 713 }
+export const COIL_COVER_M = { 'Ø450mm': 8, 'Ø730mm': 10, 'Ø980mm': 13 }
 const FLATWRAP = { 'Ø500mm': 396, 'Ø700mm': 516, 'Ø900mm': 665 }
 
 /* ── resolve a product's picked options to a real unit price ─────

@@ -20,6 +20,7 @@ export default defineConfig({
         policies: resolve(root, 'policies/index.html'),
         gallery: resolve(root, 'gallery/index.html'),
         us: resolve(root, 'us/index.html'),
+        estimate: resolve(root, 'estimate/index.html'),
         cart: resolve(root, 'cart/index.html'),
         checkout: resolve(root, 'checkout/index.html'),
         homeEstate: resolve(root, 'home-estate/index.html'),

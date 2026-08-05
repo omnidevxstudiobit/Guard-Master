@@ -30,6 +30,7 @@
   /* accents — used sparingly, see palette direction */
   --y:#f9e21b;
   --p:#762ce5;
+  --gm-red:#e02126;   /* brand red from the client brief — swap for the official hex when the SVG arrives */
 
   /* glass */
   --glass:rgba(255,255,255,.58);
@@ -227,8 +228,14 @@ a{color:inherit}
   border:0;
   box-shadow:0 10px 30px rgba(20,18,26,.10), 0 1px 3px rgba(20,18,26,.05), inset 0 -1px 0 rgba(255,255,255,.5);
 }
-.logo{display:flex; align-items:center; gap:9px; text-decoration:none; font-weight:800; letter-spacing:-.035em; font-size:17px; white-space:nowrap}
-.logo .mk{width:26px; height:26px; border-radius:8px; background:var(--ink); display:grid; place-items:center; flex:none}
+/* the sub-main lockup from the brief: G mark + uppercase wordmark */
+.logo{display:flex; align-items:center; gap:9px; text-decoration:none; font-weight:900; letter-spacing:-.01em; font-size:15px; white-space:nowrap; text-transform:uppercase}
+.logo .mk{width:27px; height:27px; border-radius:50%; background:var(--ink); display:grid; place-items:center; flex:none}
+
+/* the one red moment: Get a Quote, per the brief */
+.btn--quote{background:var(--gm-red); color:#fff; border-color:transparent}
+.btn--quote:hover{background:#c81b20}
+@media(max-width:1100px){.nav-in > .btn--quote{display:none}}
 .nav-links{display:flex; gap:4px; margin-left:10px; flex:1}
 .nav-links a{
   text-decoration:none; font-size:14.5px; font-weight:500; color:var(--muted);
@@ -1426,6 +1433,20 @@ img.ok{animation:img-in .55s var(--ease-soft)}
 .why-n{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--p)}
 .why-grid h3{margin:10px 0 8px; font-size:18px; font-weight:800; letter-spacing:-.025em}
 .why-grid p{margin:0; font-size:14px; color:var(--muted); line-height:1.65}
+
+/* ── quote estimator ──────────────────────────────────────────── */
+.est-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:26px; align-items:start}
+@media(max-width:940px){.est-grid{grid-template-columns:1fr}}
+.est-sum{position:sticky; top:104px; padding:26px}
+@media(max-width:940px){.est-sum{position:static}}
+.est-sum .sum .k{max-width:30ch}
+
+/* ── SEO editorial block ──────────────────────────────────────── */
+.seo-ed{max-width:1080px}
+.ed-cols{display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,4vw,56px)}
+@media(max-width:820px){.ed-cols{grid-template-columns:1fr}}
+.ed-cols h3{margin:20px 0 8px; font-size:17px; font-weight:800; letter-spacing:-.025em}
+.ed-cols p{margin:0; font-size:15px; line-height:1.75; color:var(--ink-2)}
 
 /* ── policies page ────────────────────────────────────────────── */
 .draft-note{

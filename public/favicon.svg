@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <rect width="24" height="24" rx="6" fill="#14121a"/>
-  <path d="M12 4.6 5.9 7.3v4.5c0 3.8 2.6 7 6.1 7.8 3.5-.8 6.1-4 6.1-7.8V7.3Z"
-        fill="none" stroke="#f9e21b" stroke-width="1.8" stroke-linejoin="round"/>
+  <title>Guard Master</title>
+  <circle cx="12" cy="12" r="11" fill="#e02126"/>
+  <circle cx="12" cy="12" r="6.9" fill="none" stroke="#fff" stroke-width="2"/>
+  <path d="M15.6 9.4A4.4 4.4 0 1 0 16.4 12H12.7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 </svg>

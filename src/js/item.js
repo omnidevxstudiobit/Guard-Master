@@ -23,6 +23,34 @@ if (!p) {
 function render (p) {
   document.title = `${p.t} — Guard Master`
   $('#crumb').textContent = p.t
+
+  /* Product + Offer and breadcrumb structured data, per the SEO spec */
+  const ld = document.createElement('script')
+  ld.type = 'application/ld+json'
+  ld.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: p.t,
+        description: p.d,
+        image: location.origin + p.gallery[0],
+        brand: { '@type': 'Brand', name: 'Guard Master' },
+        offers: {
+          '@type': 'Offer', priceCurrency: 'ZAR', price: p.from.toFixed(2),
+          availability: 'https://schema.org/InStock', url: location.href,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Catalogue', item: location.origin + '/products/' },
+          { '@type': 'ListItem', position: 2, name: p.t, item: location.href },
+        ],
+      },
+    ],
+  })
+  document.head.appendChild(ld)
   $('#pTitle').textContent = p.t
   $('#pDesc').textContent = `${p.d} ${p.plain}`
   $('#pPrice').textContent = `${p.flat ? '' : 'From '}${zar(p.from)}`

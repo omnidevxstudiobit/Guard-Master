@@ -37,7 +37,7 @@ export const PRODUCTS = [
     tags: ['Guard Master', 'T-post', 'SQ post'],
     options: [
       { k: 'Post type', v: ['Guard Master Post', 'T-Post 100mm × 60mm', 'T-Post 76mm × 40mm', 'SQ Post 76mm × 76mm'] },
-      { k: 'Post length', v: ['1.8m', '2.1m', '2.4m', '3.0m', '3.6m'] },
+      { k: 'Post length', v: ['1.8m', '2.1m', '2.4m', '3.0m', '3.6m'], note: ['6′', '7′', '8′', '10′', '12′'] },
       { k: 'Finish', v: ['Pre-galvanized', 'HDG', 'Powder-Coated', 'Plascoat'] },
     ],
     gallery: [

@@ -8,7 +8,14 @@ const APS = [
   { v: '76mm × 25mm',   t: 'Medium security',   h: 25 },
   { v: '76mm × 50mm',   t: 'Standard security', h: 50 },
 ]
-const SZS = ['3m × 1.8m', '3m × 2.1m', '3m × 2.4m', '3m × 3m']
+/* labels stay the factory's exact option names — the imperial size is
+   display-only, US-first per the brief */
+const SZS = [
+  { v: '3m × 1.8m', t: "10′ × 6′" },
+  { v: '3m × 2.1m', t: "10′ × 7′" },
+  { v: '3m × 2.4m', t: "10′ × 8′" },
+  { v: '3m × 3m', t: "10′ × 10′" },
+]
 const WRS = ['3mm × 4mm', '4mm × 4mm']
 const FNS = ['Plain Galvanised', 'Dipped', 'Powder Coated', 'Plascoat / 10yr']
 
