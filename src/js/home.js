@@ -55,6 +55,26 @@ initSeg('#segRange', (g) => {
   })
 })
 
+/* ── recent projects — real roster from the factory site, rows
+      drifting in alternating directions like the reference ──────── */
+const CLIENTS = [
+  ['PRASA', 'recent-project-prasa-320x120.jpg'],
+  ['Newmont', 'recent-project-newmont-320x120.jpg'],
+  ['Value Logistics', 'recent-valuegroup-project-320x120.jpg'],
+  ['Sibanye-Stillwater', 'recent-sibanye-stillwater-project-320x120.jpg'],
+  ['Steyn City', 'recent-steyn-city-project-320x120.jpg'],
+  ['Clicks', 'recent-projects-clicks-320x120.jpg'],
+]
+const rowHTML = (list) => {
+  const cards = list.map(([name, f]) =>
+    `<span class="logo-card"><img src="/images/clients/${f}" alt="${name} logo" loading="lazy"></span>`).join('')
+  return `<div class="rt">${cards}${cards}</div>`   // doubled for a seamless loop
+}
+const half = Math.ceil(CLIENTS.length / 2)
+document.getElementById('logoWall').innerHTML =
+  `<div class="logo-row">${rowHTML(CLIENTS.slice(0, half))}</div>
+   <div class="logo-row logo-row--rev">${rowHTML(CLIENTS.slice(half))}</div>`
+
 /* ── FAQ tabs ─────────────────────────────────────────────────── */
 initSeg('#faqSeg', (v) => {
   document.querySelectorAll('.faq-pane').forEach(p => { p.hidden = p.dataset.pane !== v })

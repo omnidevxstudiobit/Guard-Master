@@ -1042,6 +1042,22 @@ body[data-bgfollow]{
 }
 .pcard:hover .im .alt, .buy-card:hover .im .alt, .rec:hover .im .alt{opacity:1}
 
+/* ── client logo wall — rows drift in alternating directions ──── */
+.logo-wall{display:grid; gap:14px}
+.logo-row{overflow:hidden}
+.logo-row .rt{display:flex; gap:14px; width:max-content; animation:mq 30s linear infinite}
+.logo-row--rev .rt{animation-direction:reverse}
+.logo-wall:hover .rt{animation-play-state:paused}
+.logo-card{
+  height:76px; flex:none; display:flex; align-items:center; justify-content:center;
+  background:#fff; border:1px solid var(--glass-brd); border-radius:14px;
+  padding:12px 28px; box-shadow:0 6px 18px rgba(52,48,90,.08);
+  filter:grayscale(1); opacity:.82;
+  transition:filter .4s var(--ease-soft), opacity .4s var(--ease-soft);
+}
+.logo-card:hover{filter:none; opacity:1}
+.logo-card img{height:100%; width:auto; display:block}
+
 /* section head rows: display title left, controls right */
 .row-head{
   display:flex; justify-content:space-between; align-items:flex-end;
