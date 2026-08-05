@@ -86,6 +86,35 @@ export function initCart () {
 
   paint()
   initSearch()   // every page with a nav gets a working search
+  initImgFade()  // shimmer under every product image until it lands
+  initCurtain()  // branded preloader, where the page carries one
+}
+
+/* ── image loading: mark images as they land so the shimmer under
+      them releases and they fade in ─────────────────────────────── */
+export function initImgFade () {
+  const mark = (img) => { if (img.tagName === 'IMG') img.classList.add('ok') }
+  // load doesn't bubble — capture catches every image, injected ones too
+  addEventListener('load', (e) => mark(e.target), true)
+  const sweep = () => $$('img').forEach(i => { if (i.complete && i.naturalWidth) mark(i) })
+  sweep()
+  addEventListener('load', sweep)
+}
+
+/* ── the curtain: shield mark + shimmer bar, lifts when the page is
+      ready (or after 3s, whichever comes first) ────────────────── */
+export function initCurtain () {
+  const c = document.getElementById('curtain')
+  if (!c) return
+  const done = () => {
+    if (c.dataset.done) return
+    c.dataset.done = '1'
+    c.classList.add('done')
+    setTimeout(() => c.remove(), 800)
+  }
+  if (document.readyState === 'complete') setTimeout(done, 250)
+  else addEventListener('load', () => setTimeout(done, 250))
+  setTimeout(done, 3000)
 }
 
 /* ── search — routes into the catalogue's live filter ─────────── */

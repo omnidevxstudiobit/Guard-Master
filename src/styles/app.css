@@ -1276,6 +1276,68 @@ body[data-bgfollow]{
 .gv-dots i{width:6px; height:6px; border-radius:50%; background:var(--hair-2); cursor:pointer; transition:all .4s var(--ease)}
 .gv-dots i.on{background:var(--a,var(--ink)); width:20px; border-radius:3px}
 
+/* ══ loading — curtain, skeleton cards, image shimmer ═══════════ */
+
+/* the curtain: brand mark + shimmer bar on the pastel ground */
+.curtain{
+  position:fixed; inset:0; z-index:400;
+  display:grid; place-content:center; justify-items:center; gap:24px;
+  background:
+    radial-gradient(700px 520px at 16% 0%, #c9d7f3 0%, transparent 60%),
+    radial-gradient(700px 520px at 86% 100%, #e0d8f6 0%, transparent 60%),
+    var(--g3);
+  transition:opacity .55s var(--ease), visibility .55s;
+}
+.curtain.done{opacity:0; visibility:hidden; pointer-events:none}
+.c-mk{
+  width:64px; height:64px; border-radius:20px; background:var(--ink);
+  display:grid; place-items:center; box-shadow:0 18px 44px rgba(20,18,26,.22);
+  animation:mk-pulse 1.6s ease-in-out infinite;
+}
+@keyframes mk-pulse{50%{transform:scale(1.09)}}
+.c-bar{width:150px; height:4px; border-radius:99px; overflow:hidden; position:relative; background:rgba(20,18,26,.1)}
+.c-bar i{
+  position:absolute; inset:0; border-radius:inherit; background:var(--y);
+  transform:translateX(-100%); animation:c-fill 1.15s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes c-fill{to{transform:translateX(100%)}}
+
+/* skeleton cards — sit inside JS-built grids until content replaces them */
+.sk{
+  position:relative; overflow:hidden; border-radius:var(--r-lg);
+  background:linear-gradient(100deg, #e9e8f2 38%, #f7f6fb 50%, #e9e8f2 62%);
+  background-size:220% 100%; animation:sk-bg 1.3s linear infinite;
+}
+@keyframes sk-bg{from{background-position:120% 0} to{background-position:-120% 0}}
+
+/* image containers shimmer until their photograph lands, then it fades in */
+.buy-card .im:has(img:not(.ok)), .pcard .im:has(img:not(.ok)), .rec .im:has(img:not(.ok)),
+.hg-shot:has(img:not(.ok)), .gv-card:has(img:not(.ok)), .orb-card .in:has(img:not(.ok)),
+.gal-main:has(img:not(.ok)), .s-shot:has(img:not(.ok)), .cat-tiles .tile:has(> img:not(.ok)),
+.duo .tile:has(> img:not(.ok)){
+  background:linear-gradient(100deg, #e9e8f2 38%, #f7f6fb 50%, #e9e8f2 62%);
+  background-size:220% 100%; animation:sk-bg 1.3s linear infinite;
+}
+.buy-card .im img:not(.alt):not(.ok), .pcard .im img:not(.alt):not(.ok), .rec .im img:not(.alt):not(.ok),
+.hg-shot img:not(.ok), .gv-card img:not(.ok), .orb-card img:not(.ok), .gal-main img:not(.ok),
+.s-shot img:not(.ok), .cat-tiles .tile > img:not(.ok), .duo .tile > img:not(.ok){opacity:0}
+img.ok{animation:img-in .55s var(--ease-soft)}
+@keyframes img-in{from{opacity:0}}
+
+/* ── USA page: liberty silhouette behind the hero ─────────────── */
+.us-hero{position:relative}
+.us-hero > *{position:relative; z-index:1}
+.us-hero .lady{
+  position:absolute; z-index:0 !important; right:clamp(-60px,1vw,40px); bottom:-8%;
+  height:118%; aspect-ratio:420/680; pointer-events:none; color:var(--p); opacity:.09;
+  -webkit-mask-image:linear-gradient(#000 72%, transparent);
+  mask-image:linear-gradient(#000 72%, transparent);
+  animation:lady-float 9s ease-in-out infinite;
+}
+.us-hero .lady svg{width:100%; height:100%; display:block}
+@keyframes lady-float{50%{transform:translateY(-12px)}}
+@media(max-width:760px){.us-hero .lady{opacity:.06; right:-90px}}
+
 /* ── USA page: dot map, crossing arc, why cards ───────────────── */
 .sa-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:clamp(28px,5vw,64px); align-items:center}
 @media(max-width:920px){.sa-grid{grid-template-columns:1fr}}

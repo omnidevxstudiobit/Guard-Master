@@ -10,6 +10,12 @@
 </head>
 <body>
 
+<!-- ── loading curtain: lifts when the page is ready ───────────── -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <span class="c-mk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+  <span class="c-bar"><i></i></span>
+</div>
+
 <!-- ── promo bar: the utility strip every big storefront runs ──── -->
 <div class="promo-bar">
   <span>Free collection from Benoni South</span>
@@ -95,7 +101,10 @@
       <div class="row-head">
         <h2 class="disp h-row">Shop by application</h2>
       </div>
-      <div class="cat-tiles" id="catTiles" data-rise-group></div>
+      <div class="cat-tiles" id="catTiles" data-rise-group>
+        <div class="sk" style="min-height:300px"></div><div class="sk" style="min-height:300px"></div>
+        <div class="sk" style="min-height:300px"></div><div class="sk" style="min-height:300px"></div>
+      </div>
     </section>
 
     <!-- ── best sellers rail ────────────────────────────────────── -->
@@ -107,7 +116,12 @@
           <button class="icon-btn" id="railNext" aria-label="Next"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
         </div>
       </div>
-      <div class="rail-wrap"><div class="rail" id="rail"></div></div>
+      <div class="rail-wrap"><div class="rail" id="rail">
+        <div class="sk" style="flex:0 0 300px;height:390px"></div>
+        <div class="sk" style="flex:0 0 300px;height:390px"></div>
+        <div class="sk" style="flex:0 0 300px;height:390px"></div>
+        <div class="sk" style="flex:0 0 300px;height:390px"></div>
+      </div></div>
     </section>
 
     <!-- ── recent projects — the roster from the factory site ───── -->
@@ -182,7 +196,10 @@
           <button data-value="access" aria-selected="false">Accessories</button>
         </div>
       </div>
-      <div class="buy-grid" id="grid" data-rise-group></div>
+      <div class="buy-grid" id="grid" data-rise-group>
+        <div class="sk" style="min-height:320px"></div><div class="sk" style="min-height:320px"></div>
+        <div class="sk" style="min-height:320px"></div><div class="sk" style="min-height:320px"></div>
+      </div>
       <p class="lead" style="margin-top:18px;font-size:14.5px">
         All prices include 15% VAT. Variable products show their entry price —
         pick sizes and finishes on the product page or at checkout.
