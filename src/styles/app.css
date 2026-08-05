@@ -1480,31 +1480,7 @@ img.ok{animation:img-in .55s var(--ease-soft)}
 .tile .cap h3{margin:0; font-size:inherit; font-weight:inherit; letter-spacing:inherit; line-height:1.25; display:block}
 .cat-tiles .tile .cap h3{text-transform:uppercase; font-weight:800; font-size:18px; letter-spacing:-.015em}
 
-/* ── security-level spec strip — CSS-only tabs, content in DOM ── */
-.specs input{position:absolute; opacity:0; pointer-events:none}
-.spec-tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px}
-.spec-tabs .chip{user-select:none}
-#spHigh:checked ~ .spec-tabs label[for="spHigh"],
-#spMed:checked ~ .spec-tabs label[for="spMed"],
-#spLow:checked ~ .spec-tabs label[for="spLow"]{background:var(--ink); color:#fff; border-color:var(--ink)}
-.spec-pane{display:none; grid-template-columns:1fr 1.1fr; gap:clamp(20px,3.4vw,44px); align-items:stretch}
-@media(max-width:760px){.spec-pane{grid-template-columns:1fr}}
-#spHigh:checked ~ .spec-pane[data-sp="high"],
-#spMed:checked ~ .spec-pane[data-sp="med"],
-#spLow:checked ~ .spec-pane[data-sp="low"]{display:grid}
-.spec-mesh{
-  min-height:240px; border-radius:var(--r-lg); border:1px solid var(--hair-2);
-  background-color:rgba(255,255,255,.6);
-}
-.spec-mesh--high{background-image:
-  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
-  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 4px)}
-.spec-mesh--med{background-image:
-  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
-  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 7px)}
-.spec-mesh--low{background-image:
-  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
-  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 13px)}
+/* spec tables (policies warranty table, print sheets) */
 .spec-table{width:100%; border-collapse:collapse; font-size:14.5px}
 .spec-table th{
   text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em;
