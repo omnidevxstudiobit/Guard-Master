@@ -170,7 +170,8 @@ function countUp (node) {
 
 /* ── line chart, drawn left to right ──────────────────────────── */
 export function drawChart (card) {
-  const svg = $('svg', card)
+  /* the card also holds a tiny trend-icon svg — draw into the chart's own */
+  const svg = $('.chart-wrap svg', card)
   if (!svg || svg.dataset.drawn) return
   svg.dataset.drawn = '1'
 
