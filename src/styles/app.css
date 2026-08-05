@@ -116,12 +116,12 @@ a{color:inherit}
 }
 .glass > *{position:relative; z-index:2}
 
-/* focal surfaces only — these get the real backdrop blur */
+/* focal surfaces — glass body without backdrop blur: over the soft
+   pastel ground the blur was indistinguishable, and on a huge hero
+   panel it re-rasterised every scroll frame */
 .glass--lit{
-  backdrop-filter:blur(20px) saturate(1.6);
-  -webkit-backdrop-filter:blur(20px) saturate(1.6);
   background:
-    linear-gradient(150deg, rgba(255,255,255,.66) 0%, rgba(255,255,255,.40) 44%, rgba(255,255,255,.55) 100%);
+    linear-gradient(150deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.66) 44%, rgba(255,255,255,.8) 100%);
 }
 .solid{background:#fff; border:1px solid var(--hair); box-shadow:var(--glass-sh)}
 
@@ -222,11 +222,20 @@ a{color:inherit}
 .nav-in{
   display:flex; align-items:center; gap:16px; padding:10px 10px 10px 22px;
   border-radius:999px; position:relative; isolation:isolate;
+  /* the real frost lives here — but only while the page is still. A
+     sticky backdrop-filter re-samples its moving backdrop every scrolled
+     frame, so during active scroll the .scrolling flag swaps in a
+     translucent solid and the frost returns on rest. */
   background:linear-gradient(150deg, rgba(255,255,255,.72), rgba(255,255,255,.48) 45%, rgba(255,255,255,.62));
-  backdrop-filter:blur(22px) saturate(1.7);
-  -webkit-backdrop-filter:blur(22px) saturate(1.7);
+  backdrop-filter:blur(18px) saturate(1.6);
+  -webkit-backdrop-filter:blur(18px) saturate(1.6);
+  transition:background .3s var(--ease-soft);
   border:0;
   box-shadow:0 10px 30px rgba(20,18,26,.10), 0 1px 3px rgba(20,18,26,.05), inset 0 -1px 0 rgba(255,255,255,.5);
+}
+body.scrolling .nav-in{
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+  background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(255,255,255,.78) 45%, rgba(255,255,255,.86));
 }
 /* the sub-main lockup from the brief: G mark + uppercase wordmark */
 .logo{display:flex; align-items:center; gap:9px; text-decoration:none; font-weight:900; letter-spacing:-.01em; font-size:15px; white-space:nowrap; text-transform:uppercase}
@@ -1261,8 +1270,7 @@ body[data-bgfollow]{
   position:fixed; left:0; right:0; bottom:0; z-index:120;
   display:none; align-items:center; justify-content:space-between; gap:14px;
   padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-  background:linear-gradient(150deg, rgba(255,255,255,.94), rgba(255,255,255,.82));
-  backdrop-filter:blur(16px) saturate(1.5); -webkit-backdrop-filter:blur(16px) saturate(1.5);
+  background:linear-gradient(150deg, rgba(255,255,255,.97), rgba(255,255,255,.9));
   border-top:1px solid rgba(255,255,255,.75); box-shadow:0 -10px 30px rgba(20,18,26,.12);
 }
 .m-bar .m-tot{font-size:19px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
@@ -1506,6 +1514,12 @@ img.ok{animation:img-in .55s var(--ease-soft)}
 .why-n{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--p)}
 .why-grid h3{margin:10px 0 8px; font-size:18px; font-weight:800; letter-spacing:-.025em}
 .why-grid p{margin:0; font-size:14px; color:var(--muted); line-height:1.65}
+
+/* while actively scrolling, decorative loops pause — the compositor
+   spends the frame budget on the scroll itself */
+body.scrolling .marq-t, body.scrolling .logo-row .rt, body.scrolling .promo-band::after,
+body.scrolling .blob, body.scrolling .hero-ticker span, body.scrolling .arc-dash,
+body.scrolling .arc-ship, body.scrolling .city--home::after{animation-play-state:paused}
 
 /* ── announcement bar dismiss ─────────────────────────────────── */
 .promo-bar{position:relative}

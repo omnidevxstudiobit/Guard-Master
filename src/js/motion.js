@@ -48,6 +48,17 @@ export function initSmoothScroll () {
   gsap.ticker.add((t) => lenis.raf(t * 1000))
   gsap.ticker.lagSmoothing(0)
   window.lenis = lenis
+
+  /* flag active scrolling so CSS can pause decorative loops */
+  let idleTimer = null
+  lenis.on('scroll', () => {
+    if (!idleTimer) document.body.classList.add('scrolling')
+    clearTimeout(idleTimer)
+    idleTimer = setTimeout(() => {
+      document.body.classList.remove('scrolling')
+      idleTimer = null
+    }, 160)
+  })
   return lenis
 }
 
