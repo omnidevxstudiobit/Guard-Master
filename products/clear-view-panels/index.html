@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clear View fencing panels — Guard Master</title>
+<meta name="description" content="358 anti-climb Clear View fencing panels. Apertures 76×12.7, 76×25 and 76×50mm, heights 1.8–3.0m, four finish systems. From R550,85.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+<style>
+  .p-head{display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap; margin:8px 0 22px}
+  .p-price .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); display:block}
+  .p-price .v{font-size:32px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums}
+  .cfg{display:grid; grid-template-columns:1.2fr .8fr; gap:20px; align-items:start; margin-top:20px}
+  @media(max-width:940px){.cfg{grid-template-columns:1fr}}
+  .opt{margin-bottom:24px}
+  .opt:last-child{margin-bottom:0}
+  .opt-h{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; gap:12px}
+  .opt-h .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--muted)}
+  .opt-h .v{font-size:13.5px; font-weight:600; text-align:right}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; text-align:left;
+    background:var(--glass-strong); color:var(--ink);
+    backdrop-filter:blur(16px) saturate(1.4); -webkit-backdrop-filter:blur(16px) saturate(1.4);
+    border:1px solid var(--glass-brd); box-shadow:var(--glass-in);
+    border-radius:999px; padding:10px 18px;
+    transition:transform .45s var(--ease), background .35s var(--ease-soft), color .35s var(--ease-soft);
+  }
+  .chip:hover{transform:translateY(-2px)}
+  .chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:transparent}
+  .chip:focus-visible{outline:2px solid var(--p); outline-offset:3px}
+  .chip small{display:block; font-size:10.5px; opacity:.62; font-family:var(--mono); letter-spacing:.03em; font-weight:500}
+  .buy{position:sticky; top:96px; border-radius:var(--r-lg); padding:26px}
+  .buy .row{display:flex; justify-content:space-between; gap:14px; padding:10px 0; border-bottom:1px solid var(--hair); font-size:13.5px}
+  .buy .row .k{color:var(--muted)} .buy .row .v{font-family:var(--mono); font-size:12.5px; text-align:right}
+  .tot{display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 3px}
+  .tot .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--muted)}
+  .tot .v{font-size:30px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums}
+  .tot .v.poa{font-size:18px; letter-spacing:-.01em}
+  .vat{font-family:var(--mono); font-size:10.5px; color:var(--muted); margin:0 0 18px}
+  .qty{display:flex; align-items:center; border-radius:999px; width:max-content; margin-bottom:12px;
+       background:var(--glass-strong); border:1px solid var(--glass-brd); box-shadow:var(--glass-in)}
+  .qty button{width:40px; height:40px; border:0; background:none; cursor:pointer; font:inherit; font-size:18px; border-radius:50%; color:var(--ink)}
+  .qty button:hover{background:rgba(20,18,26,.05)}
+  .qty span{min-width:42px; text-align:center; font-weight:700; font-variant-numeric:tabular-nums}
+  .aps{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  @media(max-width:760px){.aps{grid-template-columns:1fr}}
+  .ap{border-radius:var(--r-lg); overflow:hidden; background:rgba(255,255,255,.7);
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      border:1px solid var(--glass-brd); box-shadow:var(--glass-sh), var(--glass-in);
+      transition:transform .55s var(--ease)}
+  .ap:hover{transform:translateY(-5px)}
+  .ap .g{aspect-ratio:16/11; background:#fff; position:relative; overflow:hidden; border-bottom:1px solid var(--hair)}
+  .ap .g svg{position:absolute; inset:0; width:100%; height:100%}
+  .ap .b{padding:16px 20px 20px}
+  .ap .t{font-size:16px; font-weight:700; letter-spacing:-.025em; font-variant-numeric:tabular-nums}
+  .ap .s{font-family:var(--mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin-top:4px}
+  .strip{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px}
+  @media(max-width:820px){.strip{grid-template-columns:1fr}}
+  .strip .tx{padding:34px}
+  .strip h3{margin:0 0 10px; font-size:22px; font-weight:700; letter-spacing:-.03em}
+  .strip p{margin:0; color:var(--muted); font-size:15px; max-width:44ch}
+  .dl{display:flex; gap:28px; margin-top:20px; flex-wrap:wrap}
+  .dl div{display:flex; flex-direction:column; gap:2px}
+  .dl dt{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+  .dl dd{margin:0; font-size:17px; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+  .strip figure{margin:0; border-radius:var(--r-lg); overflow:hidden}
+  .strip figure img{width:100%; height:100%; object-fit:cover; aspect-ratio:4/3; transition:transform 1.3s var(--ease)}
+  .strip figure:hover img{transform:scale(1.05)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".45"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      <input type="search" placeholder="Search panels, posts, razor wire…" aria-label="Search products">
+      <button class="icon-btn" style="width:36px;height:36px;background:var(--ink);color:#fff;border-color:transparent" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </button>
+    </label>
+    <div class="nav-links">
+      <a href="/products/">Catalogue</a>
+      <a href="/products/clear-view-panels/" aria-current="page">Panels</a>
+      <a href="/#factory">Factory</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main>
+    <p class="eyebrow" style="margin-bottom:6px"><a href="/products/" style="text-decoration:none;color:inherit">Catalogue</a> / Clear View fencing panels</p>
+
+    <div class="p-head">
+      <h1 class="tagline h1" style="max-width:14ch">
+        <span class="ln"><i>Clear View</i></span>
+        <span class="ln"><i>fencing panels</i></span>
+      </h1>
+      <div class="p-price"><span class="k">From</span><span class="v">R550,85</span></div>
+    </div>
+
+    <!-- ── gallery + buy box, above the fold ───────────────── -->
+    <div class="cfg" style="margin-bottom:14px">
+      <div>
+        <div class="gal">
+          <div class="gal-thumbs" id="galThumbs"></div>
+          <div class="gal-main" id="galMain">
+            <img id="galImg" alt="">
+            <button class="icon-btn nav-a l" id="galPrev" type="button" aria-label="Previous image">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+            </button>
+            <button class="icon-btn nav-a r" id="galNext" type="button" aria-label="Next image">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+            <span class="gal-count" id="galCount">1 / 5</span>
+            <span class="gal-hint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6M11 8v6M8 11h6"/></svg>
+              Hover to zoom
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- guided pick, for someone who has never bought fencing -->
+        <div class="card glass helper" id="helper" style="margin-bottom:14px">
+          <h3>Not sure which one?</h3>
+          <p class="sub">Answer two questions and we'll set the spec for you. You can still change anything after.</p>
+
+          <div class="q">
+            <span class="qt">What are you fencing?</span>
+            <div class="opts" id="qUse">
+              <button class="opt-b" type="button" data-v="home">A home or estate<small>Boundary wall or garden</small></button>
+              <button class="opt-b" type="button" data-v="biz">A business site<small>Yard, depot, offices</small></button>
+              <button class="opt-b" type="button" data-v="high">Something high-risk<small>Substation, plant, storage</small></button>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="qt">How high does it need to be?</span>
+            <span class="qs">Most residential boundaries are 1.8m. Anything you want to stop being climbed goes 2.4m or over.</span>
+            <div class="opts" id="qHeight">
+              <button class="opt-b" type="button" data-v="3m × 1.8m">1.8m<small>Standard boundary</small></button>
+              <button class="opt-b" type="button" data-v="3m × 2.1m">2.1m<small>Taller boundary</small></button>
+              <button class="opt-b" type="button" data-v="3m × 2.4m">2.4m<small>Deters climbing</small></button>
+              <button class="opt-b" type="button" data-v="3m × 3m">3.0m<small>Maximum</small></button>
+            </div>
+          </div>
+
+          <div class="verdict" id="verdict" hidden>
+            <b id="vTitle"></b>
+            <p id="vWhy"></p>
+            <button class="btn btn--go" type="button" id="vApply" style="font-size:14px;padding:11px 8px 11px 18px">
+              Use this spec
+              <span class="dot" style="width:32px;height:32px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="buy glass glass--lit" style="position:static">
+          <div class="row"><span class="k">Aperture</span><span class="v" id="rAp">76mm × 12.7mm</span></div>
+          <div class="row"><span class="k">Panel</span><span class="v" id="rSz">3m × 1.8m</span></div>
+          <div class="row"><span class="k">Wire</span><span class="v" id="rWr">3mm × 4mm</span></div>
+          <div class="row"><span class="k">Finish</span><span class="v" id="rFn">Plain Galvanised</span></div>
+          <div class="tot"><span class="k">Total</span><span class="v" id="price">R1 271,90</span></div>
+          <p class="vat" id="vatLine">Incl. VAT · 1 panel</p>
+          <div class="qty">
+            <button type="button" id="qMinus" aria-label="Decrease quantity">−</button>
+            <span id="qVal">1</span>
+            <button type="button" id="qPlus" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn--go" type="button" id="addBtn" style="width:100%;justify-content:space-between">
+            Add to cart
+            <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </button>
+          <a class="btn" href="/cart/" style="width:100%;justify-content:center;margin-top:8px">View cart</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── lightbox ────────────────────────────────────────── -->
+    <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Product image">
+      <img id="lbImg" alt="">
+      <button class="icon-btn x" id="lbX" type="button" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <button class="icon-btn nav-a l" id="lbPrev" type="button" aria-label="Previous image">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <button class="icon-btn nav-a r" id="lbNext" type="button" aria-label="Next image">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+      </button>
+      <span class="cap" id="lbCap"></span>
+    </div>
+
+    <!-- ── before / after wipe ─────────────────────────────── -->
+    <div class="wipe" id="wipe">
+      <img src="/images/products/clear-view-after-dark/clear-view-residential-sightline-through-mesh-dusk-1174.webp"
+           alt="Looking through a Clear View boundary at dusk, sightline unbroken">
+      <div class="plate" id="plate">
+        <svg id="plateSvg" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+        <div class="lead">
+          <b>From engineering drawing to a finished line.</b>
+          <span id="plateSpec">76 × 12.7mm · high security</span>
+        </div>
+      </div>
+      <span class="tag l">Drawing</span>
+      <span class="tag r">Installed</span>
+      <div class="bar" id="bar"><div class="knob">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+      </div></div>
+    </div>
+
+    <div class="marq" style="margin-top:22px"><div class="marq-t" id="marq"></div></div>
+
+    <!-- ── configure ───────────────────────────────────────── -->
+    <section id="configure">
+      <div class="sec-head">
+        <p class="eyebrow">Configure</p>
+        <h2 style="margin:0">Build your panel</h2>
+      </div>
+
+      <div class="card glass" style="padding:28px">
+        <div class="cfg" style="gap:28px">
+          <div>
+            <div class="opt">
+              <div class="opt-h"><span class="k">Aperture</span><span class="v" id="vAp">76mm × 12.7mm</span></div>
+              <div class="chips" id="cAp"></div>
+            </div>
+            <div class="opt">
+              <div class="opt-h"><span class="k">Panel size</span><span class="v" id="vSz">3m × 1.8m</span></div>
+              <div class="chips" id="cSz"></div>
+            </div>
+          </div>
+          <div>
+            <div class="opt">
+              <div class="opt-h"><span class="k">Wire size</span><span class="v" id="vWr">3mm × 4mm</span></div>
+              <div class="chips" id="cWr"></div>
+            </div>
+            <div class="opt">
+              <div class="opt-h"><span class="k">Finish</span><span class="v" id="vFn">Plain Galvanised</span></div>
+              <div class="chips" id="cFn"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── security tiers ──────────────────────────────────── -->
+    <section id="tiers">
+      <div class="sec-head">
+        <p class="eyebrow">Security tiers</p>
+        <h2 style="margin:0 0 12px">Three apertures, drawn to scale</h2>
+        <p class="lead">Panel, posts and fixings are identical across tiers — only the mesh geometry changes.</p>
+      </div>
+      <div class="aps" id="aps"></div>
+    </section>
+
+    <!-- ── detail ──────────────────────────────────────────── -->
+    <section id="detail" style="padding-top:0">
+      <div class="strip">
+        <div class="card glass tx">
+          <h3>The aperture does the work</h3>
+          <p>At 76 × 12.7mm the gap admits nothing useful — no foothold, no leverage, no purchase for a cutter jaw. Everything else on the panel exists to hold that geometry rigid.</p>
+          <dl class="dl">
+            <div><dt>Aperture</dt><dd>76 × 12.7mm</dd></div>
+            <div><dt>Wire</dt><dd>3×4 / 4×4mm</dd></div>
+            <div><dt>Width</dt><dd>3.0m</dd></div>
+          </dl>
+        </div>
+        <figure><img src="/images/products/clear-view-fencing-panels/17-640.webp" alt="Close view of the 358 mesh aperture" loading="lazy"></figure>
+      </div>
+
+      <div class="strip">
+        <figure><img src="/images/products/clear-view-fencing-panels/4-640.webp" alt="Welded junction where horizontal and vertical wires meet" loading="lazy"></figure>
+        <div class="card glass tx">
+          <h3>Welded at every crossing</h3>
+          <p>Each intersection is resistance-welded, so a cut wire doesn’t unravel the panel — it stays a panel. That is the difference between a breach and a hole.</p>
+          <dl class="dl">
+            <div><dt>Heights</dt><dd>1.8 – 3.0m</dd></div>
+            <div><dt>Finishes</dt><dd>4 systems</dd></div>
+            <div><dt>Warranty</dt><dd>10 yr*</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" style="padding-top:0">
+      <footer class="foot glass">
+        <div class="foot-grid">
+          <div><h5>Factory</h5><p>10 Burnley Street<br>Benoni South Extn.<br>Gauteng 1501, South Africa</p></div>
+          <div><h5>Sales</h5><p><a href="tel:+27114378903">+27 11 437 8903</a><br><a href="mailto:info@fencing-supplier.com">info@fencing-supplier.com</a></p></div>
+          <div><h5>Export</h5><p><a href="tel:+19547565216">+1 (954) 756 5216</a><br><a href="mailto:export@fencing-supplier.com">export@fencing-supplier.com</a></p></div>
+          <div><h5>Hours</h5><p>Mon – Thu 07:30 – 16:30<br>Fri 07:30 – 13:30</p></div>
+        </div>
+        <div class="foot-b">
+          <span>* Plascoat finish carries the 10-year warranty.</span>
+          <span>Guard Master · Wire Ventures</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="/src/js/panels.js"></script>
+</body>
+</html>

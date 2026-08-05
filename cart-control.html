@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cart control</title>
+<!--
+  Cart control — rebuilt from Scene.mp4 (7.53s, 960x720, 30fps).
+  Every value below was measured off the source video frame by frame,
+  not eyeballed. Geometry is scaled 120px(video) -> 56px(css), x0.4667.
+
+    circle           120px -> 56px
+    gap               24px -> 11.2px
+    pitch            144px -> 67.2px   (diameter + gap)
+    pill (at rest)   450px -> 210px
+    collapse peak    512px -> 239px    (+13.8%, anticipation)
+    expand peak      490px -> 228.7px  (+8.9%, overshoot)
+
+  The transition is a spring, not a tween: collapsing, the pill stretches
+  19.5% wider before contracting; expanding, it overshoots 12.7% past its
+  resting width and settles back. Both legs run 1033ms. The linear()
+  easings are sampled at every frame of the source, which is why this
+  reads as the video rather than as a generic ease-in-out.
+-->
+<style>
+@font-face{
+  font-family:"Archivo";
+  src:url("/fonts/archivo-variable.woff2") format("woff2");
+  font-weight:100 900; font-display:swap;
+}
+
+.cart{
+  /* palette — sampled from the video, do not re-pick by eye */
+  --cart-yellow:#f9e21b;
+  --cart-purple:#762ce5;
+  --cart-black:#000000;
+
+  /* geometry */
+  --d:56px;                 /* circle diameter          */
+  --pill-w:210px;           /* pill width at rest       */
+  --pitch:67.2px;           /* centre-to-centre, open   */
+  --tuck:77px;              /* pill-w/2 - d/2, closed   */
+  --dur:1033ms;
+
+  /* measured easings — the overshoot lives in these two curves */
+  --ease-collapse:linear(-0,-0.085,-0.134,-0.171,-0.192,-0.195,-0.195,-0.183,-0.171,-0.146,-0.104,-0.037,0.073,0.244,0.424,0.549,0.643,0.707,0.765,0.805,0.841,0.872,0.896,0.915,0.939,0.951,0.963,0.976,0.982,0.988,0.994,1);
+  --ease-expand:linear(0,0.297,0.491,0.642,0.764,0.861,0.939,1,1.048,1.085,1.109,1.121,1.127,1.124,1.121,1.109,1.097,1.085,1.073,1.061,1.055,1.048,1.036,1.03,1.024,1.021,1.012,1.012,1.012,1.006,1.006,1);
+
+  position:relative; width:280px; height:var(--d);
+  isolation:isolate;
+  font-family:"Archivo",system-ui,sans-serif;
+}
+
+.cart button{
+  position:absolute; top:0; left:50%; height:var(--d);
+  margin:0; padding:0; border:0; cursor:pointer;
+  font:inherit; border-radius:calc(var(--d) / 2);
+  display:flex; align-items:center; justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.cart button:focus-visible{outline:3px solid var(--cart-purple); outline-offset:3px}
+.cart svg{display:block; flex:none}
+
+.c-pay,.c-count{width:var(--d); z-index:1}
+.c-pay{background:var(--cart-black); color:#fff}
+.c-count{
+  background:var(--cart-purple); color:#fff;
+  font-size:24px; font-weight:500; letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+.c-main{
+  z-index:2; background:var(--cart-yellow); color:var(--cart-black);
+  width:var(--pill-w); overflow:hidden; white-space:nowrap;
+}
+.c-main .lbl{
+  font-size:21px; letter-spacing:-.005em;
+  max-width:140px; opacity:1; padding-left:11px; overflow:hidden;
+}
+
+/* closed — the "View cart" pill; pay/count sit hidden behind its caps */
+.cart .c-main {transform:translateX(-50%);                     transition:width var(--dur) var(--ease-expand)}
+.cart .c-pay  {transform:translateX(calc(-50% - var(--tuck))); transition:transform var(--dur) var(--ease-expand)}
+.cart .c-count{transform:translateX(calc(-50% + var(--tuck))); transition:transform var(--dur) var(--ease-expand)}
+.cart .lbl{transition:max-width 300ms ease 200ms, opacity 220ms ease-in 380ms, padding-left 300ms ease 200ms}
+
+/* open — three separate circles */
+.cart[data-open="true"] .c-main {width:var(--d);                                  transition:width var(--dur) var(--ease-collapse)}
+.cart[data-open="true"] .c-pay  {transform:translateX(calc(-50% - var(--pitch))); transition:transform var(--dur) var(--ease-collapse)}
+.cart[data-open="true"] .c-count{transform:translateX(calc(-50% + var(--pitch))); transition:transform var(--dur) var(--ease-collapse)}
+.cart[data-open="true"] .lbl{
+  max-width:0; opacity:0; padding-left:0;
+  transition:max-width 260ms ease 0ms, opacity 180ms ease-out 0ms, padding-left 260ms ease 0ms;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cart .c-main,.cart .c-pay,.cart .c-count,.cart .lbl,
+  .cart[data-open="true"] .c-main,.cart[data-open="true"] .c-pay,
+  .cart[data-open="true"] .c-count,.cart[data-open="true"] .lbl{
+    transition-duration:1ms; transition-delay:0ms;
+  }
+}
+
+/* demo page only — delete when porting */
+body{margin:0; min-height:100vh; display:grid; place-items:center; background:#f6f6f6}
+</style>
+</head>
+<body>
+
+<div class="cart" id="cart" data-open="false">
+  <button class="c-pay" type="button" aria-label="Checkout now">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/>
+      <path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/>
+    </svg>
+  </button>
+
+  <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/>
+      <circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/>
+    </svg>
+    <span class="lbl">View cart</span>
+  </button>
+
+  <button class="c-count" type="button" id="cartCount" aria-label="3 items in cart">3</button>
+</div>
+
+<script>
+(function(){
+  var cart = document.getElementById('cart');
+  document.getElementById('cartMain').addEventListener('click', function(){
+    cart.dataset.open = cart.dataset.open !== 'true';
+  });
+})();
+</script>
+</body>
+</html>

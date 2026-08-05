@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your cart — Guard Master</title>
+<meta name="description" content="Review your Guard Master fencing order and request factory pricing.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+<style>
+  .cart-grid{display:grid; grid-template-columns:.95fr 1.05fr; gap:28px; align-items:start}
+  @media(max-width:940px){.cart-grid{grid-template-columns:1fr}}
+  .stack-panel{display:flex; flex-direction:column; align-items:center; padding:30px}
+  .stack-head{width:100%; display:flex; justify-content:space-between; align-items:baseline; gap:14px; margin-bottom:22px}
+  .stack-head .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .stack-head .n{font-family:var(--mono); font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+  .deck-actions{display:flex; gap:10px; justify-content:center; margin-top:18px}
+  .add-row{display:flex; gap:10px; align-items:center; margin-top:22px; width:100%; flex-wrap:wrap}
+  .qty{display:flex; align-items:center; border-radius:999px; background:var(--glass-strong);
+       border:1px solid var(--glass-brd); box-shadow:var(--glass-in)}
+  .qty button{width:40px; height:40px; border:0; background:none; cursor:pointer; font:inherit; font-size:18px; border-radius:50%; color:var(--ink)}
+  .qty button:hover{background:rgba(20,18,26,.05)}
+  .qty span{min-width:40px; text-align:center; font-weight:700; font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".45"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      <input type="search" placeholder="Search the catalogue…" aria-label="Search products">
+      <button class="icon-btn" style="width:36px;height:36px;background:var(--ink);color:#fff;border-color:transparent" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </button>
+    </label>
+    <div class="nav-links">
+      <a href="/products/">Catalogue</a>
+      <a href="/products/clear-view-panels/">Panels</a>
+      <a href="/cart/" aria-current="page">Cart</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main>
+    <h1 class="tagline h1" style="margin:12px 0 30px;max-width:18ch">
+      <span class="ln"><i>Your order.</i></span>
+      <span class="ln"><i><em>Priced from the factory.</em></i></span>
+    </h1>
+
+    <div class="cart-grid">
+
+      <!-- ── swipeable stack ─────────────────────────────── -->
+      <div class="card glass stack-panel">
+        <div class="stack-head">
+          <span class="k" id="deckTitle">In your order</span>
+          <span class="n" id="deckIdx">01 / 01</span>
+        </div>
+
+        <div class="deck" id="deck" tabindex="0" aria-label="Product deck — swipe or use arrow keys"></div>
+
+        <div class="deck-dots" id="dots"></div>
+
+        <div class="deck-actions">
+          <button class="icon-btn" id="deckPrev" aria-label="Previous image">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <button class="icon-btn" id="deckNext" aria-label="Next image">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <p class="deck-hint" id="deckHint">Cycling your order</p>
+      </div>
+
+      <!-- ── the order ───────────────────────────────────── -->
+      <div class="card glass">
+        <div class="stack-head" style="margin-bottom:6px">
+          <span class="k">Your order</span>
+          <span class="n" id="lineCount">0 items</span>
+        </div>
+
+        <div id="lines"><p class="empty">Nothing in the cart yet — swipe through and add what you need.</p></div>
+
+        <div id="totals" hidden>
+          <div class="sum"><span class="k">Goods</span><span class="v" id="sumGoods">R0,00</span></div>
+          <div class="sum"><span class="k">of which VAT (15%)</span><span class="v" id="sumVat">R0,00</span></div>
+          <div class="sum total"><span class="k">Total</span><span class="v" id="sumTotal">R0,00</span></div>
+          <p class="vat" style="font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:6px 0 20px">
+            Incl. 15% VAT. Delivery is costed at checkout.
+          </p>
+          <a class="btn btn--go" href="/checkout/" style="width:100%;justify-content:space-between">
+            Checkout
+            <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </a>
+          <button class="btn" type="button" id="clearBtn" style="width:100%;justify-content:center;margin-top:8px">Empty cart</button>
+        </div>
+
+        <div id="recBox" hidden style="margin-top:28px">
+          <p class="eyebrow" style="margin-bottom:10px">Completes the system</p>
+          <div class="recs" id="recs"></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="contact" style="padding-top:70px">
+      <footer class="foot glass">
+        <div class="foot-grid">
+          <div><h5>Factory</h5><p>10 Burnley Street<br>Benoni South Extn.<br>Gauteng 1501, South Africa</p></div>
+          <div><h5>Sales</h5><p><a href="tel:+27114378903">+27 11 437 8903</a><br><a href="mailto:info@fencing-supplier.com">info@fencing-supplier.com</a></p></div>
+          <div><h5>Export</h5><p><a href="tel:+19547565216">+1 (954) 756 5216</a><br><a href="mailto:export@fencing-supplier.com">export@fencing-supplier.com</a></p></div>
+          <div><h5>Hours</h5><p>Mon – Thu 07:30 – 16:30<br>Fri 07:30 – 13:30</p></div>
+        </div>
+        <div class="foot-b">
+          <span>Guard Master · Wire Ventures — perimeter security manufacturer</span>
+          <span>Benoni South, Gauteng</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="/src/js/cartpage.js"></script>
+</body>
+</html>

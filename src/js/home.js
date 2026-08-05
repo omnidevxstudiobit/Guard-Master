@@ -1,0 +1,75 @@
+/* Home — commerce first, styled like the big first-party storefronts:
+   promo bar, full-bleed photographic hero, display type, category tiles,
+   a best-sellers carousel, promo band, the full priced range, and a loud
+   ticker. Real photography only; motion is GSAP/Lenis via motion.js. */
+
+import { initCart, initHero, initReveal, initSeg, initMarquee, initRail } from './app.js'
+import { initMotion } from './motion.js'
+import { PRODUCTS, byId, zar, ARROW, cardHTML, itemHref } from '../data/products.js'
+import { CATEGORIES } from '../data/categories.js'
+
+/* ── best sellers rail ────────────────────────────────────────── */
+const BEST = ['panels', 'posts', 'caps', 'coils', 'spikes', 'gates', 'razormesh', 'clamps']
+document.getElementById('rail').innerHTML = BEST.map(id => cardHTML(byId(id))).join('')
+initRail('#rail', '#railPrev', '#railNext')
+
+/* ── shop-by-application tiles — entry price from the catalogue ── */
+document.getElementById('catTiles').innerHTML = CATEGORIES.map(c => {
+  const from = Math.min(...c.products.map(id => byId(id)?.from ?? Infinity))
+  return `<a class="tile" href="${c.href}">
+    <img src="${c.pill}" alt="" loading="lazy">
+    <span class="icon-btn go" aria-hidden="true">${ARROW}</span>
+    <span class="cap bot"><b>${c.name}</b><span>${c.lede}</span>
+      <span class="from">From ${zar(from)}</span></span>
+  </a>`
+}).join('')
+
+/* ── the range, priced, straight into the cart ────────────────── */
+const grid = document.getElementById('grid')
+grid.innerHTML = PRODUCTS.map(p => `
+  <div class="buy-card" data-g="${p.g}">
+    <a class="im" href="${itemHref(p.id)}"><img src="${p.gallery[0]}" alt="${p.t}" loading="lazy">${p.gallery[1] ? `<img class="alt" src="${p.gallery[1]}" alt="" loading="lazy">` : ''}</a>
+    <div class="bd">
+      <a class="t" href="${itemHref(p.id)}" style="text-decoration:none;color:inherit">${p.t}</a>
+      <span class="plain">${p.plain}</span>
+      <span class="ft">
+        <span class="pr">${p.flat ? '' : 'From '}${zar(p.from)}</span>
+        <button class="go" type="button" data-add="${p.id}">Add</button>
+      </span>
+    </div>
+  </div>`).join('')
+
+grid.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-add]')
+  if (!b) return
+  const p = byId(b.dataset.add)
+  if (!p) return
+  window.addToCart?.(1, { id: p.id, t: p.t, unit: p.from, img: p.gallery[0], spec: p.spec })
+  b.textContent = 'Added'
+  setTimeout(() => { b.textContent = 'Add' }, 1400)
+})
+
+initSeg('#segRange', (g) => {
+  grid.querySelectorAll('.buy-card').forEach(c => {
+    c.hidden = !(g === 'all' || c.dataset.g === g)
+  })
+})
+
+/* ── FAQ tabs ─────────────────────────────────────────────────── */
+initSeg('#faqSeg', (v) => {
+  document.querySelectorAll('.faq-pane').forEach(p => { p.hidden = p.dataset.pane !== v })
+})
+
+/* ── ticker ───────────────────────────────────────────────────── */
+initMarquee('#marq', [
+  'Welded in Benoni South',
+  '358 anti-climb mesh',
+  'Four finish systems',
+  'Every product priced',
+  'Nationwide delivery',
+])
+
+initCart()
+initHero()      // tagline line reveals
+initReveal()    // .rv entrances
+initMotion()    // Lenis + GSAP: split headings, rise groups

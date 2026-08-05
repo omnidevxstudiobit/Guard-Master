@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catalogue — Guard Master</title>
+<meta name="description" content="The full Guard Master range: Clear View panels and posts, razor wire mesh, concertina coils, spikes, gates and fixings. Manufactured in Benoni South.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+<style>
+  /* ── peek carousel ───────────────────────────────────────────
+     One slide centred, neighbours cut off at both edges. Scroll
+     snapping does the positioning; JS only tracks which is active. */
+  :root{ --slide-w:min(1060px, 84vw); --slide-gap:22px }
+
+  .cara{position:relative; margin:0 calc(50% - 50vw); width:100vw}
+  .track{
+    display:flex; gap:var(--slide-gap);
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:6px calc((100vw - var(--slide-w)) / 2) 30px;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .track::-webkit-scrollbar{display:none}
+  .track.dragging{scroll-snap-type:none; cursor:grabbing}
+
+  .slide{
+    flex:0 0 var(--slide-w); scroll-snap-align:center;
+    border-radius:var(--r-lg); background:#fff;
+    border:1px solid var(--glass-brd); box-shadow:var(--glass-sh);
+    display:grid; grid-template-columns:.82fr 1.18fr; overflow:hidden;
+    text-decoration:none; color:inherit;
+    opacity:.42; transform:scale(.965);
+    transition:opacity .7s var(--ease), transform .7s var(--ease), box-shadow .7s var(--ease);
+  }
+  .slide.is-active{opacity:1; transform:none; box-shadow:0 26px 60px rgba(20,18,26,.14)}
+  .slide[hidden]{display:none}   /* display:grid would otherwise beat the hidden attribute */
+  @media(max-width:820px){ .slide{grid-template-columns:1fr} }
+
+  .slide .fig{margin:0; overflow:hidden; background:var(--g3); position:relative}
+  .slide .fig img{width:100%; height:100%; object-fit:cover; aspect-ratio:3/4; transition:transform 1.6s var(--ease)}
+  .slide.is-active .fig img{transform:scale(1.03)}
+  @media(max-width:820px){ .slide .fig img{aspect-ratio:16/10} }
+
+  .slide .body{
+    padding:clamp(26px,3.4vw,52px); display:flex; flex-direction:column;
+    justify-content:center; gap:16px; position:relative;
+  }
+  .slide .mark{position:absolute; top:26px; right:28px; opacity:.5}
+  .slide .kicker{font-family:var(--mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted)}
+  .slide h2{margin:0; font-size:clamp(28px,3.6vw,52px); font-weight:800; letter-spacing:-.045em; line-height:1; text-wrap:balance}
+  .slide .desc{margin:0; color:var(--muted); font-size:16px; max-width:38ch}
+  .slide .tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px}
+  .slide .tag{
+    font-size:13.5px; font-weight:600; padding:8px 17px; border-radius:999px;
+    border:1px solid var(--hair-2); color:var(--muted);
+  }
+  .slide .tag:first-child{background:var(--ink); border-color:var(--ink); color:#fff}
+  .slide .foot{display:flex; align-items:center; gap:18px; margin-top:12px; flex-wrap:wrap}
+  .slide .price{font-size:22px; font-weight:800; letter-spacing:-.035em; font-variant-numeric:tabular-nums}
+  .slide .spec{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--faint); text-transform:uppercase}
+
+  /* controls */
+  .cara-bar{display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:26px}
+  .cara-nav{display:flex; align-items:center; gap:10px}
+  .idx{font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--muted); font-variant-numeric:tabular-nums; min-width:64px; text-align:right}
+  .prog{height:2px; background:var(--hair); border-radius:2px; overflow:hidden; margin-top:6px}
+  .prog i{display:block; height:100%; background:var(--ink); width:0; transition:width .5s var(--ease)}
+  .icon-btn[disabled]{opacity:.35; cursor:default; transform:none !important}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".45"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      <input type="search" id="q" placeholder="Search the catalogue…" aria-label="Search products">
+      <button class="icon-btn" style="width:36px;height:36px;background:var(--ink);color:#fff;border-color:transparent" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </button>
+    </label>
+    <div class="nav-links">
+      <a href="/products/" aria-current="page">Catalogue</a>
+      <a href="/products/clear-view-panels/">Panels</a>
+      <a href="/#factory">Factory</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main>
+    <h1 class="tagline h-xl" style="margin:10px 0 46px">
+      <span class="ln"><i>The whole</i></span>
+      <span class="ln"><i><em>fence line.</em></i></span>
+    </h1>
+
+    <div class="cara-bar">
+      <div class="seg" id="segCat">
+        <span class="pill"></span>
+        <button data-value="all" aria-selected="true">All</button>
+        <button data-value="clearview" aria-selected="false">Clear View</button>
+        <button data-value="razor" aria-selected="false">Razor wire</button>
+        <button data-value="access" aria-selected="false">Accessories</button>
+      </div>
+      <div class="cara-nav">
+        <button class="icon-btn" id="prev" aria-label="Previous product">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+        </button>
+        <button class="icon-btn" id="next" aria-label="Next product">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+        <div>
+          <div class="idx" id="idx">01 / 12</div>
+          <div class="prog" style="width:64px"><i id="prog"></i></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- full-bleed, so it must sit outside .wrap -->
+<div class="cara">
+  <div class="track" id="track" tabindex="0" aria-label="Product carousel"></div>
+</div>
+
+<div class="wrap">
+  <section id="contact" style="padding-top:40px">
+    <footer class="foot glass">
+      <div class="foot-grid">
+        <div><h5>Factory</h5><p>10 Burnley Street<br>Benoni South Extn.<br>Gauteng 1501, South Africa</p></div>
+        <div><h5>Sales</h5><p><a href="tel:+27114378903">+27 11 437 8903</a><br><a href="mailto:info@fencing-supplier.com">info@fencing-supplier.com</a></p></div>
+        <div><h5>Export</h5><p><a href="tel:+19547565216">+1 (954) 756 5216</a><br><a href="mailto:export@fencing-supplier.com">export@fencing-supplier.com</a></p></div>
+        <div><h5>Hours</h5><p>Mon – Thu 07:30 – 16:30<br>Fri 07:30 – 13:30</p></div>
+      </div>
+      <div class="foot-b">
+        <span>Guard Master · Wire Ventures — perimeter security manufacturer</span>
+        <span>Benoni South, Gauteng</span>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<script type="module" src="/src/js/catalog.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home &amp; Estate fencing — Guard Master</title>
+<meta name="description" content="Clear View anti-climb fencing for homes and estates. See straight through, with no toehold. Panels from R550,85, posts from R217,35. Manufactured in Benoni.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+</head>
+<body data-cat="home-estate">
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <div class="nav-links" style="flex:1">
+      <a href="/home-estate/" aria-current="page">Home &amp; Estate</a>
+      <a href="/products/">Catalogue</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main>
+    <!-- ── header: the client's photography under the accent wash ── -->
+    <header class="cat-head cat-head--wash">
+      <img src="/images/estate/header.jpg" alt="" fetchpriority="high">
+      <div class="in">
+        <span class="kick">Home &amp; Estate</span>
+        <h1>Keep the view. Lose the risk.</h1>
+        <p id="catBlurb"></p>
+      </div>
+    </header>
+
+    <!-- ── the buy grid: every product for a home boundary ─────── -->
+    <section style="padding:44px 0 20px">
+      <div class="sec-head" style="display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:22px">
+        <div>
+          <p class="eyebrow" style="margin-bottom:8px">Everything for a home boundary</p>
+          <h2 style="margin:0;font-size:clamp(24px,3vw,34px)">Buy it straight</h2>
+        </div>
+        <a class="btn" href="/products/" style="font-size:14px">Full catalogue</a>
+      </div>
+      <div class="buy-grid" id="buyGrid" data-rise-group></div>
+      <p class="lead" style="margin-top:18px;font-size:14.5px">
+        Prices incl. 15% VAT. Not sure what you need?
+        <a href="/products/clear-view-panels/#helper" style="color:var(--ink)">Answer two questions</a> and we'll spec it.
+      </p>
+    </section>
+
+    <!-- ── the dusk scene ──────────────────────────────────────── -->
+    <section style="padding-bottom:0">
+      <div class="stage stage--tall" data-par-frame>
+        <div class="plate" data-par="-10">
+          <img src="/images/estate/dusk.jpg"
+               alt="Clear View mesh fence in front of a modern home at dusk, garden lit behind it" loading="lazy">
+        </div>
+        <span class="scrim scrim--l"></span>
+        <div class="stage-copy on-dark">
+          <h2 data-split>You still see your garden.<br>Nobody else gets in it.</h2>
+          <p>An open boundary that refuses a foothold — you keep the view, they get nothing to climb.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── sightline, both ways ────────────────────────────────── -->
+    <section>
+      <div class="grid2 sightline">
+        <div class="s-shot" data-par-frame>
+          <div class="plate" data-par="-8">
+            <img src="/images/estate/lifestyle.jpg"
+                 alt="A family garden behind Clear View mesh at golden hour, the street clearly visible through it" loading="lazy">
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow">Sightline</p>
+          <h2 data-split>See out.<br>Stay closed.</h2>
+          <p class="lead" style="margin-top:14px">From inside, the street and the trees stay part of your
+             garden — the mesh reads as fine lines and then disappears. From outside, 76 × 12.7 mm
+             offers nothing: no toehold, no finger-grip, no purchase for a jaw.</p>
+          <a class="btn" href="/products/item/?p=vista" style="margin-top:24px">Shop the Vista range</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── finishes, as swatches ───────────────────────────────── -->
+    <section id="finishes">
+      <p class="eyebrow">Finishes</p>
+      <h2 data-split style="margin:0">Four ways to weather it</h2>
+      <div class="finish-row" id="finRow"></div>
+      <div class="finish-note" id="finNote"></div>
+    </section>
+
+    <!-- ── the long view ───────────────────────────────────────── -->
+    <section style="padding-bottom:0">
+      <div class="scene" data-par-frame>
+        <div class="plate-wrap"><img src="/images/estate/landscape.jpg" data-drift="6"
+             alt="A Clear View fence line following the contour of highveld hills at sunset" loading="lazy"></div>
+        <div class="cap"><div class="box">
+          <b>From the factory floor to your fence line.</b>
+          <p>Welded and coated in Benoni South — collected free from the gate, or delivered to site.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ── process staircase ───────────────────────────────────── -->
+    <section class="sticky-sec" data-beats="2">
+      <div class="sticky-in sticky-in--steps">
+        <div class="steps-wrap">
+          <h2 data-split style="margin:0 0 34px;font-size:clamp(26px,3.6vw,44px);letter-spacing:-.04em;line-height:1.03">
+            From one call to a finished line
+          </h2>
+          <div class="steps-row" data-stair>
+            <div><span class="step-n">1</span>
+              <h3>Pick the spec</h3>
+              <p>Height, aperture and finish. Two questions if you'd rather we chose.</p></div>
+            <div><span class="step-n">2</span>
+              <h3>Order it</h3>
+              <p>Priced incl. VAT. Collection is free from Benoni South.</p></div>
+            <div><span class="step-n">3</span>
+              <h3>We weld and coat</h3>
+              <p>Made in our own factory, so stock is a phone call, not a lead time.</p></div>
+            <div><span class="step-n">4</span>
+              <h3>Up it goes</h3>
+              <p>Panels bolt between capped posts every 3 metres.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" style="padding-top:20px">
+      <footer class="foot glass">
+        <div class="foot-grid">
+          <div><h5>Factory</h5><p>10 Burnley Street<br>Benoni South Extn.<br>Gauteng 1501, South Africa</p></div>
+          <div><h5>Sales</h5><p><a href="tel:+27114378903">+27 11 437 8903</a><br><a href="mailto:info@fencing-supplier.com">info@fencing-supplier.com</a></p></div>
+          <div><h5>Export</h5><p><a href="tel:+19547565216">+1 (954) 756 5216</a><br><a href="mailto:export@fencing-supplier.com">export@fencing-supplier.com</a></p></div>
+          <div><h5>Hours</h5><p>Mon – Thu 07:30 – 16:30<br>Fri 07:30 – 13:30</p></div>
+        </div>
+        <div class="foot-b">
+          <span>Guard Master · Wire Ventures — perimeter security manufacturer</span>
+          <span>Benoni South, Gauteng</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="/src/js/category.js"></script>
+</body>
+</html>

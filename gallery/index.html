@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gallery — Guard Master</title>
+<meta name="description" content="Guard Master photography — Clear View fencing, razor wire and gates, by application.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.6 6.2v5.4c0 4.6 3.1 8.4 7.4 9.4 4.3-1 7.4-4.8 7.4-9.4V6.2Z"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <div class="nav-links">
+      <a href="/#shop">Shop</a>
+      <a href="/products/">Catalogue</a>
+      <a href="/gallery/" aria-current="page">Gallery</a>
+      <a href="/#contact">Contact</a>
+    </div>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".45"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      <input type="search" placeholder="Search the range…" aria-label="Search products">
+      <button class="icon-btn" style="width:36px;height:36px;background:var(--ink);color:#fff;border-color:transparent" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </button>
+    </label>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main>
+    <!-- ═══ view 1 · the orbit ══════════════════════════════════
+         Four category cards fanned along a convex arc, tilted
+         tangent to the curve. Pick one to open its gallery. -->
+    <section id="orbitView" style="padding-top:34px">
+      <div style="text-align:center">
+        <p class="eyebrow">Gallery</p>
+        <h1 class="disp" style="margin:0;font-size:clamp(28px,4vw,52px)">Pick a line</h1>
+      </div>
+      <div class="orbit" id="orbit"></div>
+      <svg class="orbit-arc" viewBox="0 0 1200 130" aria-hidden="true" preserveAspectRatio="none">
+        <path d="M0 128 Q600 -60 1200 128" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".18"/>
+      </svg>
+    </section>
+
+    <!-- ═══ view 2 · the focused gallery ════════════════════════
+         Centre frame focused, neighbours peeking at the edges,
+         everything advances through the centre. -->
+    <section id="galleryView" hidden style="padding-top:34px">
+      <div class="gv-head">
+        <button class="btn" id="gvBack" type="button" style="font-size:14px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+          All categories
+        </button>
+        <div style="text-align:center">
+          <p class="eyebrow" style="margin:0 0 4px" id="gvKick"></p>
+          <h2 style="margin:0;font-size:clamp(20px,2.6vw,30px)" id="gvTitle"></h2>
+        </div>
+        <span class="gv-count" id="gvCount"></span>
+      </div>
+
+      <div class="gv-stage" id="gvStage"></div>
+
+      <div class="gv-nav">
+        <button class="icon-btn" id="gvPrev" aria-label="Previous photo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button>
+        <div class="gv-dots" id="gvDots"></div>
+        <button class="icon-btn" id="gvNext" aria-label="Next photo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
+
+      <p style="text-align:center;margin-top:26px">
+        <a class="btn btn--go" id="gvShop" href="/products/">Shop this range
+          <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>
+      </p>
+    </section>
+
+    <section id="contact" style="padding-top:26px">
+      <footer class="foot glass">
+        <div class="foot-b" style="margin-top:0;padding-top:0;border-top:0">
+          <span>Guard Master · Wire Ventures — perimeter security manufacturer</span>
+          <span><a href="tel:+27114378903">+27 11 437 8903</a> · Benoni South, Gauteng</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="/src/js/gallery.js"></script>
+</body>
+</html>
