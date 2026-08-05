@@ -91,14 +91,21 @@ export function initCart () {
 }
 
 /* ── image loading: mark images as they land so the shimmer under
-      them releases and they fade in ─────────────────────────────── */
+      them releases and they fade in. Every image gets its own
+      listener (wired on injection via MutationObserver) — delegated
+      capture proved unreliable for lazy-loaded grid images. ──────── */
 export function initImgFade () {
-  const mark = (img) => { if (img.tagName === 'IMG') img.classList.add('ok') }
-  // load doesn't bubble — capture catches every image, injected ones too
-  addEventListener('load', (e) => mark(e.target), true)
-  const sweep = () => $$('img').forEach(i => { if (i.complete && i.naturalWidth) mark(i) })
-  sweep()
-  addEventListener('load', sweep)
+  const mark = (img) => img.classList.add('ok')
+  const wire = (img) => {
+    if (img.dataset.okWired) return
+    img.dataset.okWired = '1'
+    if (img.complete && img.naturalWidth) return mark(img)
+    img.addEventListener('load', () => mark(img), { once: true })
+    img.addEventListener('error', () => mark(img), { once: true })   // a broken image must not shimmer forever
+  }
+  const wireAll = () => $$('img').forEach(wire)
+  wireAll()
+  new MutationObserver(wireAll).observe(document.body, { childList: true, subtree: true })
 }
 
 /* ── the curtain: shield mark + shimmer bar, lifts when the page is

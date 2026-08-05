@@ -1,4 +1,4 @@
-import { initCart, initHero } from './app.js'
+import { initCart, initHero, initReveal } from './app.js'
 import { initMotion } from './motion.js'
 import { byId, zar, itemHref } from '../data/products.js'
 import { catById } from '../data/categories.js'
@@ -61,4 +61,5 @@ if (row && note && cat.finishes) {
 
 initCart()
 initHero()
-initMotion()   // Lenis + GSAP: split headings, rise groups, staircase
+initReveal()   // .rv fades — the buy grid appears without transforms
+initMotion()   // Lenis + GSAP: split headings, staircase
