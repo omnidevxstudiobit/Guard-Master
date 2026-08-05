@@ -401,6 +401,7 @@ a{color:inherit}
 .socials.go .soc:nth-child(3){transition-delay:140ms}
 .socials.go .soc:nth-child(4){transition-delay:210ms}
 .socials.go .soc:nth-child(5){transition-delay:280ms}
+.socials.go .soc:nth-child(6){transition-delay:350ms}
 .soc:hover{filter:brightness(1.08); transform:scale(1.12) translateY(-2px)}
 .soc:focus-visible{outline:2px solid var(--ink); outline-offset:3px}
 .soc--fb{background:#1877f2}
@@ -408,6 +409,8 @@ a{color:inherit}
 .soc--in{background:#0a66c2}
 .soc--pin{background:#e60023}
 .soc--tt{background:#000}
+.soc--ig{background:radial-gradient(120% 120% at 24% 100%, #fdc468 0%, #df4996 48%, #8a3ab9 100%)}
+.soc--wa{background:#25d366}
 
 /* ── catalog (carousel reference) ─────────────────────────────── */
 .cat-head{display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; margin-bottom:22px}
