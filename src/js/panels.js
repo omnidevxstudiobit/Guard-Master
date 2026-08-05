@@ -1,5 +1,5 @@
 import { initCart, initReveal, initWipe, initMarquee, initHero, meshSVG } from './app.js'
-import { byId } from '../data/products.js'
+import { byId, zar } from '../data/products.js'
 import { panelUnit } from '../data/variant-prices.js'
 
 /* Real catalogue options, exactly as the factory publishes them. */
@@ -28,7 +28,6 @@ const sel = { ap: APS[0].v, sz: SZS[0], wr: WRS[0], fn: FNS[0] }
 let qty = 1
 
 const $ = s => document.querySelector(s)
-const zar = n => 'R' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d)(?=.*,))/g, ' ')
 
 function chips (hostId, items, key, labelId, after) {
   const host = $(hostId)

@@ -82,8 +82,8 @@ function paint () {
   const body = encodeURIComponent(
     `Guard Master estimate — ${sel.use}, ${feet()} linear ft\n\n` +
     lines.map(l => `${l.n} × ${l.t} — ${zar(l.n * l.unit)}`).join('\n') +
-    `\n\nEstimated materials incl. VAT: ${zar(total)}\n` +
-    'Excludes freight, installation and groundworks — subject to site survey.'
+    `\n\nEstimated materials, tax-inclusive USD: ${zar(total)}\n` +
+    'Converted from factory pricing at an indicative rate. Excludes freight, installation and groundworks — subject to site survey.'
   )
   $('#estMail').href = `mailto:?subject=${encodeURIComponent('My Guard Master fence estimate')}&body=${body}`
   $('#estQuote').href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent('Firm quote request — ' + sel.use + ', ' + feet() + ' ft')}&body=${body}`

@@ -95,7 +95,7 @@ function initSplitHeadings () {
   gsap.utils.toArray('[data-split]').forEach((el) => {
     const split = SplitText.create(el, { type: 'lines', mask: 'lines', linesClass: 'sp-line' })
     gsap.from(split.lines, {
-      yPercent: 110,
+      yPercent: 110,                // transforms only — animating blur repainted every heading
       duration: 1.05,
       stagger: 0.085,
       ease: 'power4.out',
@@ -140,6 +140,67 @@ function initStair () {
       ease: 'power3.out',
       scrollTrigger: { trigger: host, start: 'clamp(top 80%)', toggleActions: 'play none none none', onRefresh: playIfVisible },
     })
+  })
+}
+
+/* ── pointer-driven micro-motion, all transform-only and gated to
+      hover-capable devices. One delegated listener, one rAF. ─────── */
+const canHover = matchMedia('(hover:hover)').matches
+
+function initPointerFX () {
+  if (!canHover) return
+  document.querySelectorAll('.why-grid .card, .stats-bento .card, .est-teaser, .pdp-sum')
+    .forEach(el => el.classList.add('spot'))
+
+  let queued = null
+  document.addEventListener('pointermove', (e) => {
+    if (queued) return
+    queued = requestAnimationFrame(() => {
+      queued = null
+
+      /* spotlight — highlight follows the pointer */
+      const spot = e.target.closest?.('.spot')
+      if (spot) {
+        const r = spot.getBoundingClientRect()
+        spot.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%')
+        spot.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%')
+      }
+
+      /* tilted cards — product cards lean toward the pointer */
+      const card = e.target.closest?.('.pcard, .buy-card')
+      if (card) {
+        const r = card.getBoundingClientRect()
+        const rx = ((e.clientY - r.top) / r.height - .5) * -7
+        const ry = ((e.clientX - r.left) / r.width - .5) * 7
+        card.classList.add('tilting')
+        card.style.transform =
+          `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`
+      }
+
+      /* dock — social icons magnify near the pointer */
+      const socials = e.target.closest?.('.socials')
+      if (socials) {
+        socials.querySelectorAll('.soc').forEach(icon => {
+          const r = icon.getBoundingClientRect()
+          const d = Math.abs(e.clientX - (r.left + r.width / 2))
+          const s = Math.max(1, 1.38 - d / 150)
+          icon.style.transform = `scale(${s.toFixed(3)}) translateY(${((s - 1) * -8).toFixed(1)}px)`
+        })
+      }
+    })
+  })
+
+  /* releases: cards settle back to the stylesheet's own hover states */
+  document.addEventListener('pointerout', (e) => {
+    const card = e.target.closest?.('.pcard, .buy-card')
+    if (card && !card.contains(e.relatedTarget)) {
+      card.style.transform = ''
+      setTimeout(() => card.classList.remove('tilting'), 350)
+    }
+    const socials = e.target.closest?.('.socials')
+    if (socials && !socials.contains(e.relatedTarget)) {
+      socials.querySelectorAll('.soc').forEach(i => { i.style.transform = '' })
+    }
   })
 }
 
@@ -265,6 +326,7 @@ export function initMotion () {
   initStair()
   initCursor()
   initMagnetic()
+  initPointerFX()
   initSequences()
   initBgFollow()
   ScrollTrigger.refresh()

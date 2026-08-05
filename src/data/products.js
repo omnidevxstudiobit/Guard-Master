@@ -246,8 +246,13 @@ export const itemHref = (id) => {
   return p?.href || `/products/item/?p=${id}`
 }
 
+/* Catalogue data stays the factory's ZAR truth; DISPLAY is USD.
+   One declared indicative rate converts everything — update it here
+   (or wire a live feed) and the whole site follows. The function
+   keeps its old name so every call site converts automatically. */
+export const ZAR_PER_USD = 16.40   // indicative, set 2026-08-06
 export const zar = (n) =>
-  'R' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d)(?=.*,))/g, ' ')
+  '$' + (n / ZAR_PER_USD).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
 export const ARROW = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>`
 

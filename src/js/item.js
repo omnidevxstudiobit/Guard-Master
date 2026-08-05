@@ -4,7 +4,7 @@
 
 import { initCart, initHero } from './app.js'
 import { initMotion } from './motion.js'
-import { byId, zar, itemHref } from '../data/products.js'
+import { byId, zar, itemHref, ZAR_PER_USD } from '../data/products.js'
 import { resolveUnit } from '../data/variant-prices.js'
 
 const $ = s => document.querySelector(s)
@@ -37,7 +37,7 @@ function render (p) {
         image: location.origin + p.gallery[0],
         brand: { '@type': 'Brand', name: 'Guard Master' },
         offers: {
-          '@type': 'Offer', priceCurrency: 'ZAR', price: p.from.toFixed(2),
+          '@type': 'Offer', priceCurrency: 'USD', price: (p.from / ZAR_PER_USD).toFixed(2),
           availability: 'https://schema.org/InStock', url: location.href,
         },
       },
