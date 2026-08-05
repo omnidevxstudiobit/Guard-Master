@@ -88,6 +88,18 @@ export function initCart () {
   initSearch()   // every page with a nav gets a working search
   initImgFade()  // shimmer under every product image until it lands
   initCurtain()  // branded preloader, where the page carries one
+  initPromoBar() // dismissible announcement, per the brief
+}
+
+/* ── announcement bar: dismissible, remembered ────────────────── */
+export function initPromoBar () {
+  const bar = document.querySelector('.promo-bar')
+  if (!bar) return
+  try { if (localStorage.getItem('gm_pb_hide')) return bar.remove() } catch {}
+  bar.querySelector('#pbClose')?.addEventListener('click', () => {
+    try { localStorage.setItem('gm_pb_hide', '1') } catch {}
+    bar.remove()
+  })
 }
 
 /* ── image loading: mark images as they land so the shimmer under

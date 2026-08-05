@@ -91,6 +91,13 @@ function render (p) {
       </div>
     </div>`).join('')
 
+  /* auto-suggest, don't force — the brief's post-height helper */
+  if (p.id === 'posts') {
+    $('#opts').insertAdjacentHTML('beforeend',
+      `<p class="opt-hint">For a 6′ panel use an 8′ post — the extra 2′ sets below grade.
+        Matched lengths: 6′ panel → 8′ post · 7′ → 9′ · 8′ → 10′ · 10′ → 12′.</p>`)
+  }
+
   $('#opts').addEventListener('click', (e) => {
     const b = e.target.closest('.chip')
     if (!b) return
@@ -113,6 +120,11 @@ function render (p) {
     $('#pNote').textContent = exact
       ? `Incl. VAT · ${q()} ${q() > 1 ? 'units' : 'unit'}`
       : `From price · ${q()} ${q() > 1 ? 'units' : 'unit'} · exact figure confirmed on order`
+    /* the configured SKU: product code + one digit per picked option */
+    const code = (p.options || []).map(o => o.v.indexOf(picks[o.k]) + 1).join('')
+    $('#pSku').textContent = `SKU GM-${p.id.slice(0, 3).toUpperCase()}${code ? '-' + code : ''}`
+    const mTot = document.getElementById('mTotal')
+    if (mTot) { mTot.textContent = zar(unit * q()); document.getElementById('mBar').hidden = false }
   }
 
   $('#qMinus').addEventListener('click', () => { qty.value = Math.max(1, q() - 1); total() })
@@ -146,6 +158,15 @@ function render (p) {
       </a>`).join('')
   }
 }
+
+document.getElementById('mAdd')?.addEventListener('click', () => $('#add')?.click())
+document.getElementById('printSpec')?.addEventListener('click', () => window.print())
+
+/* self-referencing canonical, including the ?p= product */
+const canon = document.createElement('link')
+canon.rel = 'canonical'
+canon.href = 'https://guardmasterfencing.com/products/item/' + (p ? `?p=${p.id}` : '')
+document.head.appendChild(canon)
 
 initCart()
 initHero()

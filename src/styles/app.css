@@ -233,7 +233,7 @@ a{color:inherit}
 .logo .mk{width:27px; height:27px; border-radius:50%; background:var(--ink); display:grid; place-items:center; flex:none}
 
 /* the one red moment: Get a Quote, per the brief */
-.btn--quote{background:var(--gm-red); color:#fff; border-color:transparent}
+.btn--quote{background:var(--gm-red); color:#fff; border-color:transparent; white-space:nowrap}
 .btn--quote:hover{background:#c81b20}
 @media(max-width:1100px){.nav-in > .btn--quote{display:none}}
 .nav-links{display:flex; gap:4px; margin-left:10px; flex:1}
@@ -975,6 +975,23 @@ body[data-bgfollow]{
   .rv{opacity:1; transform:none}
 }
 
+/* ── print: the product page becomes a clean spec sheet ───────── */
+@media print{
+  .nav, .promo-bar, .curtain, .m-bar, .qty, #add, .trust button, .recs, #pairsSec,
+  .gal-thumbs, .gal-count, .foot, .btn, .crumbs a{display:none !important}
+  body{background:#fff !important}
+  .wrap{max-width:100%; padding:0}
+  .pdp{grid-template-columns:1fr 1fr; gap:24px}
+  .pdp-info{position:static}
+  .card, .glass{box-shadow:none !important; border:1px solid #ddd}
+  img{opacity:1 !important}
+  .pdp::after{
+    content:"Guard Master · Wire Ventures — 10 Burnley Street, Benoni South, Gauteng · +27 11 437 8903 · info@fencing-supplier.com · US export desk +1 (954) 756 5216";
+    display:block; grid-column:1 / -1; margin-top:18px; padding-top:10px;
+    border-top:1px solid #ddd; font-size:11px; color:#555;
+  }
+}
+
 /* ==========================================================================
    Shop — commerce-first, in the big-storefront register: promo bar,
    full-bleed photographic hero, heavy display type, carousels, promo
@@ -1194,6 +1211,22 @@ body[data-bgfollow]{
 .chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
 .chip:focus-visible{outline:2px solid var(--p); outline-offset:2px}
 .pdp-sum{padding:22px 24px; margin-top:6px}
+.sku{margin:2px 0 0; font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase}
+.opt-hint{
+  margin:2px 0 16px; padding:11px 15px; border-radius:12px; font-size:13px; line-height:1.55;
+  background:rgba(118,44,229,.06); border:1px solid rgba(118,44,229,.14); color:var(--ink-2);
+}
+/* mobile sticky buy bar */
+.m-bar{
+  position:fixed; left:0; right:0; bottom:0; z-index:120;
+  display:none; align-items:center; justify-content:space-between; gap:14px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(150deg, rgba(255,255,255,.94), rgba(255,255,255,.82));
+  backdrop-filter:blur(16px) saturate(1.5); -webkit-backdrop-filter:blur(16px) saturate(1.5);
+  border-top:1px solid rgba(255,255,255,.75); box-shadow:0 -10px 30px rgba(20,18,26,.12);
+}
+.m-bar .m-tot{font-size:19px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+@media(max-width:880px){.m-bar:not([hidden]){display:flex}}
 .pdp-sum .sum .v{font-family:var(--mono); font-size:13px}
 .sum-note{margin:6px 0 14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .pdp-buy{display:flex; gap:12px; align-items:stretch; margin-top:8px}
@@ -1433,6 +1466,64 @@ img.ok{animation:img-in .55s var(--ease-soft)}
 .why-n{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--p)}
 .why-grid h3{margin:10px 0 8px; font-size:18px; font-weight:800; letter-spacing:-.025em}
 .why-grid p{margin:0; font-size:14px; color:var(--muted); line-height:1.65}
+
+/* ── announcement bar dismiss ─────────────────────────────────── */
+.promo-bar{position:relative}
+.pb-close{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  border:0; background:none; cursor:pointer; font-size:13px; color:var(--muted);
+  padding:6px 10px; border-radius:99px;
+}
+.pb-close:hover{color:var(--ink); background:rgba(20,18,26,.06)}
+
+/* static tile headings share the b styling */
+.tile .cap h3{margin:0; font-size:inherit; font-weight:inherit; letter-spacing:inherit; line-height:1.25; display:block}
+.cat-tiles .tile .cap h3{text-transform:uppercase; font-weight:800; font-size:18px; letter-spacing:-.015em}
+
+/* ── security-level spec strip — CSS-only tabs, content in DOM ── */
+.specs input{position:absolute; opacity:0; pointer-events:none}
+.spec-tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px}
+.spec-tabs .chip{user-select:none}
+#spHigh:checked ~ .spec-tabs label[for="spHigh"],
+#spMed:checked ~ .spec-tabs label[for="spMed"],
+#spLow:checked ~ .spec-tabs label[for="spLow"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.spec-pane{display:none; grid-template-columns:1fr 1.1fr; gap:clamp(20px,3.4vw,44px); align-items:stretch}
+@media(max-width:760px){.spec-pane{grid-template-columns:1fr}}
+#spHigh:checked ~ .spec-pane[data-sp="high"],
+#spMed:checked ~ .spec-pane[data-sp="med"],
+#spLow:checked ~ .spec-pane[data-sp="low"]{display:grid}
+.spec-mesh{
+  min-height:240px; border-radius:var(--r-lg); border:1px solid var(--hair-2);
+  background-color:rgba(255,255,255,.6);
+}
+.spec-mesh--high{background-image:
+  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
+  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 4px)}
+.spec-mesh--med{background-image:
+  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
+  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 7px)}
+.spec-mesh--low{background-image:
+  repeating-linear-gradient(90deg, rgba(20,18,26,.4) 0 1px, transparent 1px 18px),
+  repeating-linear-gradient(0deg, rgba(20,18,26,.4) 0 1px, transparent 1px 13px)}
+.spec-table{width:100%; border-collapse:collapse; font-size:14.5px}
+.spec-table th{
+  text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); font-weight:600; padding:12px 14px 12px 0;
+  white-space:nowrap; vertical-align:top; width:9rem;
+}
+.spec-table td{padding:12px 0; color:var(--ink-2)}
+.spec-table tr + tr th, .spec-table tr + tr td{border-top:1px solid var(--hair)}
+
+/* why cards, four across */
+.why-grid--4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1020px){.why-grid--4{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.why-grid--4{grid-template-columns:1fr}}
+
+/* estimator teaser */
+.est-teaser{
+  display:flex; justify-content:space-between; align-items:center; gap:26px;
+  flex-wrap:wrap; padding:clamp(26px,4vw,46px);
+}
 
 /* ── quote estimator ──────────────────────────────────────────── */
 .est-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:26px; align-items:start}

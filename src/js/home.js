@@ -13,16 +13,8 @@ const BEST = ['panels', 'posts', 'caps', 'coils', 'spikes', 'gates', 'razormesh'
 document.getElementById('rail').innerHTML = BEST.map(id => cardHTML(byId(id))).join('')
 initRail('#rail', '#railPrev', '#railNext')
 
-/* ── shop-by-application tiles — entry price from the catalogue ── */
-document.getElementById('catTiles').innerHTML = CATEGORIES.map(c => {
-  const from = Math.min(...c.products.map(id => byId(id)?.from ?? Infinity))
-  return `<a class="tile" href="${c.href}">
-    <img src="${c.pill}" alt="" loading="lazy">
-    <span class="icon-btn go" aria-hidden="true">${ARROW}</span>
-    <span class="cap bot"><b>${c.name}</b><span>${c.lede}</span>
-      <span class="from">From ${zar(from)}</span></span>
-  </a>`
-}).join('')
+/* the shop-by-application tiles are static HTML now — the brief wants
+   them indexable with no JS. This file only builds the priced grids. */
 
 /* ── the range, priced, straight into the cart ────────────────── */
 const grid = document.getElementById('grid')

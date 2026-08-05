@@ -61,6 +61,7 @@
         <h1 id="pTitle" style="margin:0;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.04em;line-height:1.05"></h1>
         <p id="pDesc" class="lead" style="margin-top:12px;font-size:15.5px"></p>
         <p class="pdp-price"><b id="pPrice"></b><span id="pSpec"></span></p>
+        <p class="sku" id="pSku"></p>
 
         <!-- build it: the factory's real options as chips -->
         <div id="opts" class="pdp-opts"></div>
@@ -86,6 +87,7 @@
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Price incl. 15% VAT</span>
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Free collection from Benoni South</span>
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><a href="/policies/" style="color:inherit">Warranty &amp; returns</a></span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="6" y="13" width="12" height="8"/><path d="M6 17H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/></svg><button id="printSpec" type="button" style="all:unset;cursor:pointer;text-decoration:underline">Print spec sheet</button></span>
         </div>
       </div>
     </section>
@@ -105,6 +107,12 @@
       </footer>
     </section>
   </main>
+</div>
+
+<!-- mobile sticky buy bar — config summary + add, per the brief -->
+<div class="m-bar" id="mBar" hidden>
+  <span class="m-tot" id="mTotal"></span>
+  <button class="btn btn--go" id="mAdd" type="button">Add to cart</button>
 </div>
 
 <script type="module" src="/src/js/item.js"></script>

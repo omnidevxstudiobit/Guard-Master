@@ -6,6 +6,7 @@
 <title>Guard Master — Clear View fencing, razor wire &amp; gates, factory-direct from Benoni</title>
 <meta name="description" content="Buy Clear View anti-climb fencing panels, posts, razor wire and gates online. Every product priced incl. VAT. Welded, coated and dispatched from our own factory in Benoni South, Gauteng.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://guardmasterfencing.com/">
 <link rel="stylesheet" href="/src/styles/app.css">
 <script type="application/ld+json">
 {
@@ -75,6 +76,7 @@
   <span>Now shipping across the continental US — <a href="/estimate/" style="color:inherit">request a quote</a></span>
   <span class="pb-x">Every price incl. VAT</span>
   <span class="pb-x">Factory pricing on bulk orders</span>
+  <button class="pb-close" id="pbClose" type="button" aria-label="Dismiss announcement">✕</button>
 </div>
 
 <div class="wrap">
@@ -133,15 +135,22 @@
              engineered and manufactured in-house — every product priced, nothing "on application".
              Shipped across the continental US and all of South Africa.</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
-            <a class="btn btn--go" data-mag="14" href="#shop">Shop now
+            <a class="btn btn--go" data-mag="14" href="/products/clear-view-panels/#configure">Build your fence
               <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>
-            <a class="btn" href="/products/">Browse the catalogue</a>
+            <a class="btn btn--quote" href="/estimate/">Request a quote</a>
+            <a class="btn" href="#shop">Shop now</a>
           </div>
           <div class="hero-ticker">
             <span>Panels from R550,85</span>
             <span>Posts from R217,35</span>
             <span>Razor mesh from R404,80</span>
             <span>Gates from R12 083,05</span>
+          </div>
+          <div class="trust" style="margin-top:2px">
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>ISO-certified manufacturing</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>10-year Plascoat warranty</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>In-house manufacturing</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Global shipping</span>
           </div>
         </div>
 
@@ -152,14 +161,83 @@
       </div>
     </section>
 
-    <!-- ── shop by application ──────────────────────────────────── -->
+    <!-- ── shop by application — static HTML so it indexes with no JS ── -->
     <section style="padding-top:56px">
       <div class="row-head">
         <h2 class="disp h-row">Shop by application</h2>
       </div>
-      <div class="cat-tiles rv" id="catTiles">
-        <div class="sk" style="min-height:300px"></div><div class="sk" style="min-height:300px"></div>
-        <div class="sk" style="min-height:300px"></div><div class="sk" style="min-height:300px"></div>
+      <div class="cat-tiles rv">
+        <a class="tile" href="/home-estate/">
+          <img src="/images/products/clear-view-fencing-panels/8-640.webp" alt="Vista clear view mesh panel for residential boundaries" loading="lazy">
+          <span class="icon-btn go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          <span class="cap bot"><h3>Home &amp; Estate</h3><span>Keep the view. Lose the risk.</span>
+            <span class="from">From R184,00</span></span>
+        </a>
+        <a class="tile" href="/products/">
+          <img src="/images/products/clear-view-fencing-panels/56-480.webp" alt="Clear View 358 high-security panel with spike topping for commercial sites" loading="lazy">
+          <span class="icon-btn go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          <span class="cap bot"><h3>Commercial &amp; Industrial</h3><span>Built for sites that get tested.</span>
+            <span class="from">From R8,06</span></span>
+        </a>
+        <a class="tile" href="/products/">
+          <img src="/images/products/razor-wire-mesh/img-6277-480.webp" alt="Razor wire mesh rolls for high-security perimeters" loading="lazy">
+          <span class="icon-btn go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          <span class="cap bot"><h3>High Security</h3><span>For lines that must not be crossed.</span>
+            <span class="from">From R108,10</span></span>
+        </a>
+        <a class="tile" href="/products/item/?p=gates">
+          <img src="/images/products/accessories/sliding-gate-galvanized-clear-view-mesh-filling-reinforced-intermedia-spikes-600x442-480.webp" alt="Galvanized sliding gate with clear view mesh infill and spikes" loading="lazy">
+          <span class="icon-btn go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          <span class="cap bot"><h3>Gates &amp; Entrances</h3><span>The gap in the line, closed properly.</span>
+            <span class="from">From R184,00</span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── choose your security level — CSS-toggled, all in the DOM ── -->
+    <section class="spec-strip" style="padding-top:20px">
+      <div class="row-head">
+        <h2 class="disp h-row">Choose your security level</h2>
+      </div>
+      <div class="specs">
+        <input type="radio" name="spec" id="spHigh" checked>
+        <input type="radio" name="spec" id="spMed">
+        <input type="radio" name="spec" id="spLow">
+        <div class="spec-tabs">
+          <label class="chip" for="spHigh">76 × 12.7 mm<small>High security</small></label>
+          <label class="chip" for="spMed">76 × 25 mm<small>Medium security</small></label>
+          <label class="chip" for="spLow">76 × 50 mm<small>Standard</small></label>
+        </div>
+        <div class="spec-pane" data-sp="high">
+          <div class="spec-mesh spec-mesh--high" role="img" aria-label="358 mesh at 76 by 12.7 millimetre aperture — reads as fine dense lines"></div>
+          <table class="spec-table">
+            <tr><th>Aperture</th><td>3″ × 0.5″ (76 × 12.7 mm)</td></tr>
+            <tr><th>Defeats</th><td>Toeholds, finger-grips and bolt-cutter jaws</td></tr>
+            <tr><th>Typical use</th><td>Mines, rail, utilities, government, estates</td></tr>
+            <tr><th>Panel mass</th><td>32.17 kg at 10′ × 6′ (3 × 1.8 m)</td></tr>
+            <tr><th>From</th><td>R1 271,90 per panel incl. VAT</td></tr>
+          </table>
+        </div>
+        <div class="spec-pane" data-sp="med">
+          <div class="spec-mesh spec-mesh--med" role="img" aria-label="Mesh at 76 by 25 millimetre aperture"></div>
+          <table class="spec-table">
+            <tr><th>Aperture</th><td>3″ × 1″ (76 × 25 mm)</td></tr>
+            <tr><th>Defeats</th><td>Toeholds and hand-grips</td></tr>
+            <tr><th>Typical use</th><td>Commercial yards, schools, residential boundaries</td></tr>
+            <tr><th>Panel mass</th><td>20.14 kg at 10′ × 6′ (3 × 1.8 m)</td></tr>
+            <tr><th>From</th><td>R795,80 per panel incl. VAT</td></tr>
+          </table>
+        </div>
+        <div class="spec-pane" data-sp="low">
+          <div class="spec-mesh spec-mesh--low" role="img" aria-label="Mesh at 76 by 50 millimetre aperture"></div>
+          <table class="spec-table">
+            <tr><th>Aperture</th><td>3″ × 2″ (76 × 50 mm)</td></tr>
+            <tr><th>Defeats</th><td>Casual intrusion — a clean boundary line</td></tr>
+            <tr><th>Typical use</th><td>Demarcation, parks, low-risk perimeters</td></tr>
+            <tr><th>Panel mass</th><td>13.92 kg at 10′ × 6′ (3 × 1.8 m)</td></tr>
+            <tr><th>From</th><td>R550,85 per panel incl. VAT</td></tr>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -233,11 +311,43 @@
       </div>
     </section>
 
+    <!-- ── why guard master — four cards, static ─────────────────── -->
+    <section style="padding-top:20px">
+      <div class="row-head"><h2 class="disp h-row">Why Guard Master</h2></div>
+      <div class="why-grid why-grid--4" data-rise-group>
+        <div class="card glass"><span class="why-n">01</span>
+          <h3>Manufacturer, not reseller</h3>
+          <p>Every panel is welded in our own factory — one margin, published prices, no importer in the middle.</p></div>
+        <div class="card glass"><span class="why-n">02</span>
+          <h3>Bespoke engineering</h3>
+          <p>Panels, posts, gates and toppings built to your spec, from aperture to coating.</p></div>
+        <div class="card glass"><span class="why-n">03</span>
+          <h3>10-year Plascoat warranty</h3>
+          <p>The premium finish is warranted in writing for a decade — the only finish we sell with one.</p></div>
+        <div class="card glass"><span class="why-n">04</span>
+          <h3>A full system</h3>
+          <p>Panel, post, clamp and cap engineered together, so the line goes up as one piece.</p></div>
+      </div>
+    </section>
+
+    <!-- ── estimator teaser ─────────────────────────────────────── -->
+    <section style="padding-top:20px">
+      <div class="card glass est-teaser">
+        <div>
+          <p class="eyebrow">Quote estimator</p>
+          <h2 data-split style="margin:0">Know your cost in 60 seconds.</h2>
+          <p class="lead" style="margin-top:10px">Six picks, one real bill of materials — panels,
+             posts, clamps and toppings, priced from the factory's own rates.</p>
+        </div>
+        <a class="btn btn--quote" data-mag="14" href="/estimate/" style="font-size:16px;padding:16px 26px">Start estimate</a>
+      </div>
+    </section>
+
     <!-- ── promo band ───────────────────────────────────────────── -->
     <section class="promo-band bleed">
       <h2 class="disp">Factory pricing.<br>No importer in the middle.</h2>
       <p>Welded at every crossing, finished in one of four systems, dispatched from Benoni South.</p>
-      <a class="btn btn--dark" data-mag="14" href="#shop" style="margin-top:22px">Shop the range</a>
+      <a class="btn btn--quote" data-mag="14" href="/estimate/" style="margin-top:22px">Get a quote</a>
     </section>
 
     <!-- ── the full range, priced, add to cart ──────────────────── -->
