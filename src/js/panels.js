@@ -1,5 +1,6 @@
 import { initCart, initReveal, initWipe, initMarquee, initHero, meshSVG } from './app.js'
 import { byId } from '../data/products.js'
+import { panelUnit } from '../data/variant-prices.js'
 
 /* Real catalogue options, exactly as the factory publishes them. */
 const APS = [
@@ -11,11 +12,10 @@ const SZS = ['3m × 1.8m', '3m × 2.1m', '3m × 2.4m', '3m × 3m']
 const WRS = ['3mm × 4mm', '4mm × 4mm']
 const FNS = ['Plain Galvanised', 'Dipped', 'Powder Coated', 'Plascoat / 10yr']
 
-/* The catalogue publishes exactly one fully-configured price. We show that
-   real figure for that exact build and quote everything else, rather than
-   inventing a price matrix. Replace KNOWN with the real one when available. */
-const KNOWN = { '76mm × 12.7mm|3m × 1.8m|3mm × 4mm|Plain Galvanised': 1271.90 }
-const FROM = 550.85   // published "From:" price for Clear View fencing panels
+/* Every combination now has the client's own estimator price — 96 real
+   configurations recovered from their instant-quote data. */
+const FROM = 550.85   // published "From:" price, the cheapest configuration
+const unitFor = () => panelUnit({ wire: sel.wr, aperture: sel.ap, size: sel.sz, finish: sel.fn })
 
 const sel = { ap: APS[0].v, sz: SZS[0], wr: WRS[0], fn: FNS[0] }
 let qty = 1
@@ -114,7 +114,7 @@ function price () {
   ;['ap', 'sz', 'wr', 'fn'].forEach(k => {
     $('#r' + k[0].toUpperCase() + k.slice(1)).textContent = sel[k]
   })
-  const exact = KNOWN[`${sel.ap}|${sel.sz}|${sel.wr}|${sel.fn}`]
+  const exact = unitFor()
   const unit = exact ?? FROM
   const el = $('#price')
   el.classList.remove('poa')
@@ -136,9 +136,8 @@ price()
 $('#qPlus').addEventListener('click', () => { qty++; $('#qVal').textContent = qty; price() })
 $('#qMinus').addEventListener('click', () => { if (qty > 1) { qty--; $('#qVal').textContent = qty; price() } })
 $('#addBtn').addEventListener('click', () => {
-  // the catalogue publishes one exact configured price and a "From" for the
-  // rest — both are real numbers, so no line ever goes in unpriced
-  const unit = KNOWN[`${sel.ap}|${sel.sz}|${sel.wr}|${sel.fn}`] ?? FROM
+  // every combination carries the estimator's real figure; FROM only backstops
+  const unit = unitFor() ?? FROM
   window.addToCart?.(qty, {
     id: 'panels',                       // links the line to the catalogue entry
     t: `Clear View panel — ${sel.sz}`,

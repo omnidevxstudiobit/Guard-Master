@@ -61,17 +61,24 @@
         <p id="pDesc" class="lead" style="margin-top:12px;font-size:15.5px"></p>
         <p class="pdp-price"><b id="pPrice"></b><span id="pSpec"></span></p>
 
-        <form id="opts" class="pdp-opts"></form>
+        <!-- build it: the factory's real options as chips -->
+        <div id="opts" class="pdp-opts"></div>
 
-        <div class="pdp-buy">
-          <div class="qty" aria-label="Quantity">
-            <button type="button" id="qMinus" aria-label="Fewer">−</button>
-            <input id="qty" inputmode="numeric" value="1" aria-label="Quantity">
-            <button type="button" id="qPlus" aria-label="More">+</button>
+        <!-- the sum: chosen spec, live total, add to cart -->
+        <div class="card glass pdp-sum">
+          <div id="sumRows"></div>
+          <div class="sum total"><span class="k">Total</span><span class="v" id="pTotal"></span></div>
+          <p class="sum-note" id="pNote"></p>
+          <div class="pdp-buy">
+            <div class="qty" aria-label="Quantity">
+              <button type="button" id="qMinus" aria-label="Fewer">−</button>
+              <input id="qty" inputmode="numeric" value="1" aria-label="Quantity">
+              <button type="button" id="qPlus" aria-label="More">+</button>
+            </div>
+            <button class="btn btn--go" id="add" type="button" style="flex:1;justify-content:center">Add to cart
+              <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </button>
           </div>
-          <button class="btn btn--go" id="add" type="button" style="flex:1;justify-content:center">Add to cart
-            <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
-          </button>
         </div>
 
         <div class="trust" style="margin-top:20px">

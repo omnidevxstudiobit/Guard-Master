@@ -5,6 +5,7 @@
 import { initCart, initHero } from './app.js'
 import { initMotion } from './motion.js'
 import { byId, zar, itemHref } from '../data/products.js'
+import { resolveUnit } from '../data/variant-prices.js'
 
 const $ = s => document.querySelector(s)
 
@@ -47,27 +48,55 @@ function render (p) {
   $('#stage').addEventListener('click', () => show(cur + 1))
   show(0)
 
-  /* ── options — the factory's real variation attributes ───────── */
-  $('#opts').innerHTML = (p.options || []).map((o, oi) => `
-    <div class="field">
-      <label for="opt${oi}">${o.k}</label>
-      <select id="opt${oi}" data-k="${o.k}">
-        ${o.v.map((v, vi) => `<option value="${v}">${v}${o.note?.[vi] ? ` — ${o.note[vi]}` : ''}</option>`).join('')}
-      </select>
+  /* ── build it — the factory's real options as chips ──────────── */
+  const picks = {}
+  ;(p.options || []).forEach(o => { picks[o.k] = o.v[0] })
+
+  $('#opts').innerHTML = (p.options || []).map(o => `
+    <div class="opt-group">
+      <p class="eyebrow" style="margin:0 0 8px">${o.k}</p>
+      <div class="chips" data-k="${o.k}">
+        ${o.v.map((v, vi) => `
+          <button class="chip" type="button" data-v="${v}" aria-pressed="${vi === 0}">
+            ${v}${o.note?.[vi] ? `<small>${o.note[vi]}</small>` : ''}
+          </button>`).join('')}
+      </div>
     </div>`).join('')
 
-  /* ── quantity + add ──────────────────────────────────────────── */
+  $('#opts').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip')
+    if (!b) return
+    const host = b.closest('.chips')
+    picks[host.dataset.k] = b.dataset.v
+    Array.from(host.children).forEach(c => c.setAttribute('aria-pressed', String(c === b)))
+    total()
+  })
+
+  /* ── the sum — recalculated on every pick, real figures only ─── */
   const qty = $('#qty')
   const q = () => Math.max(1, parseInt(qty.value, 10) || 1)
-  $('#qMinus').addEventListener('click', () => { qty.value = Math.max(1, q() - 1) })
-  $('#qPlus').addEventListener('click', () => { qty.value = q() + 1 })
-  qty.addEventListener('change', () => { qty.value = q() })
+  const priceNow = () => resolveUnit(p, picks)
+
+  function total () {
+    $('#sumRows').innerHTML = (p.options || []).map(o => `
+      <div class="sum"><span class="k">${o.k}</span><span class="v">${picks[o.k]}</span></div>`).join('')
+    const { unit, exact } = priceNow()
+    $('#pTotal').textContent = zar(unit * q())
+    $('#pNote').textContent = exact
+      ? `Incl. VAT · ${q()} ${q() > 1 ? 'units' : 'unit'}`
+      : `From price · ${q()} ${q() > 1 ? 'units' : 'unit'} · exact figure confirmed on order`
+  }
+
+  $('#qMinus').addEventListener('click', () => { qty.value = Math.max(1, q() - 1); total() })
+  $('#qPlus').addEventListener('click', () => { qty.value = q() + 1; total() })
+  qty.addEventListener('change', () => { qty.value = q(); total() })
+  total()
 
   $('#add').addEventListener('click', () => {
-    const picked = Array.from(document.querySelectorAll('#opts select'))
-      .map(s => s.value).join(' · ')
+    const { unit } = priceNow()
+    const picked = (p.options || []).map(o => picks[o.k]).join(' · ')
     window.addToCart?.(q(), {
-      id: p.id, t: p.t, unit: p.from,
+      id: p.id, t: p.t, unit,
       img: p.gallery[0], spec: picked || p.spec,
     })
     const btn = $('#add')

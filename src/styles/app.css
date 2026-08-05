@@ -1172,6 +1172,23 @@ body[data-bgfollow]{
 .pdp-price b{font-size:clamp(24px,2.8vw,32px); font-weight:800; letter-spacing:-.035em; font-variant-numeric:tabular-nums}
 .pdp-price span{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.05em}
 .pdp-opts{margin-top:14px}
+.opt-group{margin-bottom:18px}
+.chips{display:flex; gap:8px; flex-wrap:wrap}
+.chip{
+  font:inherit; font-size:13.5px; font-weight:600; text-align:left; cursor:pointer;
+  padding:10px 16px; border-radius:999px; border:1px solid var(--hair-2);
+  background:rgba(255,255,255,.82); transition:all .3s var(--ease-soft);
+}
+.chip small{
+  display:block; font-family:var(--mono); font-size:10px; letter-spacing:.06em;
+  font-weight:500; opacity:.6; margin-top:1px;
+}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--p); outline-offset:2px}
+.pdp-sum{padding:22px 24px; margin-top:6px}
+.pdp-sum .sum .v{font-family:var(--mono); font-size:13px}
+.sum-note{margin:6px 0 14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .pdp-buy{display:flex; gap:12px; align-items:stretch; margin-top:8px}
 .qty{
   display:flex; align-items:center; border:1px solid var(--hair-2); border-radius:999px;
@@ -1289,12 +1306,33 @@ body[data-bgfollow]{
   transition:opacity .55s var(--ease), visibility .55s;
 }
 .curtain.done{opacity:0; visibility:hidden; pointer-events:none}
-.c-mk{
-  width:64px; height:64px; border-radius:20px; background:var(--ink);
-  display:grid; place-items:center; box-shadow:0 18px 44px rgba(20,18,26,.22);
-  animation:mk-pulse 1.6s ease-in-out infinite;
+/* the fence draws itself: posts, then the dense horizontals, then verticals */
+.c-fence{width:min(240px,60vw); height:auto; overflow:visible}
+.c-fence path{
+  stroke-dasharray:1; stroke-dashoffset:1;
+  animation:cf-draw 2.7s cubic-bezier(.4,0,.2,1) infinite;
 }
-@keyframes mk-pulse{50%{transform:scale(1.09)}}
+.c-fence .cf-post path:nth-child(2){animation-delay:.06s}
+.c-fence .cf-cap path{animation-delay:.18s}
+.c-fence .cf-cap path:nth-child(2){animation-delay:.24s}
+.c-fence .cf-h path:nth-child(1){animation-delay:.34s}
+.c-fence .cf-h path:nth-child(2){animation-delay:.41s}
+.c-fence .cf-h path:nth-child(3){animation-delay:.48s}
+.c-fence .cf-h path:nth-child(4){animation-delay:.55s}
+.c-fence .cf-h path:nth-child(5){animation-delay:.62s}
+.c-fence .cf-h path:nth-child(6){animation-delay:.69s}
+.c-fence .cf-h path:nth-child(7){animation-delay:.76s}
+.c-fence .cf-h path:nth-child(8){animation-delay:.83s}
+.c-fence .cf-v path:nth-child(1){animation-delay:.95s}
+.c-fence .cf-v path:nth-child(2){animation-delay:1.03s}
+.c-fence .cf-v path:nth-child(3){animation-delay:1.11s}
+@keyframes cf-draw{
+  0%{stroke-dashoffset:1; opacity:1}
+  26%{stroke-dashoffset:0}
+  76%{stroke-dashoffset:0; opacity:1}
+  90%{opacity:0}
+  100%{stroke-dashoffset:1; opacity:0}
+}
 .c-bar{width:150px; height:4px; border-radius:99px; overflow:hidden; position:relative; background:rgba(20,18,26,.1)}
 .c-bar i{
   position:absolute; inset:0; border-radius:inherit; background:var(--y);
