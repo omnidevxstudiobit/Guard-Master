@@ -1203,15 +1203,22 @@ body[data-bgfollow]{
 }
 .gv-card{
   position:absolute; left:50%; top:50%; margin:0;
-  width:min(58vw,760px); aspect-ratio:3/2; max-height:92%;
+  width:min(52vw,680px); aspect-ratio:4/3; max-height:92%;
   translate:0 -50%;   /* vertical centring lives here — gsap owns transform */
   border-radius:20px; overflow:hidden; cursor:pointer;
   box-shadow:0 24px 60px rgba(52,48,90,.24);
-  outline:1px solid rgba(255,255,255,.5); outline-offset:-1px;
-  will-change:transform,opacity;
+  will-change:transform,opacity,filter;
+  padding:0; background:transparent;
+  transition:padding .55s var(--ease), background .55s var(--ease);
 }
 @media(max-width:760px){.gv-card{width:82vw}}
-.gv-card img{width:100%; height:100%; object-fit:cover; display:block}
+.gv-card img{width:100%; height:100%; object-fit:cover; display:block; border-radius:14px}
+/* the centre card sits in its frosted glass mat, like the reference */
+.gv-card.focus{
+  padding:clamp(10px,1.3vw,18px);
+  background:linear-gradient(150deg, rgba(255,255,255,.66), rgba(255,255,255,.36) 50%, rgba(255,255,255,.56));
+  box-shadow:0 30px 72px rgba(52,48,90,.28), inset 0 1px 0 rgba(255,255,255,.75);
+}
 .gv-nav{display:flex; justify-content:center; align-items:center; gap:20px; margin-top:22px}
 .gv-dots{display:flex; gap:6px}
 .gv-dots i{width:6px; height:6px; border-radius:50%; background:var(--hair-2); cursor:pointer; transition:all .4s var(--ease)}

@@ -93,11 +93,12 @@ orbit.addEventListener('click', (e) => {
 const stage = $('#gvStage')
 let photos = [], idx = 0, autoTimer = null, current = null
 
+/* like the reference: centre sharp in its glass mat, sides blurred + dim */
 const slot = (o) => o === 0
-  ? { xPercent: -50, scale: 1, opacity: 1, zIndex: 5 }
+  ? { xPercent: -50, scale: 1, opacity: 1, zIndex: 5, filter: 'blur(0px)' }
   : Math.abs(o) === 1
-    ? { xPercent: -50 + o * 118, scale: .8, opacity: .45, zIndex: 3 }
-    : { xPercent: -50 + Math.sign(o) * 220, scale: .7, opacity: 0, zIndex: 1 }
+    ? { xPercent: -50 + o * 118, scale: .78, opacity: .55, zIndex: 3, filter: 'blur(5px)' }
+    : { xPercent: -50 + Math.sign(o) * 220, scale: .68, opacity: 0, zIndex: 1, filter: 'blur(9px)' }
 
 function paint (animate = true) {
   Array.from(stage.children).forEach((el, i) => {
@@ -107,13 +108,31 @@ function paint (animate = true) {
     if (o < -photos.length / 2) o += photos.length
     const to = { ...slot(Math.max(-2, Math.min(2, o))), duration: animate && !reduce ? .75 : 0, ease: 'power3.inOut' }
     gsap.to(el, to)
+    el.classList.toggle('focus', o === 0)     // the glass mat lives on the centre card
     el.style.pointerEvents = Math.abs(o) === 1 ? 'auto' : o === 0 ? 'auto' : 'none'
   })
   $('#gvCount').textContent = `${String(idx + 1).padStart(2, '0')} / ${String(photos.length).padStart(2, '0')}`
   document.querySelectorAll('#gvDots i').forEach((d, i) => d.classList.toggle('on', i === idx))
 }
 
-const go = (i, animate = true) => { idx = (i + photos.length) % photos.length; paint(animate) }
+const go = (i, animate = true) => { zoomed = false; idx = (i + photos.length) % photos.length; paint(animate) }
+
+/* the reference's click beat: the centre frame zooms in, sides fall away */
+let zoomed = false
+function toggleZoom () {
+  const el = stage.children[idx]
+  if (!el) return
+  zoomed = !zoomed
+  stopAuto()
+  const sides = Array.from(stage.children).filter((_, i) => i !== idx)
+  if (zoomed) {
+    gsap.to(el, { scale: 1.15, duration: .7, ease: 'power3.inOut' })
+    gsap.to(sides, { opacity: 0, duration: .5 })
+  } else {
+    paint()
+    startAuto()
+  }
+}
 
 function startAuto () {
   stopAuto()
@@ -159,7 +178,8 @@ stage.addEventListener('click', (e) => {
   const el = e.target.closest('.gv-card')
   if (!el) return
   const i = Array.from(stage.children).indexOf(el)
-  if (i !== idx) nudge(() => go(i))
+  if (i === idx) toggleZoom()
+  else nudge(() => go(i))
 })
 stage.addEventListener('pointerenter', stopAuto)
 stage.addEventListener('pointerleave', startAuto)
@@ -167,7 +187,7 @@ addEventListener('keydown', (e) => {
   if ($('#galleryView').hidden) return
   if (e.key === 'ArrowRight') nudge(() => go(idx + 1))
   if (e.key === 'ArrowLeft') nudge(() => go(idx - 1))
-  if (e.key === 'Escape') location.hash = ''
+  if (e.key === 'Escape') { if (zoomed) toggleZoom(); else location.hash = '' }
 })
 $('#gvBack').addEventListener('click', () => { location.hash = '' })
 
