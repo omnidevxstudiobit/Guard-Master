@@ -73,8 +73,25 @@ function render (p) {
     const b = e.target.closest('button')
     if (b) show(+b.dataset.i)
   })
-  $('#stage').addEventListener('click', () => show(cur + 1))
+  $('#gPrev').addEventListener('click', (e) => { e.stopPropagation(); show(cur - 1) })
+  $('#gNext').addEventListener('click', (e) => { e.stopPropagation(); show(cur + 1) })
+  $('#stage').addEventListener('click', (e) => { if (!e.target.closest('.nav-a')) show(cur + 1) })
   show(0)
+
+  /* hover-to-zoom loupe — the origin follows the cursor */
+  const stage = $('#stage')
+  if (matchMedia('(hover:hover)').matches) {
+    stage.addEventListener('pointerenter', () => stage.classList.add('zooming'))
+    stage.addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect()
+      main.style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`
+      main.style.transform = 'scale(2.1)'
+    })
+    stage.addEventListener('pointerleave', () => {
+      stage.classList.remove('zooming')
+      main.style.transform = ''
+    })
+  }
 
   /* ── build it — the factory's real options as chips ──────────── */
   const picks = {}
@@ -125,6 +142,8 @@ function render (p) {
     $('#pSku').textContent = `SKU GM-${p.id.slice(0, 3).toUpperCase()}${code ? '-' + code : ''}`
     const mTot = document.getElementById('mTotal')
     if (mTot) { mTot.textContent = zar(unit * q()); document.getElementById('mBar').hidden = false }
+    const mini = document.getElementById('miniTot')
+    if (mini) mini.textContent = zar(unit * q())
   }
 
   $('#qMinus').addEventListener('click', () => { qty.value = Math.max(1, q() - 1); total() })

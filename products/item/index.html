@@ -53,14 +53,25 @@
         <div class="gal-thumbs" id="thumbs" role="tablist" aria-label="Product images"></div>
         <div class="gal-main" id="stage">
           <img id="mainImg" src="" alt="">
+          <button class="icon-btn nav-a l" id="gPrev" type="button" aria-label="Previous image">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <button class="icon-btn nav-a r" id="gNext" type="button" aria-label="Next image">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
           <span class="gal-count" id="galCount"></span>
+          <span class="gal-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6M11 8v6M8 11h6"/></svg>
+            Hover to zoom
+          </span>
         </div>
       </div>
 
       <div class="pdp-info">
         <h1 id="pTitle" style="margin:0;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.04em;line-height:1.05"></h1>
         <p id="pDesc" class="lead" style="margin-top:12px;font-size:15.5px"></p>
-        <p class="pdp-price"><b id="pPrice"></b><span id="pSpec"></span></p>
+        <p class="pdp-price"><b id="pPrice"></b><span id="pSpec"></span>
+          <span class="mini-tot" id="miniTot"></span></p>
         <p class="sku" id="pSku"></p>
 
         <!-- build it: the factory's real options as chips -->
