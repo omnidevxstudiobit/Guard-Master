@@ -18,6 +18,9 @@ Left: gallery (loupe hover-zoom + lightbox) + helper card with **imperial-first*
 - Add from desktop and from the m-bar both land the configured line in the cart.
 - Gallery lightbox opens/closes; loupe follows cursor.
 
+## Admin integration
+If the owner hides the `panels` product, this page redirects to `/products/` (same semantics as the generic PDP); a `CATALOGUE` fallback keeps module boot exception-safe so the curtain can never strand (adversarial-review BLOCKER fix — see [admin.md](admin.md)).
+
 ## Regressions fixed (both from user screenshots)
 - **Page stuck "still loading" + empty yellow wipe**: after the imperial-label change made `SZS` entries objects, `sel.sz.split(...)` threw at boot, which killed the module — leaving the curtain up and the wipe empty. Fix: `sz: SZS[0].v`. **Lesson recorded in [shared-chrome.md](shared-chrome.md): a top-level throw on any page strands the curtain — keep page boot exception-safe.**
 - Earlier version had duplicated local styles drifting from the design system → deleted in favour of shared `.chip`/`.pick`/`.mini-tot`.

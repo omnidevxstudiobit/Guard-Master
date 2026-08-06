@@ -7,10 +7,20 @@ import { initCart, initHero, initReveal, initSeg, initMarquee, initRail } from '
 import { initMotion } from './motion.js'
 import { PRODUCTS, byId, zar, ARROW, cardHTML, itemHref } from '../data/products.js'
 import { CATEGORIES } from '../data/categories.js'
+import { SETTINGS } from '../data/overrides.js'
 
-/* ── best sellers rail ────────────────────────────────────────── */
-const BEST = ['panels', 'posts', 'caps', 'coils', 'spikes', 'gates', 'razormesh', 'clamps']
-document.getElementById('rail').innerHTML = BEST.map(id => cardHTML(byId(id))).join('')
+/* ── homepage cover — /admin/ Store info picks from the real photo pool ── */
+if (typeof SETTINGS.hero === 'string' && SETTINGS.hero.startsWith('/')) {
+  const shot = document.querySelector('.hg-shot img')
+  if (shot) shot.src = SETTINGS.hero
+}
+
+/* ── best sellers rail — owner-ordered from /admin/, hidden products
+      simply drop out ─────────────────────────────────────────────── */
+const BEST = (Array.isArray(SETTINGS.bestSellers) && SETTINGS.bestSellers.length)
+  ? SETTINGS.bestSellers
+  : ['panels', 'posts', 'caps', 'coils', 'spikes', 'gates', 'razormesh', 'clamps']
+document.getElementById('rail').innerHTML = BEST.map(byId).filter(Boolean).map(cardHTML).join('')
 initRail('#rail', '#railPrev', '#railNext')
 
 /* the shop-by-application tiles are static HTML now — the brief wants

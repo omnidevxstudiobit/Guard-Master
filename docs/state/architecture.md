@@ -21,8 +21,12 @@
 | `/checkout/` | `checkout/index.html` | `src/js/checkout.js` |
 | `/us/` (Company) | `us/index.html` | `src/js/us.js` |
 | `/policies/` | `policies/index.html` | `src/js/policies.js` |
+| `/admin/` (owner console, noindex) | `admin/index.html` | `src/js/admin/admin.js` |
+| `/pages/?s=<slug>` (CMS pages/blog) | `pages/index.html` | `src/js/page.js` |
 
-Shared modules: `src/js/app.js` (chrome + widgets, see [shared-chrome.md](shared-chrome.md)), `src/js/motion.js` (see [performance.md](performance.md)). Data: `src/data/products.js`, `src/data/variant-prices.js`, `src/data/categories.js` (see [pricing-inventory.md](pricing-inventory.md)).
+Shared modules: `src/js/app.js` (chrome + widgets, see [shared-chrome.md](shared-chrome.md)), `src/js/motion.js` (see [performance.md](performance.md)). Data: `src/data/products.js`, `src/data/variant-prices.js`, `src/data/categories.js` (see [pricing-inventory.md](pricing-inventory.md)), `src/data/overrides.js` + `map-cities.js` (admin data layer, see [admin.md](admin.md)).
+
+Build note: `vite.config.js` sets `build.target: 'es2022'` — the data layer uses top-level await; don't lower it.
 
 ## Deploy
 - GitHub `siraajul/Guard-Master`, branch `main` → Vercel at guard-master.vercel.app. Push to main deploys.

@@ -1,6 +1,13 @@
 import { initCart, initReveal, initWipe, initMarquee, initHero, meshSVG } from './app.js'
-import { byId, zar } from '../data/products.js'
+import { byId, zar, CATALOGUE } from '../data/products.js'
 import { panelUnit } from '../data/variant-prices.js'
+
+/* if the owner hides the panels product in /admin/, this page follows
+   it out of the shop (same semantics as the generic PDP) — and the
+   CATALOGUE fallback keeps boot exception-safe while the redirect
+   lands, so the curtain can never strand */
+const PANELS = byId('panels') || CATALOGUE.find(p => p.id === 'panels')
+if (!byId('panels')) location.replace('/products/')
 
 /* Real catalogue options, exactly as the factory publishes them. */
 const APS = [
@@ -159,7 +166,7 @@ $('#addBtn').addEventListener('click', () => {
 })
 
 /* ── gallery: rail + stage + hover zoom + lightbox ─────────────── */
-const GAL = byId('panels').gallery
+const GAL = PANELS.gallery
 const CAPS = [
   'Panel, post and spike topping assembled',
   'Panel and post with shark-tooth topping',

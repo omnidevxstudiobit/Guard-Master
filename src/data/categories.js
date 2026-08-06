@@ -60,4 +60,22 @@ export const CATEGORIES = [
   },
 ]
 
+/* owner overrides from /admin/ Collections — name, copy and product list */
+import { OV } from './overrides.js'
+
+/* pristine snapshot for /admin/, pre-override */
+export const BASE_CATEGORIES = CATEGORIES.map(c => ({ ...c }))
+
+{
+  const co = OV.collections || {}
+  for (const c of CATEGORIES) {
+    const o = co[c.id]
+    if (!o) continue
+    if (typeof o.name === 'string' && o.name.trim()) c.name = o.name.trim()
+    if (typeof o.lede === 'string' && o.lede.trim()) c.lede = o.lede.trim()
+    if (typeof o.blurb === 'string' && o.blurb.trim()) c.blurb = o.blurb.trim()
+    if (Array.isArray(o.products) && o.products.length) c.products = o.products
+  }
+}
+
 export const catById = (id) => CATEGORIES.find(c => c.id === id)

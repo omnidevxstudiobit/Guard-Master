@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guard Master — pages</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/src/styles/app.css">
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav"><div class="nav-in">
+    <a class="logo" href="/">
+      <span class="mk"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="6.9"/><path d="M15.6 9.4A4.4 4.4 0 1 0 16.4 12H12.7"/></svg></span>
+      guard&nbsp;master
+    </a>
+    <div class="nav-links" style="flex:1">
+      <a href="/#shop">Shop</a>
+      <a href="/products/">Catalogue</a>
+      <a href="/gallery/">Gallery</a>
+      <a href="/us/">Company</a>
+    </div>
+    <a class="btn btn--quote" href="/estimate/">Get a quote</a>
+    <div class="cart" id="cart" data-open="false">
+      <button class="c-pay" type="button" aria-label="Checkout now">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="5" width="19.2" height="14" rx="3.2"/><path d="M2.4 9.6h19.2"/><path d="M6 14.6h3.2"/></svg>
+      </button>
+      <button class="c-main" type="button" id="cartMain" aria-label="View cart">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.6h2.1l2.6 11.3h10.4"/><path d="M6.2 6.7h14.3l-1.7 6.3H7.6"/><circle cx="9.1" cy="19" r="1.7"/><circle cx="17.4" cy="19" r="1.7"/></svg>
+        <span class="lbl">View cart</span>
+      </button>
+      <button class="c-count" type="button" id="cartCount" aria-label="0 items in cart">0</button>
+    </div>
+  </div></nav>
+
+  <main id="main">
+    <article id="pageBody" style="max-width:760px;margin:24px auto 80px">
+      <p class="eyebrow" id="pgKicker">Guard Master</p>
+      <h1 class="disp" id="pgTitle" style="font-size:clamp(30px,5vw,56px);letter-spacing:-.04em;margin:6px 0 22px"></h1>
+      <div id="pgContent" style="font-size:16px;line-height:1.8;color:var(--ink-2)"></div>
+    </article>
+  </main>
+</div>
+
+<script type="module" src="/src/js/page.js"></script>
+</body>
+</html>

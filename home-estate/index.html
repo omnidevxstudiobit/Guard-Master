@@ -20,6 +20,9 @@
   </svg>
   <span class="c-bar"><i></i></span>
 </div>
+<!-- watchdog: if page JS never boots (stalled fetch, pre-es2022 browser),
+     the curtain still lifts and the static page stays usable -->
+<script>setTimeout(function(){var c=document.getElementById('curtain');if(c&&!c.dataset.done){c.classList.add('done');setTimeout(function(){c.remove()},800)}},4000)</script>
 
 <div class="wrap">
   <nav class="nav"><div class="nav-in">

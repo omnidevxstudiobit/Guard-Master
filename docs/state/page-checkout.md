@@ -14,5 +14,10 @@
 - Valid submit produced ref `GM-260806-6986`, cart badge reset to 0, totals matched the cart page ($148.10 / VAT-of $19.32).
 - Empty-cart state disables the button with "Nothing to order".
 
+## Admin integration (added 2026-08-06 — see [admin.md](admin.md))
+- **Promo codes**: `#promo` field validated against `/admin/` discounts; percent capped 0–100, amount codes never take the total below zero; VAT-inside computed on the **discounted** total; discount recorded on the order. Verified: SAVE10 on R1500 → Goods $91.46 / −$9.15 / VAT $10.74 / Total $82.32.
+- **Order log + webhooks**: placing an order appends to `localStorage.gm_orders` and fires `orders/create` webhooks (browser POST, best-effort — a dead endpoint never blocks the confirmation). Verified against a local receiver.
+- **Settings**: fulfilment options can be switched off from admin (never both), plus an owner note under the totals.
+
 ## Open items
-- No backend: order POST target + payment flow are pending client infrastructure (Monday.com webhook owed — see [content-rules.md](content-rules.md)). The delivery-address rules are SA-format; if US checkout addresses are ever needed, RULES (postal/province) must fork by country.
+- No backend: order POST target + payment flow are pending client infrastructure (webhooks → Zapier/Make/Monday.com is the interim path for durable order capture — see [admin.md](admin.md)). The delivery-address rules are SA-format; if US checkout addresses are ever needed, RULES (postal/province) must fork by country.

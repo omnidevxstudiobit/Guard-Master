@@ -995,7 +995,7 @@ body[data-bgfollow]{
 /* ── print: the product page becomes a clean spec sheet ───────── */
 @media print{
   .nav, .promo-bar, .curtain, .m-bar, .qty, #add, .trust button, .recs, #pairsSec,
-  .gal-thumbs, .gal-count, .foot, .btn, .crumbs a{display:none !important}
+  .gal-thumbs, .gal-count, .foot, .btn, .crumbs a, .draft-flag{display:none !important}
   body{background:#fff !important}
   .wrap{max-width:100%; padding:0}
   .pdp{grid-template-columns:1fr 1fr; gap:24px}
@@ -1838,4 +1838,17 @@ body.scrolling .hfab{animation-play-state:paused}
 .sticky-in--steps{color:var(--ink)}
 /* white cards carry their own ink for the same reason */
 .buy-card{color:var(--ink)}
+
+/* ── admin draft ribbon — only the owner ever sees this (drafts live
+      in their browser); links straight to /admin/ publish ─────────── */
+.draft-flag{
+  position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:360;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink); text-decoration:none; white-space:nowrap;
+  padding:9px 16px; border-radius:999px;
+  background:rgba(250,204,21,.92); border:1px solid rgba(20,18,26,.12);
+  box-shadow:0 10px 26px rgba(20,18,26,.18);
+}
+.draft-flag:hover{background:rgba(250,204,21,1)}
+@media(max-width:880px){.draft-flag{bottom:calc(14px + 74px)}}   /* clear the mobile buy bar */
 

@@ -21,5 +21,6 @@ US company that owns the SA factory; SA record = proving ground; welcome copy ne
 - Screenshots eyeballed: both silhouettes read as their countries (SA earlier, US in `shots/us-map.png`).
 
 ## Notes
+- City sets live in `src/data/map-cities.js` and can be overridden per-map from `/admin/#/locations` (validated: name, copy, 0–1 coords; invalid overrides fall back to built-ins) — see [admin.md](admin.md).
 - Silhouettes are stylised originals (hand-plotted), not traced GeoJSON — edit outline points by nudging normalised coords and re-screenshotting.
 - The Liberty vector is an original drawing of a public-domain monument.

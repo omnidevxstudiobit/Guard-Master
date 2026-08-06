@@ -3,7 +3,7 @@
    follows the manufacturer's assembly drawing: panels are 3 m bays,
    posts = panels + 1, spider clamps per panel scale with height. */
 
-import { initCart, initHero } from './app.js'
+import { initCart, initHero, SUPPORT_EMAIL } from './app.js'
 import { initMotion } from './motion.js'
 import { zar } from '../data/products.js'
 import {
@@ -86,7 +86,7 @@ function paint () {
     'Converted from factory pricing at an indicative rate. Excludes freight, installation and groundworks — subject to site survey.'
   )
   $('#estMail').href = `mailto:?subject=${encodeURIComponent('My Guard Master fence estimate')}&body=${body}`
-  $('#estQuote').href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent('Firm quote request — ' + sel.use + ', ' + feet() + ' ft')}&body=${body}`
+  $('#estQuote').href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Firm quote request — ' + sel.use + ', ' + feet() + ' ft')}&body=${body}`
 }
 
 /* chips: single-select per group, except the multi-select extras */

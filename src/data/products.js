@@ -1,7 +1,12 @@
 /* Real catalogue, scraped from the live factory site (fencing-supplier.com).
    `from` is the published "From:" price in ZAR incl. VAT. `options` are the
    real WooCommerce variation attributes, in the order the factory lists them.
-   Nothing here is invented — no product is priced "on application". */
+   Nothing here is invented — no product is priced "on application".
+
+   The store owner can override title/price/copy and hide products from
+   /admin/ — overrides merge in below, before any page reads PRODUCTS. */
+
+import { OV, SETTINGS } from './overrides.js'
 
 export const PRODUCTS = [
   {
@@ -238,6 +243,48 @@ export const PRODUCTS = [
   },
 ]
 
+/* pristine snapshot for /admin/ — the factory truth before any
+   override or hiding is applied */
+export const CATALOGUE = PRODUCTS.map(p => ({ ...p }))
+
+/* apply the owner's overrides, then drop hidden products from every
+   grid, rail and search — byId stops resolving them too */
+{
+  const po = OV.products || {}
+  const validGallery = (g) => Array.isArray(g) && g.length &&
+    g.every(src => typeof src === 'string' && src.startsWith('/'))
+  const validOptions = (os) => Array.isArray(os) &&
+    os.every(o => o && typeof o.k === 'string' && o.k.trim() &&
+      Array.isArray(o.v) && o.v.length && o.v.every(v => typeof v === 'string' && v.trim()))
+  for (const p of PRODUCTS) {
+    const o = po[p.id]
+    if (!o) continue
+    if (typeof o.t === 'string' && o.t.trim()) p.t = o.t.trim()
+    if (typeof o.d === 'string' && o.d.trim()) p.d = o.d.trim()
+    if (typeof o.plain === 'string' && o.plain.trim()) p.plain = o.plain.trim()
+    if (typeof o.spec === 'string' && o.spec.trim()) p.spec = o.spec.trim()
+    if (typeof o.lead === 'string' && o.lead.trim()) p.lead = o.lead.trim()
+    if (Number(o.from) > 0) p.from = Number(o.from)
+    if (validGallery(o.gallery)) p.gallery = o.gallery
+    if (Array.isArray(o.pairs)) p.pairs = o.pairs
+    /* option labels are pricing keys — an edited label that no longer
+       resolves falls back to "From price · confirmed on order", never a
+       wrong number, so owner edits degrade honestly */
+    if (validOptions(o.options)) p.options = o.options
+  }
+  for (let i = PRODUCTS.length - 1; i >= 0; i--) {
+    if (po[PRODUCTS[i].id]?.hidden) PRODUCTS.splice(i, 1)
+  }
+  /* the owner decides who comes first — settings.productOrder ranks the
+     catalogue everywhere PRODUCTS is mapped in order (home grid, the
+     catalogue deck); unranked products keep their relative order */
+  const ord = Array.isArray(SETTINGS.productOrder) ? SETTINGS.productOrder : []
+  if (ord.length) {
+    const rank = new Map(ord.map((id, i) => [id, i]))
+    PRODUCTS.sort((a, b) => (rank.get(a.id) ?? 1e6) - (rank.get(b.id) ?? 1e6))
+  }
+}
+
 export const byId = (id) => PRODUCTS.find(p => p.id === id)
 
 /* every product has a page: its own if it has one, else the template */
@@ -250,7 +297,9 @@ export const itemHref = (id) => {
    One declared indicative rate converts everything — update it here
    (or wire a live feed) and the whole site follows. The function
    keeps its old name so every call site converts automatically. */
-export const ZAR_PER_USD = 16.40   // indicative, set 2026-08-06
+export const ZAR_PER_USD = Number(SETTINGS.rateZarPerUsd) > 0
+  ? Number(SETTINGS.rateZarPerUsd)
+  : 16.40   // indicative, set 2026-08-06 — /admin/ Store info can override
 export const zar = (n) =>
   '$' + (n / ZAR_PER_USD).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 

@@ -11,6 +11,8 @@ const root = fileURLToPath(new URL('.', import.meta.url))
 export default defineConfig({
   server: { port: 5173, open: false },
   build: {
+    // the admin data layer uses top-level await (src/data/overrides.js)
+    target: 'es2022',
     rollupOptions: {
       input: {
         home: resolve(root, 'index.html'),
@@ -24,6 +26,8 @@ export default defineConfig({
         cart: resolve(root, 'cart/index.html'),
         checkout: resolve(root, 'checkout/index.html'),
         homeEstate: resolve(root, 'home-estate/index.html'),
+        admin: resolve(root, 'admin/index.html'),
+        pages: resolve(root, 'pages/index.html'),
       },
     },
   },

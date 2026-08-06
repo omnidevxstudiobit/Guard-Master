@@ -5,9 +5,16 @@
    social pop-in, product rail, and the before/after wipe.
    ========================================================================== */
 
+import { SETTINGS, hasDrafts } from '../data/overrides.js'
+
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches
 const $  = (s, r = document) => r.querySelector(s)
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s))
+
+/* where enquiry mailtos go — /admin/ Store info can change it */
+export const SUPPORT_EMAIL = (typeof SETTINGS.store?.email === 'string' && SETTINGS.store.email.includes('@'))
+  ? SETTINGS.store.email.trim()
+  : 'info@fencing-supplier.com'
 
 /* ── cart ─────────────────────────────────────────────────────────
    The split state is not a flourish — it IS the "cart has items"
@@ -96,6 +103,7 @@ export function initCart () {
   initDrawer()   // frosted mobile menu — the links were unreachable on phones
   initRipple()   // one-shot water ripple on primary controls
   initSupport()  // droplet support FAB + frosted enquiry sheet
+  initDraftFlag() // owner-only ribbon when unpublished drafts exist
 }
 
 /* ── liquid support widget — droplet FAB opening a frosted enquiry
@@ -186,7 +194,7 @@ export function initSupport () {
       `${msg.value.trim()}\n\n— ${name}\nContact: ${contact.value.trim()}` +
       (sheet.querySelector('#hsWhere').value.trim() ? `\nSite: ${sheet.querySelector('#hsWhere').value.trim()}` : '') +
       `\nSent from ${location.href}`)
-    location.href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent('Website enquiry — ' + name)}&body=${body}`
+    location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Website enquiry — ' + name)}&body=${body}`
     sheet.querySelector('.hs-form').hidden = true
     sheet.querySelector('.hs-done').hidden = false
   })
@@ -328,15 +336,31 @@ export function initAnchors () {
   })
 }
 
-/* ── announcement bar: dismissible, remembered ────────────────── */
+/* ── announcement bar: dismissible, remembered; message managed
+      from /admin/ Store info ───────────────────────────────────── */
 export function initPromoBar () {
   const bar = document.querySelector('.promo-bar')
   if (!bar) return
+  if (typeof SETTINGS.promo === 'string' && SETTINGS.promo.trim()) {
+    const first = bar.querySelector('span')
+    if (first) first.textContent = SETTINGS.promo.trim()
+  }
   try { if (localStorage.getItem('gm_pb_hide')) return bar.remove() } catch {}
   bar.querySelector('#pbClose')?.addEventListener('click', () => {
     try { localStorage.setItem('gm_pb_hide', '1') } catch {}
     bar.remove()
   })
+}
+
+/* ── draft ribbon — the owner has unpublished admin edits; visitors
+      never see this because drafts live only in the owner's browser ── */
+function initDraftFlag () {
+  if (!hasDrafts || location.pathname.startsWith('/admin')) return
+  const f = document.createElement('a')
+  f.className = 'draft-flag'
+  f.href = '/admin/#/publish'
+  f.textContent = 'Draft preview — unpublished admin changes'
+  document.body.appendChild(f)
 }
 
 /* ── image loading: mark images as they land so the shimmer under

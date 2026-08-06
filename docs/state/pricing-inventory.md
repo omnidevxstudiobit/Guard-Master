@@ -1,7 +1,7 @@
 # Pricing & inventory — state
 
 ## The one rule
-**ZAR factory data is the source of truth; the display is always USD.** Never hand-type a dollar price. Store/keep ZAR, render through `zar()`:
+**ZAR factory data is the source of truth; the display is always USD.** Never hand-type a dollar price. Store/keep ZAR, render through `zar()`. The `/admin/` console keeps this rule: owner price edits are entered in ZAR, and the display rate `settings.rateZarPerUsd` (see [admin.md](admin.md)) only changes conversion, never the stored truth:
 
 - `src/data/products.js`: `ZAR_PER_USD = 16.40` (indicative, dated in a comment — official USD list still owed by client), `zar(n) = '$' + (n/16.40).toFixed(2)` with comma grouping.
 - All stored unit prices (product `from`, cart line `unit`, variant matrices after `inclVat`) are **ZAR incl. VAT**.

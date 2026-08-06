@@ -33,5 +33,6 @@ US high-security fencing storefront (Clear View 358 mesh). Vanilla ES modules + 
 | Checkout | `docs/state/page-checkout.md` |
 | Company page (`/us/`) | `docs/state/page-company.md` |
 | Policies | `docs/state/page-policies.md` |
+| Admin side (`/admin/`, data layer, webhooks, `/pages/`) | `docs/state/admin.md` |
 
 **Keep these docs current**: when you fix a regression, add a test, or change a standard, update the matching state doc in the same commit.

@@ -15,6 +15,13 @@
   .summary .cnt{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--muted)}
   .co-form{padding:30px}
   @media(max-width:560px){.co-form{padding:22px}}
+  .promo-row{display:flex; gap:8px; margin-top:14px}
+  .promo-row input{flex:1; min-width:0; border:1px solid rgba(20,18,26,.14); border-radius:12px;
+    padding:10px 14px; font:inherit; font-size:13.5px; background:rgba(255,255,255,.7)}
+  .promo-row .btn{padding:10px 18px; font-size:13.5px}
+  .promo-msg{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; margin:6px 0 0}
+  .promo-msg.ok{color:#1c7c46}
+  .promo-msg.err{color:#b3261e}
 </style>
 </head>
 <body>
@@ -170,6 +177,11 @@
           <span class="cnt" id="sumCount">0 items</span>
         </div>
         <div id="sumLines" style="margin-top:12px"></div>
+        <div class="promo-row" id="promoRow">
+          <input id="promo" placeholder="Promo code" autocomplete="off" aria-label="Promo code">
+          <button class="btn" id="promoApply" type="button">Apply</button>
+        </div>
+        <p class="promo-msg" id="promoMsg" aria-live="polite"></p>
         <div id="sumTotals"></div>
         <a class="btn" href="/cart/" style="width:100%;justify-content:center;margin-top:12px;font-size:14px">Back to cart</a>
       </aside>

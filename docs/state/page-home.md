@@ -17,6 +17,9 @@ Promo bar (dismissible US-shipping message) → nav → glass hero (kicker "See 
 - Grid Add → cart badge increments, toast fires; segment filter hides non-group cards.
 - First-click `/#shop` scrolls (the Lenis anchor fix — regression test worth repeating on nav changes).
 
+## Admin integration
+The hero cover photo (`settings.hero`, swapped onto `.hg-shot img`), the promo-bar message, and product prices/titles/visibility are owner-managed — see [admin.md](admin.md). The best-sellers rail is hidden-product-safe (`.map(byId).filter(Boolean)`).
+
 ## Regressions fixed here
 - Grid cards stuck on shimmer / hover showing 2nd image → per-image load listeners in `initImgFade` (delegated capture missed lazy imgs).
 - Grid overlap from GSAP transform entrances → commerce grids use CSS `.rv` fade only.

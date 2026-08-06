@@ -6,8 +6,21 @@
 
 import { initCart, initHero } from './app.js'
 import { initMotion } from './motion.js'
+import { OV } from '../data/overrides.js'
+import { SA_CITIES, US_CITIES } from '../data/map-cities.js'
 
 const $ = s => document.querySelector(s)
+
+/* /admin/ Locations can replace either city list; a valid entry needs a
+   name, copy and normalised coords — anything else keeps the defaults */
+const adminCities = (key, fallback) => {
+  const list = OV.locations?.[key]?.cities
+  if (!Array.isArray(list) || !list.length) return fallback
+  const ok = list.every(c => c && typeof c.n === 'string' && typeof c.d === 'string' &&
+    typeof c.x === 'number' && c.x >= 0 && c.x <= 1 &&
+    typeof c.y === 'number' && c.y >= 0 && c.y <= 1)
+  return ok ? list : fallback
+}
 
 /* point-in-polygon (ray cast), with an optional elliptical hole */
 const inside = (outline, hole) => (x, y) => {
@@ -71,18 +84,7 @@ buildMap({
     [.38, .955], [.21, 1], [.14, .965], [.117, .93], [.06, .80], [.03, .66],
   ],
   hole: { x: .725, y: .60, rx: .052, ry: .075 },
-  cities: [
-    { x: .72, y: .335, n: 'Benoni — the factory', d: 'Every panel starts here: welded at every crossing and coated in Benoni South, Gauteng.', home: true },
-    { x: .685, y: .35, n: 'Johannesburg', d: 'Home turf — Steyn City, PRASA and the rest of the roster.' },
-    { x: .705, y: .285, n: 'Pretoria', d: 'Gauteng deliveries run constantly.' },
-    { x: .885, y: .615, n: 'Durban', d: 'Coastal air calls for the hot-dip galvanized finish.' },
-    { x: .12, y: .92, n: 'Cape Town', d: 'Nationwide delivery — coast to coast.' },
-    { x: .55, y: .92, n: 'Gqeberha', d: 'Eastern Cape, delivered.' },
-    { x: .59, y: .55, n: 'Bloemfontein', d: 'Free State, delivered.' },
-    { x: .79, y: .15, n: 'Polokwane', d: 'Limpopo, delivered.' },
-    { x: .875, y: .275, n: 'Mbombela', d: 'Mpumalanga, delivered.' },
-    { x: .50, y: .53, n: 'Kimberley', d: 'Northern Cape, delivered.' },
-  ],
+  cities: adminCities('sa', SA_CITIES),
 })
 
 /* ── the continental US — the welcome ────────────────────────── */
@@ -96,16 +98,7 @@ buildMap({
     [.879, .35], [.948, .32], [.95, .3], [1, .18], [.962, .07], [.922, .17],
     [.831, .23], [.793, .24], [.729, .3], [.693, .13], [.631, .03], [.514, 0], [.034, 0],
   ],
-  cities: [
-    { x: .774, y: .95, n: 'Fort Lauderdale — Guard Master US', d: 'Head office. Dollar quotes, container or crate, shipped across the continental US.', home: true },
-    { x: .879, y: .35, n: 'New York', d: 'East coast shipping destination, out of the Florida desk.' },
-    { x: .645, y: .30, n: 'Chicago', d: 'Midwest shipping destination.' },
-    { x: .486, y: .68, n: 'Dallas', d: 'Texas perimeters are exactly what 358 mesh was made for.' },
-    { x: .117, y: .62, n: 'Los Angeles', d: 'West coast shipping destination — the mesh doesn’t mind the distance.' },
-    { x: .047, y: .06, n: 'Seattle', d: 'Pacific Northwest shipping destination.' },
-    { x: .345, y: .39, n: 'Denver', d: 'Mountain-states shipping destination.' },
-    { x: .700, y: .64, n: 'Atlanta', d: 'Southeast shipping destination.' },
-  ],
+  cities: adminCities('us', US_CITIES),
 })
 
 initCart()
