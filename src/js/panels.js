@@ -124,7 +124,11 @@ function price () {
   const unit = exact ?? FROM
   const el = $('#price')
   el.classList.remove('poa')
-  el.textContent = zar(unit * qty)
+  const shown = zar(unit * qty)
+  el.textContent = shown
+  /* the total answers wherever you're looking: buy box, builder head, mobile bar */
+  const mini = $('#miniTot'); if (mini) mini.textContent = shown
+  const mTot = $('#mTotal'); if (mTot) mTot.textContent = shown
   $('#vatLine').textContent = exact
     ? `Incl. VAT · ${qty} panel${qty > 1 ? 's' : ''}`
     : `From price · ${qty} panel${qty > 1 ? 's' : ''} · confirmed on order`
@@ -141,6 +145,7 @@ price()
 
 $('#qPlus').addEventListener('click', () => { qty++; $('#qVal').textContent = qty; price() })
 $('#qMinus').addEventListener('click', () => { if (qty > 1) { qty--; $('#qVal').textContent = qty; price() } })
+$('#mAdd')?.addEventListener('click', () => $('#addBtn').click())
 $('#addBtn').addEventListener('click', () => {
   // every combination carries the estimator's real figure; FROM only backstops
   const unit = unitFor() ?? FROM

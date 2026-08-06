@@ -1295,6 +1295,7 @@ body.scrolling .blob{opacity:0; visibility:hidden}
   width:44px; text-align:center; border:0; background:none; font:inherit; font-weight:700;
   font-variant-numeric:tabular-nums; outline:none;
 }
+.qty span{min-width:44px; text-align:center; font-weight:700; font-variant-numeric:tabular-nums}
 
 /* two-up: image beside copy */
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,5vw,70px); align-items:center}
