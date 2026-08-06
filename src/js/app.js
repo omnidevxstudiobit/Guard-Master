@@ -95,6 +95,101 @@ export function initCart () {
   initNavPill()  // liquid pill slides to the hovered/active nav link
   initDrawer()   // frosted mobile menu — the links were unreachable on phones
   initRipple()   // one-shot water ripple on primary controls
+  initSupport()  // droplet support FAB + frosted enquiry sheet
+}
+
+/* ── liquid support widget — droplet FAB opening a frosted enquiry
+      sheet. Validation and the character gauge are live; submission
+      composes a prefilled email to sales (no backend yet, same
+      pattern as the estimator). Blur exists only while open. ──────── */
+export function initSupport () {
+  if (document.getElementById('hfab')) return
+  const fab = document.createElement('button')
+  fab.id = 'hfab'; fab.className = 'hfab'; fab.type = 'button'
+  fab.setAttribute('aria-label', 'Contact us')
+  fab.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.2c0 4-4 7.2-9 7.2-1 0-2-.13-2.9-.38L4 20l1.5-3.3A7 7 0 0 1 3 11.2C3 7.2 7 4 12 4s9 3.2 9 7.2Z"/></svg>'
+
+  const sheet = document.createElement('div')
+  sheet.className = 'hsheet'
+  sheet.innerHTML = `
+    <div class="hs-form">
+      <b class="hs-t">Talk to Guard Master</b>
+      <p class="hs-s">We answer fast — spec questions, quotes, big perimeters.</p>
+      <div class="field"><label for="hsName">Name</label><input id="hsName" autocomplete="name"></div>
+      <div class="field hs-cap"><label for="hsContact">Email or phone</label><input id="hsContact" autocomplete="email"></div>
+      <div class="field"><label for="hsWhere">Site location <span style="text-transform:none;letter-spacing:0">(optional)</span></label><input id="hsWhere" autocomplete="address-level2"></div>
+      <div class="field" style="position:relative">
+        <label for="hsMsg">What do you need?</label>
+        <textarea id="hsMsg" maxlength="500" rows="3"></textarea>
+        <span class="hs-drop" aria-hidden="true"><i id="hsFill"></i></span>
+      </div>
+      <button class="btn btn--go" id="hsSend" type="button" style="width:100%;justify-content:center">Send it
+        <span class="dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+      </button>
+      <p class="hs-err" id="hsErr"></p>
+    </div>
+    <div class="hs-done" hidden>
+      <span class="hs-tick"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <b class="hs-t">Message ready</b>
+      <p class="hs-s">Your email app is opening with everything filled in — just hit send.
+         Or call <a href="tel:+19547565216">US +1 (954) 756 5216</a>.</p>
+    </div>`
+  document.body.append(fab, sheet)
+
+  const toggle = (open) => {
+    sheet.classList.toggle('open', open)
+    fab.classList.toggle('active', open)
+  }
+  fab.addEventListener('click', () => toggle(!sheet.classList.contains('open')))
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false) })
+
+  /* live contact validation — the capsule pulses when it turns valid */
+  const cap = sheet.querySelector('.hs-cap')
+  const contact = sheet.querySelector('#hsContact')
+  const sr = document.createElement('span')
+  sr.setAttribute('role', 'status')
+  sr.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)'
+  cap.appendChild(sr)
+  const isValid = (v) => /\S+@\S+\.\S+/.test(v) || /^[+\d][\d\s()-]{6,}$/.test(v.trim())
+  contact.addEventListener('input', () => {
+    const ok = isValid(contact.value)
+    cap.classList.toggle('warn', !ok && contact.value.trim().length > 2)
+    if (ok && !cap.classList.contains('ok')) {
+      cap.classList.add('ok', 'pulse')
+      sr.textContent = 'Contact details look valid.'
+    }
+    if (!ok) { cap.classList.remove('ok'); sr.textContent = '' }
+    setTimeout(() => cap.classList.remove('pulse'), 700)
+  })
+  const buzz = (ms) => { try { navigator.vibrate?.(ms) } catch {} }
+  fab.addEventListener('click', () => buzz(10))
+
+  /* the droplet gauge fills as the message grows */
+  const msg = sheet.querySelector('#hsMsg')
+  msg.addEventListener('input', () => {
+    sheet.querySelector('#hsFill').style.height = Math.min(100, msg.value.length / 5) + '%'
+  })
+
+  sheet.querySelector('#hsSend').addEventListener('click', (e) => {
+    const btn = e.currentTarget
+    const name = sheet.querySelector('#hsName').value.trim()
+    const err = sheet.querySelector('#hsErr')
+    if (!name || !isValid(contact.value) || !msg.value.trim()) {
+      err.textContent = 'Name, a valid email or phone, and a message — then it sends.'
+      return
+    }
+    err.textContent = ''
+    btn.disabled = true                                   // deterministic: no double-fires
+    btn.firstChild.textContent = 'Opening your email… '
+    buzz(10)
+    const body = encodeURIComponent(
+      `${msg.value.trim()}\n\n— ${name}\nContact: ${contact.value.trim()}` +
+      (sheet.querySelector('#hsWhere').value.trim() ? `\nSite: ${sheet.querySelector('#hsWhere').value.trim()}` : '') +
+      `\nSent from ${location.href}`)
+    location.href = `mailto:info@fencing-supplier.com?subject=${encodeURIComponent('Website enquiry — ' + name)}&body=${body}`
+    sheet.querySelector('.hs-form').hidden = true
+    sheet.querySelector('.hs-done').hidden = false
+  })
 }
 
 /* ── liquid nav pill — slides to the hovered link, rests on the

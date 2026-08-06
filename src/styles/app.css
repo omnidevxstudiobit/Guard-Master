@@ -1633,6 +1633,89 @@ body.scrolling .arc-ship, body.scrolling .city--home::after{animation-play-state
 .why-grid .card{transition:border-radius .8s var(--ease), transform .5s var(--ease)}
 .why-grid .card:hover{border-radius:34px 48px 30px 52px / 46px 30px 50px 32px}
 
+/* ── liquid support widget ────────────────────────────────────── */
+.hfab{
+  position:fixed; left:18px; bottom:18px; z-index:340;
+  width:58px; height:58px; border:0; cursor:pointer; color:var(--ink);
+  display:grid; place-items:center;
+  border-radius:58% 42% 46% 54% / 52% 48% 52% 48%;
+  background:linear-gradient(150deg, rgba(255,255,255,.96), rgba(255,255,255,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 14px 32px rgba(20,18,26,.18);
+  animation:hfab-bob 6s ease-in-out infinite;
+  transition:transform .4s var(--ease), border-radius .6s var(--ease);
+}
+.hfab::before{
+  content:""; position:absolute; top:9px; left:13px; width:18px; height:9px;
+  border-radius:50%; background:rgba(255,255,255,.85); filter:none;
+  transform:rotate(-18deg); pointer-events:none;
+}
+.hfab:hover{transform:scale(1.08); border-radius:50%}
+.hfab.active{border-radius:50%; transform:rotate(90deg)}
+body.scrolling .hfab{animation-play-state:paused}
+/* a click target must hold still when you aim at it */
+.hfab:hover, .hfab:focus-visible{animation-play-state:paused}
+@keyframes hfab-bob{50%{transform:translateY(-5px)}}
+@media(max-width:880px){.hfab{bottom:calc(18px + 74px)}}
+
+.hsheet{
+  position:fixed; left:18px; bottom:88px; z-index:339;
+  width:min(360px, calc(100vw - 36px));
+  border-radius:24px; padding:22px;
+  background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(255,255,255,.74));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 26px 60px rgba(20,18,26,.22);
+  opacity:0; visibility:hidden; transform:translateY(14px) scale(.96);
+  transform-origin:bottom left;
+  transition:opacity .35s var(--ease), transform .35s var(--ease), visibility .35s;
+}
+.hsheet.open{
+  opacity:1; visibility:visible; transform:none;
+  backdrop-filter:blur(24px) saturate(1.5); -webkit-backdrop-filter:blur(24px) saturate(1.5);
+}
+@media(max-width:880px){.hsheet{bottom:calc(88px + 74px)}}
+.hs-t{display:block; font-size:17px; font-weight:800; letter-spacing:-.025em}
+.hs-s{margin:4px 0 16px; font-size:13px; color:var(--muted); line-height:1.5}
+.hs-err{margin:10px 0 0; font-size:12.5px; color:#c02626; min-height:1em}
+.hsheet textarea{padding-right:34px}
+
+/* OS accessibility flags: glass becomes solid, blur goes away */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more){
+  .nav-in, body.scrolling .nav-in, .hsheet, .hsheet.open, .drawer, .drawer.open,
+  .toast, .glass, .glass--lit, .foot, .m-bar, .promo-bar{
+    background:#fff !important;
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  }
+}
+
+/* contact capsule: amber while it isn't valid yet, green when it is */
+.hs-cap.warn input{border-color:#d97706}
+.hs-cap.ok input{border-color:#22c55e}
+.hs-cap.pulse input{animation:cap-ring .7s var(--ease-soft)}
+@keyframes cap-ring{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}
+  100%{box-shadow:0 0 0 12px rgba(34,197,94,0)}
+}
+
+/* the message droplet gauge */
+.hs-drop{
+  position:absolute; right:10px; bottom:12px; width:15px; height:15px;
+  border:1.5px solid var(--hair-2); overflow:hidden;
+  border-radius:50% 50% 50% 0; transform:rotate(-45deg);
+}
+.hs-drop i{
+  position:absolute; left:0; right:0; bottom:0; height:0%;
+  background:linear-gradient(#7aa0eb, #5379d1);
+  transition:height .25s var(--ease-soft);
+}
+
+/* splash confirmation */
+.hs-done{text-align:center; padding:10px 4px}
+.hs-tick{
+  width:52px; height:52px; margin:0 auto 12px; border-radius:50%;
+  background:var(--y); display:grid; place-items:center;
+  animation:pop .7s var(--ease-collapse) both;
+}
+.hs-done a{color:inherit}
+
 /* ── fence footer — the band the fence rises inside ───────────── */
 .fence-foot{padding-bottom:44vh}
 .fence-band{
