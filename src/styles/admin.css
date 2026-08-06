@@ -108,8 +108,9 @@ body{
 
 /* ── fields — frosted inputs with the storefront focus ring ───── */
 .adm-f{display:flex; flex-direction:column; gap:6px; margin-bottom:12px}
-.adm-f label{font-family:var(--mono); font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted)}
-.adm-f input, .adm-f select, .adm-f textarea, .adm-tbl input, .adm-tbl select,
+/* the field caption only — option/checkbox labels keep normal casing */
+.adm-f > label:first-child{font-family:var(--mono); font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted)}
+.adm-f input:not([type="checkbox"]), .adm-f select, .adm-f textarea, .adm-tbl input, .adm-tbl select,
 .adm-card input:not([type="checkbox"]):not([type="file"]), .adm-card select{
   font:inherit; font-size:13.5px; color:var(--ink);
   border:1px solid rgba(255,255,255,.85); border-radius:12px;
@@ -222,6 +223,92 @@ body{
 
 /* file input — keep it plain but aligned */
 .adm-card input[type="file"]{font-size:13px; color:var(--ink-2)}
+
+/* ── product editor — Shopify anatomy in our glass language ────── */
+.pd-grid{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px; align-items:start}
+@media(max-width:1020px){.pd-grid{grid-template-columns:1fr}}
+.pd-side .adm-card{padding:18px}
+.pd-side h2{font-size:14px}
+
+/* sticky unsaved-changes bar, Shopify-style */
+.savebar{
+  position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:390;
+  display:flex; align-items:center; gap:14px;
+  padding:10px 12px 10px 20px; border-radius:999px;
+  background:#14121a; color:#fff; font-size:13.5px; font-weight:600;
+  box-shadow:0 16px 40px rgba(20,18,26,.35), inset 0 1px 0 rgba(255,255,255,.12);
+  white-space:nowrap;
+}
+.savebar .btn{color:#fff; border-color:rgba(255,255,255,.25); background:none}
+.savebar .btn:hover{background:rgba(255,255,255,.1)}
+.savebar .btn.sv{background:var(--y); color:var(--ink); border-color:transparent; font-weight:700}
+.savebar .btn.sv:hover{background:#ffe14a}
+.savebar[hidden]{display:none}
+
+/* media grid — first image large, like Shopify's media card */
+.med-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+@media(max-width:640px){.med-grid{grid-template-columns:repeat(3,1fr)}}
+.med{
+  position:relative; border-radius:14px; overflow:hidden; aspect-ratio:1;
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 5px 14px rgba(52,48,90,.1);
+  background:#fff;
+}
+.med:first-child{grid-column:span 2; grid-row:span 2}
+.med img{width:100%; height:100%; object-fit:cover; display:block}
+.med .mtools{
+  position:absolute; inset:auto 6px 6px 6px; display:flex; gap:5px; justify-content:center;
+  opacity:0; transition:opacity .25s var(--ease-soft);
+}
+.med:hover .mtools, .med:focus-within .mtools{opacity:1}
+.med .mtools button{
+  width:26px; height:26px; border:0; border-radius:8px; cursor:pointer;
+  display:grid; place-items:center; font-size:12px; color:var(--ink);
+  background:rgba(255,255,255,.94); box-shadow:0 3px 9px rgba(20,18,26,.25);
+}
+.med .mtools button:disabled{opacity:.35; cursor:default}
+.med .mno{
+  position:absolute; top:6px; left:6px; font-family:var(--mono); font-size:9px;
+  padding:3px 7px; border-radius:99px; background:rgba(255,255,255,.92); color:var(--ink);
+  box-shadow:0 2px 6px rgba(20,18,26,.18);
+}
+
+/* value/tag pills, Shopify option-value style */
+.tagp{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 7px 6px 13px; border-radius:999px; font-size:12.5px; font-weight:600;
+  background:linear-gradient(150deg, rgba(255,255,255,.95), rgba(255,255,255,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 3px 8px rgba(20,18,26,.07);
+  color:var(--ink);
+}
+.tagp button{
+  width:18px; height:18px; border:0; border-radius:50%; cursor:pointer; font-size:10px;
+  display:grid; place-items:center; background:rgba(20,18,26,.08); color:var(--ink);
+}
+.tagp button:hover{background:rgba(179,38,30,.15); color:#b3261e}
+.tag-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.tag-add{display:flex; gap:8px; margin-top:10px}
+.tag-add input{flex:1; min-width:0}
+
+/* option set block */
+.optset{
+  border:1px solid rgba(20,18,26,.08); border-radius:16px; padding:14px;
+  margin-bottom:12px; background:rgba(255,255,255,.5);
+}
+.optset .oh{display:flex; gap:8px; align-items:center; margin-bottom:10px}
+.optset .oh input{flex:1; min-width:0; font-weight:700}
+
+/* google-style search preview */
+.gprev{border:1px solid rgba(20,18,26,.08); border-radius:14px; padding:16px 18px; background:rgba(255,255,255,.6)}
+.gprev .gt{color:#1a0dab; font-size:17px; margin:0 0 2px; font-weight:500}
+.gprev .gu{color:#006621; font-size:12.5px; font-family:var(--mono)}
+.gprev .gd{color:#545454; font-size:13px; line-height:1.5; margin:4px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+
+/* publishing checklist */
+.pubrow{display:flex; gap:9px; align-items:center; font-size:13px; padding:5px 0; color:var(--ink-2)}
+.pubrow i{width:8px; height:8px; border-radius:50%; flex:none}
+.pubrow i.on{background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.pubrow i.off{background:rgba(20,18,26,.18)}
 
 /* reduced transparency / contrast: same accessibility contract as the site */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more){

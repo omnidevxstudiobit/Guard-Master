@@ -267,6 +267,8 @@ export const CATALOGUE = PRODUCTS.map(p => ({ ...p }))
     if (Number(o.from) > 0) p.from = Number(o.from)
     if (validGallery(o.gallery)) p.gallery = o.gallery
     if (Array.isArray(o.pairs)) p.pairs = o.pairs
+    if (['clearview', 'razor', 'access'].includes(o.g)) p.g = o.g
+    if (Array.isArray(o.tags) && o.tags.every(t => typeof t === 'string' && t.trim())) p.tags = o.tags
     /* option labels are pricing keys — an edited label that no longer
        resolves falls back to "From price · confirmed on order", never a
        wrong number, so owner edits degrade honestly */

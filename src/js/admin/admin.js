@@ -2,7 +2,7 @@
    on the GM.* API namespaces in api.js. Edits are drafts (live-previewed
    on the storefront in this browser) until Publish commits them. */
 
-import { GM, PHOTO_POOL, TOPICS } from './api.js'
+import { GM, GROUPS, TOPICS } from './api.js'
 import * as store from './store.js'
 import { zar, CATALOGUE } from '../../data/products.js'
 import { SA_CITIES, US_CITIES } from '../../data/map-cities.js'
@@ -695,140 +695,257 @@ const SECTIONS = {
   },
 }
 
-/* ── per-product editor: photos, price, copy, options, pairs ──── */
+/* ── per-product editor — Shopify anatomy, our glass: edits batch
+      into a working copy behind an "Unsaved changes" Save/Discard
+      bar; main column Title/Description → Media → Pricing →
+      Inventory → Variants → Search engine listing; sidebar Status →
+      Publishing → Product organization → recommendations ─────────── */
 function productDetail (id) {
-  const p = GM.products.get(id)
-  if (!p) { view.innerHTML = head('Unknown product', `No product "${esc(id)}". <a href="#/products">Back to products</a>.`); return }
+  const saved = GM.products.get(id)
+  if (!saved) { view.innerHTML = head('Unknown product', `No product "${esc(id)}". <a href="#/products">Back to products</a>.`); return }
   const base = CATALOGUE.find(x => x.id === id)
   const href = base.href || `/products/item/?p=${id}`
-  const pool = [...new Set([...base.gallery, ...GM.media.list()])].filter(src => !p.gallery.includes(src))
 
-  view.innerHTML = head(esc(p.t),
-    `Everything the storefront shows for this product. <a href="#/products">← All products</a> · <a href="${esc(href)}" target="_blank" rel="noopener">View on site ↗</a>`,
-    `<span class="pill-st ${p.hidden ? 'hidden' : 'live'}">${p.hidden ? 'hidden' : 'live'}</span>`) + `
-
-    <div class="adm-card"><h2>Price & copy</h2>
-      <div class="adm-grid2">
-        <div class="adm-f"><label>Title</label><input data-f="t" value="${esc(p.t)}"></div>
-        <div class="adm-grid2">
-          <div class="adm-f"><label>From price (ZAR)</label><input data-f="from" type="number" step="0.01" min="0" value="${p.from}"></div>
-          <div class="adm-f"><label>Shows as</label><input value="${zar(p.from)}" disabled id="usdPrev"></div>
-        </div>
-      </div>
-      <div class="adm-f"><label>Plain-words line (cards)</label><input data-f="plain" value="${esc(p.plain)}"></div>
-      <div class="adm-f"><label>Description (catalogue + product page)</label><textarea data-f="d" rows="3">${esc(p.d)}</textarea></div>
-      <div class="adm-grid2">
-        <div class="adm-f"><label>Spec line</label><input data-f="spec" value="${esc(p.spec)}"></div>
-        <div class="adm-f"><label>Lead time note (honest availability, never fake stock)</label><input data-f="lead" value="${esc(p.lead || '')}" placeholder="e.g. ships in 2–3 weeks"></div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn--sm" id="pdToggle">${p.hidden ? 'Show on storefront' : 'Hide from storefront'}</button>
-        <button class="btn btn--sm btn--danger" id="pdReset">Reset everything to factory values</button>
-      </div></div>
-
-    <div class="adm-card"><h2>Photos</h2>
-      <p class="adm-note" style="margin:0 0 12px">First photo = the card and page lead image; second = the card's hover image. Order with ▲▼.</p>
-      <table class="adm-tbl">${p.gallery.map((src, i) => `
-        <tr><td><img class="im" src="${esc(src)}" alt=""></td>
-          <td style="word-break:break-all;font-size:12px;color:var(--muted)">${esc(src)}${i === 0 ? ' <span class="pill-st draft">lead</span>' : i === 1 ? ' <span class="pill-st draft">hover</span>' : ''}</td>
-          <td style="white-space:nowrap">
-            <button class="btn btn--sm" data-gmove="-1" data-gi="${i}" ${i === 0 ? 'disabled' : ''}>▲</button>
-            <button class="btn btn--sm" data-gmove="1" data-gi="${i}" ${i === p.gallery.length - 1 ? 'disabled' : ''}>▼</button>
-            <button class="btn btn--sm btn--danger" data-gdel="${i}" ${p.gallery.length < 2 ? 'disabled' : ''}>✕</button>
-          </td></tr>`).join('')}
-      </table>
-      <h2 style="margin-top:18px">Add a photo</h2>
-      <div class="adm-pool">${pool.slice(0, 24).map(src => `
-        <button type="button" data-gadd="${esc(src)}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('')}</div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <input id="gPath" placeholder="/images/…  (any path under public/, incl. uploads)" style="flex:1;min-width:0">
-        <button class="btn btn--sm" id="gAddPath">Add by path</button>
-      </div></div>
-
-    <div class="adm-card"><h2>Sizes & options</h2>
-      <p class="adm-note" style="margin:0 0 12px"><b>Option labels are pricing keys.</b> If an edited label no longer matches the price matrix, the product shows "From price · confirmed on order" instead of a computed price — honest, but check the product page after editing. Values are comma-separated.</p>
-      <div id="optRows">${p.options.map((o, i) => `
-        <div style="display:flex;gap:8px;margin-bottom:8px" data-oi="${i}">
-          <input data-ok value="${esc(o.k)}" placeholder="Option name" style="width:170px">
-          <input data-ov value="${esc(o.v.join(', '))}" placeholder="Value, value, value" style="flex:1;min-width:0">
-          <button class="btn btn--sm btn--danger" data-odel="${i}">✕</button>
-        </div>`).join('')}</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn--sm" id="optAdd">Add option set</button>
-        <button class="btn btn--sm" id="optSave">Save options (draft)</button>
-      </div></div>
-
-    <div class="adm-card"><h2>“You may also like” (pairs)</h2>
-      <p class="adm-note" style="margin:0 0 12px">Shown on the product page and driving the cart/checkout recommendations.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">${CATALOGUE.filter(x => x.id !== id).map(x => `
-        <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.7)">
-          <input type="checkbox" data-pair="${esc(x.id)}" ${p.pairs.includes(x.id) ? 'checked' : ''}> ${esc(x.t)}
-        </label>`).join('')}</div></div>`
-
-  const patchField = (f, v) => guard(() => {
-    GM.products.update(id, { [f]: v })
-    if (f === 'from') $('#usdPrev').value = zar(GM.products.get(id).from)
-    toast(`${f} saved (draft)`)
-    paintNav()
-  })
-  view.addEventListener('change', (e) => {
-    const f = e.target.closest('[data-f]')
-    if (f) { patchField(f.dataset.f, f.value); return }
-    if (e.target.closest('[data-pair]')) {
-      const pairs = Array.from(view.querySelectorAll('[data-pair]:checked')).map(c => c.dataset.pair)
-      guard(() => { GM.products.update(id, { pairs }); toast('pairs saved (draft)'); paintNav() })
-    }
-  })
-  const readOptions = () => Array.from(view.querySelectorAll('#optRows > div')).map(row => ({
-    k: row.querySelector('[data-ok]').value,
-    v: row.querySelector('[data-ov]').value.split(',').map(s => s.trim()).filter(Boolean),
+  const work = JSON.parse(JSON.stringify({
+    t: saved.t, plain: saved.plain, d: saved.d, spec: saved.spec,
+    lead: saved.lead || '', from: saved.from, g: saved.g,
+    tags: saved.tags, gallery: saved.gallery, options: saved.options,
+    pairs: saved.pairs, hidden: saved.hidden,
   }))
+  const snap = JSON.stringify(work)
+  const collSaved = GM.collections.list().filter(c => (c.products || []).includes(id)).map(c => c.id)
+  let collWork = [...collSaved]
+  const dirty = () => JSON.stringify(work) !== snap || JSON.stringify(collWork) !== JSON.stringify(collSaved)
+  const syncBar = () => { const b = $('#pdBar'); if (b) b.hidden = !dirty() }
+  const pool = () => [...new Set([...base.gallery, ...GM.media.list()])].filter(s => !work.gallery.includes(s))
+  const GROUP_LABEL = { clearview: 'Clear View system', razor: 'Razor wire', access: 'Accessories & fixings' }
+
+  function paint () {
+    view.innerHTML = `
+      <div class="savebar" id="pdBar" hidden>
+        Unsaved changes
+        <button class="btn btn--sm" id="pdDiscard" type="button">Discard</button>
+        <button class="btn btn--sm sv" id="pdSave" type="button">Save</button>
+      </div>` +
+      head(esc(work.t),
+        `<a href="#/products">← Products</a> · <a href="${esc(href)}" target="_blank" rel="noopener">View on site ↗</a> · <span style="font-family:var(--mono);font-size:10px">${esc(id)}</span>`,
+        `<span class="pill-st ${work.hidden ? 'hidden' : 'live'}">${work.hidden ? 'hidden' : 'active'}</span>`) + `
+      <div class="pd-grid">
+        <div>
+          <div class="adm-card">
+            <div class="adm-f"><label>Title</label><input data-f="t" value="${esc(work.t)}"></div>
+            <div class="adm-f"><label>Description</label><textarea data-f="d" rows="4">${esc(work.d)}</textarea></div>
+            <div class="adm-grid2">
+              <div class="adm-f"><label>Card line (plain words)</label><input data-f="plain" value="${esc(work.plain)}"></div>
+              <div class="adm-f"><label>Spec line</label><input data-f="spec" value="${esc(work.spec)}"></div>
+            </div>
+          </div>
+
+          <div class="adm-card"><h2>Media</h2>
+            <div class="med-grid">${work.gallery.map((src, i) => `
+              <figure class="med">
+                <img src="${esc(src)}" alt="">
+                <span class="mno">${i === 0 ? 'LEAD' : i === 1 ? 'HOVER' : i + 1}</span>
+                <span class="mtools">
+                  <button type="button" data-gmove="-1" data-gi="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Move image earlier">◀</button>
+                  <button type="button" data-gmove="1" data-gi="${i}" ${i === work.gallery.length - 1 ? 'disabled' : ''} aria-label="Move image later">▶</button>
+                  <button type="button" data-gdel="${i}" ${work.gallery.length < 2 ? 'disabled' : ''} aria-label="Remove image">✕</button>
+                </span>
+              </figure>`).join('')}
+            </div>
+            <details style="margin-top:12px"><summary style="cursor:pointer;font-size:13px;font-weight:700">Add from the photo pool</summary>
+              <div class="adm-pool" style="margin-top:10px">${pool().slice(0, 24).map(src => `
+                <button type="button" data-gadd="${esc(src)}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('')}</div>
+            </details>
+            <div class="tag-add"><input id="gPath" placeholder="/images/…  (any path under public/, incl. uploads)">
+              <button class="btn btn--sm" id="gAddPath" type="button">Add by path</button></div>
+          </div>
+
+          <div class="adm-card"><h2>Pricing</h2>
+            <div class="adm-grid2">
+              <div class="adm-f"><label>Price — ZAR, the pricing source of truth</label><input data-f="from" type="number" step="0.01" min="0" value="${work.from}"></div>
+              <div class="adm-f"><label>Customers see</label><input id="usdPrev" value="${zar(work.from)}" disabled></div>
+            </div>
+            <p class="adm-note">No compare-at price by design — the site never fakes a discount. Money off lives in <a href="#/discounts">Discounts &amp; gifts</a>.</p>
+          </div>
+
+          <div class="adm-card"><h2>Inventory</h2>
+            <div class="adm-grid2">
+              <div class="adm-f"><label>SKU pattern (generated per configuration)</label><input value="GM-${esc(id.slice(0, 3).toUpperCase())}-…" disabled></div>
+              <div class="adm-f"><label>Lead time note</label><input data-f="lead" value="${esc(work.lead)}" placeholder="e.g. ships in 2–3 weeks"></div>
+            </div>
+            <p class="adm-note">Quantities aren't tracked by design — stock is confirmed by the factory on order, and the site never claims counts it cannot know.</p>
+          </div>
+
+          <div class="adm-card"><h2>Variants — options &amp; values</h2>
+            <p class="adm-note" style="margin:0 0 12px"><b>Values are pricing keys.</b> A value that no longer matches the price matrix shows "From price · confirmed on order" on the storefront — honest, but check the product page after editing.</p>
+            ${work.options.map((o, oi) => `
+              <div class="optset" data-oi="${oi}">
+                <div class="oh">
+                  <input data-oname value="${esc(o.k)}" placeholder="Option name (e.g. Finish)">
+                  <button class="btn btn--sm btn--danger" data-odel="${oi}" type="button">Remove</button>
+                </div>
+                <div class="tag-row">${o.v.map((v, vi) => `
+                  <span class="tagp">${esc(v)}<button type="button" data-vdel data-oi2="${oi}" data-vi="${vi}" aria-label="Remove value">✕</button></span>`).join('')}
+                </div>
+                <div class="tag-add"><input data-vnew placeholder="Add a value and press Enter">
+                  <button class="btn btn--sm" data-vadd="${oi}" type="button">Add</button></div>
+              </div>`).join('')}
+            <button class="btn btn--sm" id="optAdd" type="button">+ Add an option like size or finish</button>
+          </div>
+
+          <div class="adm-card"><h2>Search engine listing</h2>
+            <div class="gprev">
+              <p class="gt">${esc(work.t)} — Guard Master</p>
+              <span class="gu">guardmasterfencing.com${esc(href)}</span>
+              <p class="gd">${esc(work.d)}</p>
+            </div>
+            <p class="adm-note">Generated from the title and description above — edit those and this follows.</p>
+          </div>
+        </div>
+
+        <aside class="pd-side">
+          <div class="adm-card"><h2>Status</h2>
+            <div class="adm-f"><select id="pdStatus">
+              <option value="active" ${work.hidden ? '' : 'selected'}>Active</option>
+              <option value="hidden" ${work.hidden ? 'selected' : ''}>Hidden</option>
+            </select></div>
+            <p class="adm-note">Hidden removes it from every grid, rail and search.</p>
+          </div>
+          <div class="adm-card"><h2>Publishing</h2>
+            ${[
+              ['Home product grid', !work.hidden],
+              ['Catalogue deck', !work.hidden],
+              ['Best-sellers rail', !work.hidden && GM.products.bestSellers().includes(id)],
+              ...GM.collections.list().map(c => [esc(c.name) + ' page', !work.hidden && collWork.includes(c.id)]),
+            ].map(([n, on]) => `<div class="pubrow"><i class="${on ? 'on' : 'off'}"></i>${n}</div>`).join('')}
+          </div>
+          <div class="adm-card"><h2>Product organization</h2>
+            <div class="adm-f"><label>Product type</label><select id="pdGroup">
+              ${GROUPS.map(g => `<option value="${g}" ${work.g === g ? 'selected' : ''}>${GROUP_LABEL[g]}</option>`).join('')}
+            </select></div>
+            <div class="adm-f"><label>Collections</label>
+              ${GM.collections.list().map(c => `
+                <label style="display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0">
+                  <input type="checkbox" data-coll="${esc(c.id)}" ${collWork.includes(c.id) ? 'checked' : ''}> ${esc(c.name)}</label>`).join('')}
+            </div>
+            <div class="adm-f"><label>Tags</label>
+              <div class="tag-row">${work.tags.map((t, ti) => `
+                <span class="tagp">${esc(t)}<button type="button" data-tdel="${ti}" aria-label="Remove tag">✕</button></span>`).join('')}</div>
+              <div class="tag-add"><input id="tagNew" placeholder="Add tag"><button class="btn btn--sm" id="tagAdd" type="button">Add</button></div>
+            </div>
+          </div>
+          <div class="adm-card"><h2>“You may also like”</h2>
+            <p class="adm-note" style="margin:0 0 8px">On the product page, and the cart/checkout recommendations.</p>
+            ${CATALOGUE.filter(x => x.id !== id).map(x => `
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0">
+                <input type="checkbox" data-pair="${esc(x.id)}" ${work.pairs.includes(x.id) ? 'checked' : ''}> ${esc(x.t)}</label>`).join('')}
+          </div>
+          <div class="adm-card">
+            <button class="btn btn--sm btn--danger" id="pdReset" type="button" style="width:100%">Reset everything to factory values</button>
+          </div>
+        </aside>
+      </div>`
+    syncBar()
+  }
+
+  paint()
+
+  /* text fields update the working copy in place — no repaint, no
+     stolen focus; the savebar just appears */
+  view.addEventListener('input', (e) => {
+    const f = e.target.closest('[data-f]')
+    if (f) {
+      work[f.dataset.f] = f.dataset.f === 'from' ? Number(f.value) : f.value
+      if (f.dataset.f === 'from') $('#usdPrev').value = Number(f.value) > 0 ? zar(Number(f.value)) : '—'
+      syncBar()
+      return
+    }
+    const on = e.target.closest('[data-oname]')
+    if (on) { work.options[+on.closest('.optset').dataset.oi].k = on.value; syncBar() }
+  })
+
+  view.addEventListener('change', (e) => {
+    if (e.target.id === 'pdStatus') { work.hidden = e.target.value === 'hidden'; paint(); return }
+    if (e.target.id === 'pdGroup') { work.g = e.target.value; syncBar(); return }
+    const coll = e.target.closest('[data-coll]')
+    if (coll) {
+      collWork = coll.checked ? [...collWork, coll.dataset.coll] : collWork.filter(c => c !== coll.dataset.coll)
+      paint()
+      return
+    }
+    const pr = e.target.closest('[data-pair]')
+    if (pr) {
+      work.pairs = pr.checked ? [...work.pairs, pr.dataset.pair] : work.pairs.filter(p2 => p2 !== pr.dataset.pair)
+      syncBar()
+    }
+  })
+
+  view.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return
+    if (e.target.matches('[data-vnew]') || e.target.id === 'tagNew' || e.target.id === 'gPath') {
+      e.preventDefault()
+      e.target.parentElement.querySelector('button')?.click()
+    }
+  })
+
   view.addEventListener('click', (e) => {
-    const gmv = e.target.closest('[data-gmove]')
+    const t = e.target
+    if (t.closest('#pdDiscard')) { render(); return }
+    if (t.closest('#pdSave')) {
+      guard(() => {
+        GM.products.update(id, work)
+        GM.collections.list().forEach(c => {
+          const has = (c.products || []).includes(id)
+          const want = collWork.includes(c.id)
+          if (has === want) return
+          GM.collections.update(c.id, {
+            products: want ? [...(c.products || []), id] : (c.products || []).filter(p2 => p2 !== id),
+          })
+        })
+        toast('saved (draft) — publish to go live')
+        render()
+      })
+      return
+    }
+    const gmv = t.closest('[data-gmove]')
     if (gmv) {
-      const g = [...GM.products.get(id).gallery]
-      const i = Number(gmv.dataset.gi), j = i + Number(gmv.dataset.gmove)
-      ;[g[i], g[j]] = [g[j], g[i]]
-      guard(() => { GM.products.update(id, { gallery: g }); render() })
+      const i = +gmv.dataset.gi, j = i + +gmv.dataset.gmove
+      ;[work.gallery[i], work.gallery[j]] = [work.gallery[j], work.gallery[i]]
+      paint()
       return
     }
-    const gdel = e.target.closest('[data-gdel]')
-    if (gdel) {
-      const g = GM.products.get(id).gallery.filter((_, i) => i !== Number(gdel.dataset.gdel))
-      guard(() => { GM.products.update(id, { gallery: g }); render() })
-      return
-    }
-    const gadd = e.target.closest('[data-gadd]')
-    if (gadd) {
-      guard(() => { GM.products.update(id, { gallery: [...GM.products.get(id).gallery, gadd.dataset.gadd] }); render() })
-      return
-    }
-    if (e.target.closest('#gAddPath')) {
+    const gdel = t.closest('[data-gdel]')
+    if (gdel) { work.gallery.splice(+gdel.dataset.gdel, 1); paint(); return }
+    const gadd = t.closest('[data-gadd]')
+    if (gadd) { work.gallery.push(gadd.dataset.gadd); paint(); return }
+    if (t.closest('#gAddPath')) {
       const v = $('#gPath').value.trim()
       if (!v.startsWith('/')) return toast('paths start with /', true)
-      guard(() => { GM.products.update(id, { gallery: [...GM.products.get(id).gallery, v] }); render() })
+      work.gallery.push(v)
+      paint()
       return
     }
-    if (e.target.closest('#optAdd')) {
-      const div = document.createElement('div')
-      div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px'
-      div.innerHTML = `<input data-ok placeholder="Option name" style="width:170px">
-        <input data-ov placeholder="Value, value, value" style="flex:1;min-width:0">
-        <button class="btn btn--sm btn--danger" data-odel>✕</button>`
-      $('#optRows').appendChild(div)
+    if (t.closest('#optAdd')) { work.options.push({ k: '', v: [] }); paint(); return }
+    const odel = t.closest('[data-odel]')
+    if (odel) { work.options.splice(+odel.dataset.odel, 1); paint(); return }
+    const vadd = t.closest('[data-vadd]')
+    if (vadd) {
+      const inp = vadd.parentElement.querySelector('[data-vnew]')
+      const v = inp.value.trim()
+      if (v) { work.options[+vadd.dataset.vadd].v.push(v); paint() }
       return
     }
-    const odel = e.target.closest('[data-odel]')
-    if (odel) { odel.parentElement.remove(); return }
-    if (e.target.closest('#optSave')) {
-      guard(() => { GM.products.update(id, { options: readOptions() }); toast('options saved (draft) — check the product page'); render() })
+    const vdel = t.closest('[data-vdel]')
+    if (vdel) { work.options[+vdel.dataset.oi2].v.splice(+vdel.dataset.vi, 1); paint(); return }
+    if (t.closest('#tagAdd')) {
+      const v = $('#tagNew').value.trim()
+      if (v) { work.tags.push(v); paint() }
       return
     }
-    if (e.target.closest('#pdToggle')) {
-      guard(() => { p.hidden ? GM.products.show(id) : GM.products.hide(id); render() })
-      return
-    }
-    if (e.target.closest('#pdReset')) {
+    const tdel = t.closest('[data-tdel]')
+    if (tdel) { work.tags.splice(+tdel.dataset.tdel, 1); paint(); return }
+    if (t.closest('#pdReset')) {
       if (confirm('Reset every override on this product back to factory values?')) {
         guard(() => { GM.products.resetOverrides(id); toast('reset to factory values'); render() })
       }

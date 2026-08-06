@@ -30,9 +30,14 @@ const mergedProduct = (p) => {
     gallery: (Array.isArray(o.gallery) && o.gallery.length) ? o.gallery : p.gallery,
     pairs: Array.isArray(o.pairs) ? o.pairs : p.pairs,
     options: Array.isArray(o.options) ? o.options : p.options,
+    g: GROUPS.includes(o.g) ? o.g : p.g,
+    tags: Array.isArray(o.tags) ? o.tags : (p.tags || []),
     hidden: !!o.hidden,
   }
 }
+
+/* product types — the catalogue's three groups, used by filters */
+export const GROUPS = ['clearview', 'razor', 'access']
 
 /* ══ Storefront-facing reads ═══════════════════════════════════ */
 export const storefront = {
@@ -46,19 +51,29 @@ export const products = {
   list: ({ includeHidden = true } = {}) =>
     CATALOGUE.map(mergedProduct).filter(p => includeHidden || !p.hidden),
   get: (id) => { const p = CATALOGUE.find(x => x.id === id); return p ? mergedProduct(p) : null },
-  /* patch: {t, d, plain, spec, from (ZAR), lead, hidden} — empty string clears an override */
+  /* patch: {t, d, plain, spec, from (ZAR), lead, hidden, gallery, pairs,
+     options, g, tags} — empty/base-equal values clear the override */
   update (id, patch) {
-    if (!CATALOGUE.find(p => p.id === id)) throw new Error('unknown product: ' + id)
+    const base = CATALOGUE.find(p => p.id === id)
+    if (!base) throw new Error('unknown product: ' + id)
     const cur = store.get('products.' + id, null) || {}
     const next = { ...cur }
     for (const k of ['t', 'd', 'plain', 'spec', 'lead']) {
       if (!(k in patch)) continue
       const v = String(patch[k] ?? '').trim()
-      if (v) next[k] = v; else delete next[k]
+      if (v && v !== String(base[k] ?? '')) next[k] = v; else delete next[k]
     }
     if ('from' in patch) {
       const n = Number(patch.from)
-      if (n > 0) next.from = n; else delete next.from
+      if (n > 0 && n !== base.from) next.from = n; else delete next.from
+    }
+    if ('g' in patch) {
+      if (GROUPS.includes(patch.g) && patch.g !== base.g) next.g = patch.g; else delete next.g
+    }
+    if ('tags' in patch) {
+      const ts = (patch.tags || []).map(t => String(t).trim()).filter(Boolean)
+      if (JSON.stringify(ts) !== JSON.stringify(base.tags || [])) next.tags = ts
+      else delete next.tags
     }
     if ('hidden' in patch) { patch.hidden ? next.hidden = true : delete next.hidden }
     if ('gallery' in patch) {
