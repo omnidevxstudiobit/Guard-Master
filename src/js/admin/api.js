@@ -254,21 +254,43 @@ export const inventory = {
   policy: () => 'Stock is confirmed by the factory on order — the site never claims counts it cannot know.',
 }
 
-/* ══ Discounts & gift codes ════════════════════════════════════ */
+/* ══ Discounts & gift cards — Shopify's shape, the honest subset.
+      Minimum purchase and active dates ARE enforced (checkout checks
+      them against published data); usage limits are NOT offered —
+      counting uses across shoppers needs a backend, and a limit the
+      store can't enforce would be a lie. ══════════════════════════ */
 const allDiscounts = () => { const d = store.get('discounts', []); return Array.isArray(d) ? d : [] }
+export const dayStart = (s) => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? null : d }
+export const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999'); return isNaN(d) ? null : d }
+const DATE_RX = /^\d{4}-\d{2}-\d{2}$/
 export const discounts = {
   list: allDiscounts,
-  /* kind: 'percent' (value = %) or 'amount' (value = ZAR) */
-  create ({ code, kind = 'percent', value, active = true, giftcard = false }) {
+  /* kind: 'percent' (value = %) or 'amount' (value = ZAR); optional
+     minZar minimum purchase and startsAt/endsAt (yyyy-mm-dd) window */
+  create ({ code, kind = 'percent', value, active = true, giftcard = false, minZar = null, startsAt = null, endsAt = null, for: holder = '' }) {
     code = String(code || '').trim().toUpperCase()
     if (!code) throw new Error('a code is required')
     if (!['percent', 'amount'].includes(kind)) throw new Error("kind must be 'percent' or 'amount'")
     if (allDiscounts().find(d => d.code === code)) throw new Error('code already exists: ' + code)
     const v = Number(value)
     if (!(v > 0) || (kind === 'percent' && v > 100)) throw new Error('bad value')
-    const list = [...allDiscounts(), { code, kind, value: v, active, giftcard, createdAt: now() }]
-    store.set('discounts', list)
-    return list[list.length - 1]
+    const entry = { code, kind, value: v, active, giftcard, createdAt: now() }
+    if (minZar !== null && minZar !== '') {
+      const m = Number(minZar)
+      if (!(m > 0)) throw new Error('the minimum must be a positive ZAR amount')
+      entry.minZar = m
+    }
+    for (const [k, s] of [['startsAt', startsAt], ['endsAt', endsAt]]) {
+      if (!s) continue
+      if (!DATE_RX.test(s) || !dayStart(s)) throw new Error(`bad ${k === 'startsAt' ? 'start' : 'end'} date`)
+      entry[k] = s
+    }
+    if (entry.startsAt && entry.endsAt && dayEnd(entry.endsAt) < dayStart(entry.startsAt)) {
+      throw new Error('the end date is before the start date')
+    }
+    if (holder) entry.for = String(holder).trim()
+    store.set('discounts', [...allDiscounts(), entry])
+    return entry
   },
   update (code, patch) {
     const list = allDiscounts().map(d => d.code === code ? { ...d, ...patch, code: d.code } : d)
@@ -276,19 +298,34 @@ export const discounts = {
     return list.find(d => d.code === code)
   },
   remove (code) { store.set('discounts', allDiscounts().filter(d => d.code !== code)) },
+  /* derived, Shopify-style */
+  status (d, at = new Date()) {
+    if (d.redeemedAt) return 'redeemed'
+    if (d.active === false) return 'off'
+    if (d.startsAt && at < dayStart(d.startsAt)) return 'scheduled'
+    if (d.endsAt && at > dayEnd(d.endsAt)) return 'expired'
+    return 'active'
+  },
+  /* honest label: counts orders recorded in THIS browser only */
+  usedCount: (code) => orderLog.read().filter(o => o.discount?.code === code).length,
 }
 export const giftCards = {
-  issue (amountZar) {
+  issue (amountZar, { for: holder = '', endsAt = null } = {}) {
     for (let tries = 0; tries < 5; tries++) {
       const code = 'GM-GIFT-' + Math.random().toString(36).slice(2, 6).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
       if (!allDiscounts().find(d => d.code === code)) {
-        return discounts.create({ code, kind: 'amount', value: amountZar, giftcard: true })
+        return discounts.create({ code, kind: 'amount', value: amountZar, giftcard: true, for: holder, endsAt })
       }
     }
     throw new Error('could not generate a unique code — try again')
   },
   list: () => allDiscounts().filter(d => d.giftcard),
+  /* the list shows last-4 only, like Shopify; the full code is revealed
+     once at issue time (and via explicit copy — the owner has to send
+     it to the recipient somehow) */
+  mask: (code) => '•••• ' + String(code).slice(-4),
   redeemManually: (code) => discounts.update(code, { active: false, redeemedAt: now() }),
+  deactivate: (code) => discounts.update(code, { active: false }),
 }
 
 /* ══ Draft orders — compose, then open in the real checkout ════ */

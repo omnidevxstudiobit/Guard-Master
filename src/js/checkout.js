@@ -19,12 +19,36 @@ function lines () { return cartStore.read() }
 
 /* ── promo codes — issued by the owner in /admin/ Discounts. Percent
       codes take a share; amount codes (incl. gift codes) hold a ZAR
-      value and never take the total below zero. ─────────────────── */
+      value and never take the total below zero. Minimum-purchase and
+      active-date rules are enforced here with the reason spelled out,
+      and re-checked at submit. ──────────────────────────────────── */
 let applied = null
+const dayStart = (s) => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? null : d }
+const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999'); return isNaN(d) ? null : d }
 const findCode = (code) =>
   (Array.isArray(OV.discounts) ? OV.discounts : []).find(d =>
-    d && d.active !== false && typeof d.code === 'string' &&
+    d && typeof d.code === 'string' &&
     d.code.trim().toLowerCase() === code.trim().toLowerCase())
+const prettyDate = (s) => {
+  const d = dayStart(s)
+  return d ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : s
+}
+const codeState = (d, goods) => {
+  if (!d) return { why: 'That code is not valid.' }
+  if (d.redeemedAt) return { why: 'That code has already been redeemed.' }
+  if (d.active === false) return { why: 'That code is not active.' }
+  const at = new Date()
+  if (d.startsAt && dayStart(d.startsAt) && at < dayStart(d.startsAt)) {
+    return { why: `That code only starts on ${prettyDate(d.startsAt)}.` }
+  }
+  if (d.endsAt && dayEnd(d.endsAt) && at > dayEnd(d.endsAt)) {
+    return { why: `That code expired on ${prettyDate(d.endsAt)}.` }
+  }
+  if (Number(d.minZar) > 0 && goods < Number(d.minZar)) {
+    return { why: `That code needs a minimum order of ${zar(Number(d.minZar))}.` }
+  }
+  return { ok: true }
+}
 const discountOf = (goods) => {
   if (!applied) return 0
   const v = Number(applied.value) || 0
@@ -39,7 +63,9 @@ function wirePromo () {
     const raw = input.value.trim()
     if (!raw) { applied = null; msg.textContent = ''; msg.className = 'promo-msg'; renderSummary(); return }
     const hit = findCode(raw)
-    if (hit) {
+    const goods = lines().reduce((s, l) => s + l.unit * l.qty, 0)
+    const state = codeState(hit, goods)
+    if (state.ok) {
       applied = hit
       msg.textContent = hit.kind === 'percent'
         ? `${hit.code} — ${hit.value}% off applied`
@@ -47,7 +73,7 @@ function wirePromo () {
       msg.className = 'promo-msg ok'
     } else {
       applied = null
-      msg.textContent = 'That code is not valid.'
+      msg.textContent = state.why
       msg.className = 'promo-msg err'
     }
     renderSummary()
@@ -206,6 +232,21 @@ $('#form').addEventListener('submit', (e) => {
 
   const ref = reference()
   const goods = order.reduce((s, l) => s + l.unit * l.qty, 0)
+
+  // the applied code's rules are re-checked at the moment of ordering —
+  // the cart may have changed since it was applied
+  if (applied) {
+    const state = codeState(applied, goods)
+    if (!state.ok) {
+      applied = null
+      const msg = $('#promoMsg')
+      msg.textContent = state.why + ' It has been removed from the order.'
+      msg.className = 'promo-msg err'
+      renderSummary()
+      msg.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+  }
   const disc = discountOf(goods)
   const total = goods - disc
 

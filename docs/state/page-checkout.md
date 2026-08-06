@@ -15,7 +15,7 @@
 - Empty-cart state disables the button with "Nothing to order".
 
 ## Admin integration (added 2026-08-06 — see [admin.md](admin.md))
-- **Promo codes**: `#promo` field validated against `/admin/` discounts; percent capped 0–100, amount codes never take the total below zero; VAT-inside computed on the **discounted** total; discount recorded on the order. Verified: SAVE10 on R1500 → Goods $91.46 / −$9.15 / VAT $10.74 / Total $82.32.
+- **Promo codes**: `#promo` field validated against `/admin/` discounts; percent capped 0–100, amount codes never take the total below zero; VAT-inside computed on the **discounted** total; discount recorded on the order. `codeState()` enforces redeemed/inactive/**date window**/**minimum purchase** with human reasons, and the applied code is **re-checked at submit** (removed with a message if the cart changed). A code that zeroes the whole order blocks submit. Verified: SAVE10 on R1500 → Goods $91.46 / −$9.15 / VAT $10.74 / Total $82.32; scheduled/expired/min-purchase/redeemed all rejected with their reasons.
 - **Order log + webhooks**: placing an order appends to `localStorage.gm_orders` and fires `orders/create` webhooks (browser POST, best-effort — a dead endpoint never blocks the confirmation). Verified against a local receiver.
 - **Settings**: fulfilment options can be switched off from admin (never both), plus an owner note under the totals.
 

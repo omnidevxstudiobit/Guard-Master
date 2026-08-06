@@ -100,7 +100,7 @@ const SECTIONS = {
         <div class="adm-card kpi"><b>${os.length}</b><span>orders recorded</span></div>
         <div class="adm-card kpi"><b>${zar(revenue)}</b><span>order value</span></div>
         <div class="adm-card kpi"><b>${live}/${all}</b><span>products live</span></div>
-        <div class="adm-card kpi"><b>${GM.discounts.list().filter(d => d.active !== false).length}</b><span>active codes</span></div>
+        <div class="adm-card kpi"><b>${GM.discounts.list().filter(d => GM.discounts.status(d) === 'active').length}</b><span>active codes</span></div>
         <div class="adm-card kpi"><b>${store.dirty() ? Object.keys(store.drafts).length : 0}</b><span>unpublished drafts</span></div>
       </div>
       <div class="adm-card"><h2>Recent orders</h2>
@@ -299,47 +299,109 @@ const SECTIONS = {
     })
   },
 
-  /* ── discounts & gift codes ── */
+  /* ── discounts & gift cards — Shopify's anatomy, the honest subset:
+        method (code + generate), type, value, minimum purchase, active
+        dates, derived Active/Scheduled/Expired status; gift cards
+        issued with value/recipient/expiry and listed masked to the
+        last 4. No usage limits — unenforceable without a backend. ── */
   discounts () {
-    const ds = GM.discounts.list()
-    view.innerHTML = head('Discounts & gift codes', 'Codes the checkout accepts. Percent codes take a share of goods; amount codes (and issued gift codes) hold a ZAR value. Amounts never take a total below zero.') + `
-      <div class="adm-grid2">
-        <div class="adm-card"><h2>New discount code</h2>
-          <div class="adm-f"><label>Code</label><input id="dCode" placeholder="LAUNCH10" style="text-transform:uppercase"></div>
+    const ds = GM.discounts.list().filter(d => !d.giftcard)
+    const gs = GM.giftCards.list()
+    const stPill = (d) => {
+      const st = GM.discounts.status(d)
+      const cls = { active: 'live', scheduled: 'draft', expired: 'hidden', off: 'hidden', redeemed: 'cancelled' }[st]
+      return `<span class="pill-st ${cls}">${st}</span>`
+    }
+    const dates = (d) => d.startsAt || d.endsAt
+      ? `${esc(d.startsAt || '…')} → ${esc(d.endsAt || 'no end')}`
+      : 'always on'
+    view.innerHTML = head('Discounts & gift cards', 'Codes the checkout accepts. Minimum purchase and active dates are enforced at checkout with the reason spelled out. Usage limits aren\'t offered — counting uses across shoppers needs a backend, and a limit the store can\'t enforce would be a lie.') + `
+      <div class="adm-card"><h2>Create discount</h2>
+        <div class="adm-f"><label>Method — discount code</label>
+          <div class="tag-add" style="margin:0"><input id="dCode" placeholder="LAUNCH10" style="text-transform:uppercase">
+            <button class="btn btn--sm" id="dGen" type="button">Generate</button></div>
+        </div>
+        <div class="adm-grid2">
+          <div class="adm-f"><label>Type</label><select id="dKind">
+            <option value="percent">Percentage</option>
+            <option value="amount">Fixed amount (ZAR)</option></select></div>
+          <div class="adm-f"><label>Value</label><input id="dVal" type="number" min="0" step="0.01" placeholder="10"></div>
+        </div>
+        <div class="adm-grid2">
+          <div class="adm-f"><label>Minimum purchase (ZAR, blank = none)</label><input id="dMin" type="number" min="0" step="0.01" placeholder="none"></div>
           <div class="adm-grid2">
-            <div class="adm-f"><label>Kind</label><select id="dKind"><option value="percent">Percent off</option><option value="amount">Amount off (ZAR)</option></select></div>
-            <div class="adm-f"><label>Value</label><input id="dVal" type="number" min="0" step="0.01" placeholder="10"></div>
+            <div class="adm-f"><label>Start date (blank = now)</label><input id="dStart" type="date"></div>
+            <div class="adm-f"><label>End date (blank = no end)</label><input id="dEnd" type="date"></div>
           </div>
-          <button class="btn btn--sm" id="dAdd">Create code</button></div>
-        <div class="adm-card"><h2>Issue a gift code</h2>
-          <p class="adm-note" style="margin:0 0 10px">Generates a GM-GIFT amount code. Redemption is manual until a backend can decrement balances — mark it redeemed after honouring it.</p>
-          <div class="adm-f"><label>Value (ZAR)</label><input id="gVal" type="number" min="1" step="1" placeholder="500"></div>
-          <button class="btn btn--sm" id="gAdd">Issue gift code</button></div>
-      </div>
-      <div class="adm-card"><h2>All codes</h2>${ds.length ? `<table class="adm-tbl">
-        <tr><th>Code</th><th>Kind</th><th>Value</th><th>State</th><th></th></tr>
+        </div>
+        <button class="btn btn--sm" id="dAdd" type="button">Create discount</button></div>
+
+      <div class="adm-card"><h2>Discount codes</h2>${ds.length ? `<table class="adm-tbl">
+        <tr><th>Code</th><th>Type & value</th><th>Minimum</th><th>Active dates</th><th>Status</th><th>Used*</th><th></th></tr>
         ${ds.map(d => `<tr>
-          <td><b>${esc(d.code)}</b>${d.giftcard ? ' <span class="pill-st draft">gift</span>' : ''}</td>
-          <td>${esc(d.kind)}</td>
-          <td class="num">${d.kind === 'percent' ? esc(String(d.value)) + '%' : zar(d.value)}</td>
-          <td><span class="pill-st ${d.active !== false ? 'live' : 'hidden'}">${d.active !== false ? 'active' : 'off'}</span></td>
+          <td><b>${esc(d.code)}</b></td>
+          <td class="num">${d.kind === 'percent' ? esc(String(d.value)) + '% off' : zar(d.value) + ' off'}</td>
+          <td class="num">${Number(d.minZar) > 0 ? zar(d.minZar) : '—'}</td>
+          <td style="font-family:var(--mono);font-size:11px">${dates(d)}</td>
+          <td>${stPill(d)}</td>
+          <td class="num">${GM.discounts.usedCount(d.code)}</td>
           <td style="white-space:nowrap">
             <button class="btn btn--sm" data-tog="${esc(d.code)}">${d.active !== false ? 'Deactivate' : 'Activate'}</button>
             <button class="btn btn--sm btn--danger" data-rm="${esc(d.code)}">Delete</button>
           </td></tr>`).join('')}
-      </table>` : '<p class="adm-note">No codes yet.</p>'}</div>`
+      </table><p class="adm-note">*orders recorded in this browser — real coverage needs the orders webhook.</p>` : '<p class="adm-note">No discount codes yet.</p>'}</div>
+
+      <div class="adm-card"><h2>Gift cards</h2>
+        <div class="adm-grid2">
+          <div class="adm-f"><label>Initial value (ZAR)</label><input id="gVal" type="number" min="1" step="1" placeholder="500"></div>
+          <div class="adm-grid2">
+            <div class="adm-f"><label>For (recipient / note)</label><input id="gFor" placeholder="Jane — thank-you"></div>
+            <div class="adm-f"><label>Expiry (blank = none)</label><input id="gExp" type="date"></div>
+          </div>
+        </div>
+        <button class="btn btn--sm" id="gAdd" type="button">Issue gift card</button>
+        <p class="adm-note" id="gReveal"></p>
+        ${gs.length ? `<table class="adm-tbl" style="margin-top:14px">
+          <tr><th>Code</th><th>Value</th><th>For</th><th>Expiry</th><th>Status</th><th></th></tr>
+          ${gs.map(d => `<tr>
+            <td style="font-family:var(--mono)">${esc(GM.giftCards.mask(d.code))}</td>
+            <td class="num">${zar(d.value)}</td>
+            <td>${esc(d.for || '—')}</td>
+            <td style="font-family:var(--mono);font-size:11px">${esc(d.endsAt || '—')}</td>
+            <td>${stPill(d)}</td>
+            <td style="white-space:nowrap">
+              <button class="btn btn--sm" data-copy="${esc(d.code)}">Copy code</button>
+              ${!d.redeemedAt ? `<button class="btn btn--sm" data-redeem="${esc(d.code)}">Mark redeemed</button>` : ''}
+              <button class="btn btn--sm btn--danger" data-rm="${esc(d.code)}">Delete</button>
+            </td></tr>`).join('')}
+        </table>` : ''}
+        <p class="adm-note">The list masks codes like Shopify — the full code shows once at issue (and via Copy, since you have to send it to the recipient). Redemption is manual until a backend can decrement balances: honour it, then mark it redeemed.</p></div>`
+    $('#dGen').addEventListener('click', () => {
+      $('#dCode').value = 'GM' + Math.random().toString(36).slice(2, 6).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
+    })
     $('#dAdd').addEventListener('click', () => guard(() => {
-      GM.discounts.create({ code: $('#dCode').value, kind: $('#dKind').value, value: $('#dVal').value })
-      toast('code created (draft)'); render()
+      GM.discounts.create({
+        code: $('#dCode').value, kind: $('#dKind').value, value: $('#dVal').value,
+        minZar: $('#dMin').value || null, startsAt: $('#dStart').value || null, endsAt: $('#dEnd').value || null,
+      })
+      toast('discount created (draft)'); render()
     }))
     $('#gAdd').addEventListener('click', () => guard(() => {
-      const g = GM.giftCards.issue(Number($('#gVal').value))
-      toast(`issued ${g.code} (draft)`); render()
+      const g = GM.giftCards.issue(Number($('#gVal').value), { for: $('#gFor').value, endsAt: $('#gExp').value || null })
+      toast('gift card issued (draft)')
+      render()
+      const rv = $('#gReveal')
+      if (rv) rv.innerHTML = `Issued <b style="font-family:var(--mono)">${esc(g.code)}</b> — copy it now; the list only shows the last 4.`
     }))
-    view.addEventListener('click', (e) => {
-      const tog = e.target.closest('[data-tog]'); const rm = e.target.closest('[data-rm]')
-      if (tog) guard(() => { const d = ds.find(x => x.code === tog.dataset.tog); GM.discounts.update(d.code, { active: d.active === false }); render() })
+    view.addEventListener('click', async (e) => {
+      const tog = e.target.closest('[data-tog]')
+      const rm = e.target.closest('[data-rm]')
+      const cp = e.target.closest('[data-copy]')
+      const rd = e.target.closest('[data-redeem]')
+      if (tog) guard(() => { const d = GM.discounts.list().find(x => x.code === tog.dataset.tog); GM.discounts.update(d.code, { active: d.active === false }); render() })
       if (rm) guard(() => { GM.discounts.remove(rm.dataset.rm); render() })
+      if (cp) { try { await navigator.clipboard.writeText(cp.dataset.copy); toast('code copied') } catch { toast(cp.dataset.copy) } }
+      if (rd) guard(() => { GM.giftCards.redeemManually(rd.dataset.redeem); toast('marked redeemed (draft)'); render() })
     })
   },
 
