@@ -67,6 +67,41 @@ document.getElementById('logoWall').innerHTML =
   `<div class="logo-row">${rowHTML(CLIENTS.slice(0, half))}</div>
    <div class="logo-row logo-row--rev">${rowHTML(CLIENTS.slice(half))}</div>`
 
+/* ── factory videos — muted autoplay while in view; unmuting one
+      mutes the other; reduced-motion and data-saver get controls ── */
+const vidFrames = document.querySelectorAll('.vid-frame')
+if (vidFrames.length) {
+  const still = matchMedia('(prefers-reduced-motion:reduce)').matches || navigator.connection?.saveData
+  const resetSnd = () => document.querySelectorAll('.vid-snd').forEach(b => {
+    b.classList.remove('on')
+    b.querySelector('span').textContent = 'Sound'
+    b.setAttribute('aria-label', 'Unmute video')
+  })
+  vidFrames.forEach(frame => {
+    const v = frame.querySelector('video')
+    if (still) {
+      v.controls = true
+    } else {
+      new IntersectionObserver((es) => es.forEach(e => {
+        e.isIntersecting ? v.play().catch(() => {}) : v.pause()
+      }), { threshold: 0.35 }).observe(v)
+    }
+    const snd = frame.querySelector('.vid-snd')
+    snd.addEventListener('click', () => {
+      const unmuting = v.muted
+      document.querySelectorAll('.vid-frame video').forEach(o => { o.muted = true })
+      resetSnd()
+      if (unmuting) {
+        v.muted = false
+        snd.classList.add('on')
+        snd.querySelector('span').textContent = 'Mute'
+        snd.setAttribute('aria-label', 'Mute video')
+        if (v.paused) v.play().catch(() => {})
+      }
+    })
+  })
+}
+
 /* ── FAQ tabs ─────────────────────────────────────────────────── */
 initSeg('#faqSeg', (v) => {
   document.querySelectorAll('.faq-pane').forEach(p => { p.hidden = p.dataset.pane !== v })
