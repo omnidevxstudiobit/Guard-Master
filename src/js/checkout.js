@@ -23,15 +23,18 @@ function lines () { return cartStore.read() }
       active-date rules are enforced here with the reason spelled out,
       and re-checked at submit. ──────────────────────────────────── */
 let applied = null
-const dayStart = (s) => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? null : d }
-const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999'); return isNaN(d) ? null : d }
+/* windows are pinned to store time (SAST, UTC+2) — matches /admin/ */
+const dayStart = (s) => { const d = new Date(s + 'T00:00:00+02:00'); return isNaN(d) ? null : d }
+const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999+02:00'); return isNaN(d) ? null : d }
 const findCode = (code) =>
   (Array.isArray(OV.discounts) ? OV.discounts : []).find(d =>
     d && typeof d.code === 'string' &&
     d.code.trim().toLowerCase() === code.trim().toLowerCase())
+/* show the CALENDAR date as stored, never TZ-shifted a day */
 const prettyDate = (s) => {
-  const d = dayStart(s)
-  return d ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : s
+  const [y, m, d] = String(s).split('-').map(Number)
+  const dt = new Date(Date.UTC(y, (m || 1) - 1, d || 1))
+  return isNaN(dt) ? s : dt.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
 }
 const codeState = (d, goods) => {
   if (!d) return { why: 'That code is not valid.' }
@@ -61,18 +64,28 @@ function wirePromo () {
   if (!input || !btn) return
   const attempt = () => {
     const raw = input.value.trim()
-    if (!raw) { applied = null; msg.textContent = ''; msg.className = 'promo-msg'; renderSummary(); return }
+    if (!raw) {
+      applied = null
+      sessionStorage.removeItem('gm_promo')
+      msg.textContent = ''; msg.className = 'promo-msg'
+      renderSummary()
+      return
+    }
     const hit = findCode(raw)
     const goods = lines().reduce((s, l) => s + l.unit * l.qty, 0)
     const state = codeState(hit, goods)
     if (state.ok) {
       applied = hit
+      // survives a round-trip to the cart — a validated code silently
+      // vanishing on reload lost the shopper's discount (review finding)
+      sessionStorage.setItem('gm_promo', hit.code)
       msg.textContent = hit.kind === 'percent'
         ? `${hit.code} — ${hit.value}% off applied`
         : `${hit.code} — ${zar(Number(hit.value) || 0)} off applied`
       msg.className = 'promo-msg ok'
     } else {
       applied = null
+      sessionStorage.removeItem('gm_promo')
       msg.textContent = state.why
       msg.className = 'promo-msg err'
     }
@@ -80,6 +93,8 @@ function wirePromo () {
   }
   btn.addEventListener('click', attempt)
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); attempt() } })
+  const remembered = sessionStorage.getItem('gm_promo')
+  if (remembered) { input.value = remembered; attempt() }
 }
 
 /* fulfilment options can be switched off in /admin/ Checkout settings —
@@ -280,6 +295,7 @@ $('#form').addEventListener('submit', (e) => {
     lines: order,
   }
   sessionStorage.setItem('gm_last_order', JSON.stringify(placed))
+  sessionStorage.removeItem('gm_promo')
   orderLog.add(placed)
   fireWebhooks('orders/create', placed)
 

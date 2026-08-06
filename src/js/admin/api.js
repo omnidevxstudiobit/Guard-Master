@@ -260,8 +260,10 @@ export const inventory = {
       counting uses across shoppers needs a backend, and a limit the
       store can't enforce would be a lie. ══════════════════════════ */
 const allDiscounts = () => { const d = store.get('discounts', []); return Array.isArray(d) ? d : [] }
-export const dayStart = (s) => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? null : d }
-export const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999'); return isNaN(d) ? null : d }
+/* date windows are pinned to STORE time (SAST, UTC+2) — the owner is in
+   SA, shoppers are in the US, and both must agree on when a code lives */
+export const dayStart = (s) => { const d = new Date(s + 'T00:00:00+02:00'); return isNaN(d) ? null : d }
+export const dayEnd = (s) => { const d = new Date(s + 'T23:59:59.999+02:00'); return isNaN(d) ? null : d }
 const DATE_RX = /^\d{4}-\d{2}-\d{2}$/
 export const discounts = {
   list: allDiscounts,
@@ -292,18 +294,41 @@ export const discounts = {
     store.set('discounts', [...allDiscounts(), entry])
     return entry
   },
+  /* patches go through the same validators as create — the API console
+     is one typo away from silently mutating a live code otherwise */
   update (code, patch) {
-    const list = allDiscounts().map(d => d.code === code ? { ...d, ...patch, code: d.code } : d)
+    const cur = allDiscounts().find(d => d.code === code)
+    if (!cur) throw new Error('unknown code: ' + code)
+    const p = { ...patch }
+    if ('kind' in p && !['percent', 'amount'].includes(p.kind)) throw new Error("kind must be 'percent' or 'amount'")
+    if ('value' in p) {
+      const v = Number(p.value)
+      if (!(v > 0) || ((p.kind ?? cur.kind) === 'percent' && v > 100)) throw new Error('bad value')
+      p.value = v
+    }
+    if ('minZar' in p && p.minZar !== null) {
+      const m = Number(p.minZar)
+      if (!(m > 0)) throw new Error('the minimum must be a positive ZAR amount')
+      p.minZar = m
+    }
+    for (const k of ['startsAt', 'endsAt']) {
+      if (k in p && p[k] !== null && (!DATE_RX.test(p[k]) || !dayStart(p[k]))) throw new Error('bad ' + k)
+    }
+    const list = allDiscounts().map(d => d.code === code ? { ...d, ...p, code: d.code } : d)
     store.set('discounts', list)
     return list.find(d => d.code === code)
   },
   remove (code) { store.set('discounts', allDiscounts().filter(d => d.code !== code)) },
-  /* derived, Shopify-style */
+  /* derived, Shopify-style. Invalid stored dates fail OPEN (active) on
+     both sides — the admin must never report a code dead while the
+     checkout keeps taking it (adversarial finding: `at > null` is true) */
   status (d, at = new Date()) {
     if (d.redeemedAt) return 'redeemed'
     if (d.active === false) return 'off'
-    if (d.startsAt && at < dayStart(d.startsAt)) return 'scheduled'
-    if (d.endsAt && at > dayEnd(d.endsAt)) return 'expired'
+    const s = d.startsAt ? dayStart(d.startsAt) : null
+    if (s && at < s) return 'scheduled'
+    const e = d.endsAt ? dayEnd(d.endsAt) : null
+    if (e && at > e) return 'expired'
     return 'active'
   },
   /* honest label: counts orders recorded in THIS browser only */

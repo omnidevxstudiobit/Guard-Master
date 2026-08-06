@@ -201,6 +201,19 @@ const SECTIONS = {
       const tr = inp.closest('tr')
       const id = tr.dataset.id
       guard(() => {
+        // an emptied cell must not silently clear an override — same
+        // guard the full editor has (adversarial review finding)
+        const v = inp.value.trim()
+        if (inp.dataset.k === 'from' && !(Number(v) > 0)) {
+          toast('the price needs a number above zero', true)
+          inp.value = GM.products.get(id).from
+          return
+        }
+        if (inp.dataset.k === 't' && !v) {
+          toast('the title cannot be empty', true)
+          inp.value = GM.products.get(id).t
+          return
+        }
         GM.products.update(id, { [inp.dataset.k]: inp.value })
         // update in place — a full render() here would eat the user's
         // focus mid-tab-through (adversarial review finding)
@@ -330,8 +343,8 @@ const SECTIONS = {
         <div class="adm-grid2">
           <div class="adm-f"><label>Minimum purchase (ZAR, blank = none)</label><input id="dMin" type="number" min="0" step="0.01" placeholder="none"></div>
           <div class="adm-grid2">
-            <div class="adm-f"><label>Start date (blank = now)</label><input id="dStart" type="date"></div>
-            <div class="adm-f"><label>End date (blank = no end)</label><input id="dEnd" type="date"></div>
+            <div class="adm-f"><label>Start date — store time, SAST (blank = now)</label><input id="dStart" type="date"></div>
+            <div class="adm-f"><label>End date — store time, SAST (blank = no end)</label><input id="dEnd" type="date"></div>
           </div>
         </div>
         <button class="btn btn--sm" id="dAdd" type="button">Create discount</button></div>
@@ -1019,7 +1032,14 @@ function productDetail (id) {
     }
     if (t.closest('#optAdd')) { work.options.push({ k: '', v: [] }); paint(); return }
     const odel = t.closest('[data-odel]')
-    if (odel) { work.options.splice(+odel.dataset.odel, 1); paint(); return }
+    if (odel) {
+      // clear staging add-boxes first — the index-keyed carryover would
+      // shift in-flight text into the wrong option set after a delete
+      view.querySelectorAll('[data-vnew]').forEach(i => { i.value = '' })
+      work.options.splice(+odel.dataset.odel, 1)
+      paint()
+      return
+    }
     const vadd = t.closest('[data-vadd]')
     if (vadd) {
       const inp = vadd.parentElement.querySelector('[data-vnew]')

@@ -45,6 +45,8 @@ Two skeptical agents audited the whole surface; every confirmed finding was fixe
 - **A code covering the whole order blocks submit** ("call the factory to redeem it") — a $0 self-served order was misleading.
 Accepted as-is, with reasons: empty city list = reset to built-ins (explicit button exists); publish failure semantics (drafts survive, errors surface, discard only after full success); estimator still quotes a hidden product (it prices from variant data, quote-tool not cart).
 
+Third round (discounts batch): **discount date windows are pinned to store time (SAST, UTC+2)** in both api.js and checkout.js — owner and shoppers must agree on when a code lives; date display is calendar-faithful (`timeZone:'UTC'` render of the stored y-m-d). Invalid stored dates **fail open (active) on both sides** — the admin must never report a code dead while checkout keeps taking it. `discounts.update()` validates patches like `create()`. The products-list quick-edit refuses emptied price/title cells (same guard as the editor). An applied promo persists in `sessionStorage.gm_promo` across cart round-trips (cleared on order or explicit removal). Option-set delete clears staging add-boxes so index-keyed carryover can't shift text between sets.
+
 ## Known limitations (stated, not hidden)
 - Orders/customers exist per-browser until a backend exists; the Orders screen says so. Webhooks → Zapier/Make/Monday.com is the current path to durable order capture.
 - The passphrase gates the screen, not the data; publishing rights = the GitHub token.
