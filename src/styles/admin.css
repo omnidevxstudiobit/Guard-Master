@@ -313,5 +313,5 @@ body{
 /* reduced transparency / contrast: same accessibility contract as the site */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more){
   .adm-side, .adm-card, .adm-gate form, .adm-toast, .adm-logo,
-  .adm-f input, .adm-f select, .adm-f textarea, .adm-tbl input{background:#fff !important}
+  .adm-f input:not([type="checkbox"]), .adm-f select, .adm-f textarea, .adm-tbl input{background:#fff !important}
 }

@@ -74,7 +74,9 @@ export const BASE_CATEGORIES = CATEGORIES.map(c => ({ ...c }))
     if (typeof o.name === 'string' && o.name.trim()) c.name = o.name.trim()
     if (typeof o.lede === 'string' && o.lede.trim()) c.lede = o.lede.trim()
     if (typeof o.blurb === 'string' && o.blurb.trim()) c.blurb = o.blurb.trim()
-    if (Array.isArray(o.products) && o.products.length) c.products = o.products
+    /* [] is a real owner choice (page emptied) — only null/absent means
+       "use the base list" */
+    if (Array.isArray(o.products)) c.products = o.products
   }
 }
 

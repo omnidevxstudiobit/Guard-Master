@@ -58,45 +58,44 @@ export const products = {
     if (!base) throw new Error('unknown product: ' + id)
     const cur = store.get('products.' + id, null) || {}
     const next = { ...cur }
+    /* cleared fields are stored as explicit null, NEVER deleted — a
+       missing draft key lets the published admin-data.json value
+       re-merge over the clear (adversarial review BLOCKER; same trap
+       the email field documents). null replaces in merge(), every
+       consumer treats it as no-override, prune() strips it at publish. */
     for (const k of ['t', 'd', 'plain', 'spec', 'lead']) {
       if (!(k in patch)) continue
       const v = String(patch[k] ?? '').trim()
-      if (v && v !== String(base[k] ?? '')) next[k] = v; else delete next[k]
+      next[k] = (v && v !== String(base[k] ?? '')) ? v : null
     }
     if ('from' in patch) {
       const n = Number(patch.from)
-      if (n > 0 && n !== base.from) next.from = n; else delete next.from
+      next.from = (n > 0 && n !== base.from) ? n : null
     }
     if ('g' in patch) {
-      if (GROUPS.includes(patch.g) && patch.g !== base.g) next.g = patch.g; else delete next.g
+      next.g = (GROUPS.includes(patch.g) && patch.g !== base.g) ? patch.g : null
     }
     if ('tags' in patch) {
       const ts = (patch.tags || []).map(t => String(t).trim()).filter(Boolean)
-      if (JSON.stringify(ts) !== JSON.stringify(base.tags || [])) next.tags = ts
-      else delete next.tags
+      next.tags = JSON.stringify(ts) !== JSON.stringify(base.tags || []) ? ts : null
     }
-    if ('hidden' in patch) { patch.hidden ? next.hidden = true : delete next.hidden }
+    if ('hidden' in patch) { next.hidden = patch.hidden ? true : null }
     if ('gallery' in patch) {
       const g = (patch.gallery || []).filter(s => typeof s === 'string' && s.startsWith('/'))
-      const base = CATALOGUE.find(p => p.id === id).gallery
-      if (g.length && JSON.stringify(g) !== JSON.stringify(base)) next.gallery = g
-      else delete next.gallery
+      next.gallery = (g.length && JSON.stringify(g) !== JSON.stringify(base.gallery)) ? g : null
     }
     if ('pairs' in patch) {
       const ids = (patch.pairs || []).filter(pid => CATALOGUE.find(p => p.id === pid) && pid !== id)
-      const base = CATALOGUE.find(p => p.id === id).pairs || []
-      if (JSON.stringify(ids) !== JSON.stringify(base)) next.pairs = ids
-      else delete next.pairs
+      next.pairs = JSON.stringify(ids) !== JSON.stringify(base.pairs || []) ? ids : null
     }
     if ('options' in patch) {
       const os = (patch.options || [])
         .map(o => ({ k: String(o.k || '').trim(), v: (o.v || []).map(v => String(v).trim()).filter(Boolean), ...(o.note ? { note: o.note } : {}) }))
         .filter(o => o.k && o.v.length)
-      const base = CATALOGUE.find(p => p.id === id).options
-      if (JSON.stringify(os) !== JSON.stringify(base)) next.options = os
-      else delete next.options
+      next.options = JSON.stringify(os) !== JSON.stringify(base.options) ? os : null
     }
-    store.set('products.' + id, Object.keys(next).length ? next : null)
+    const allNull = Object.values(next).every(v => v === null)
+    store.set('products.' + id, allNull ? null : next)
     return products.get(id)
   },
   hide: (id) => products.update(id, { hidden: true }),
@@ -126,22 +125,33 @@ export const products = {
 }
 
 export const collections = {
-  list: () => BASE_CATEGORIES.map(c => ({ ...c, ...(store.get('collections.' + c.id, null) || {}) })),
+  /* null override slots mean "cleared" — filter them before spreading */
+  list: () => BASE_CATEGORIES.map(c => {
+    const o = store.get('collections.' + c.id, null)
+    const clean = {}
+    for (const [k, v] of Object.entries(o || {})) if (v !== null && v !== undefined) clean[k] = v
+    return { ...c, ...clean }
+  }),
   get: (id) => collections.list().find(c => c.id === id) || null,
   update (id, patch) {
-    if (!BASE_CATEGORIES.find(c => c.id === id)) throw new Error('unknown collection: ' + id)
+    const base = BASE_CATEGORIES.find(c => c.id === id)
+    if (!base) throw new Error('unknown collection: ' + id)
     const cur = store.get('collections.' + id, null) || {}
     const next = { ...cur }
+    /* explicit null, never delete — see products.update */
     for (const k of ['name', 'lede', 'blurb']) {
       if (!(k in patch)) continue
       const v = String(patch[k] ?? '').trim()
-      if (v) next[k] = v; else delete next[k]
+      next[k] = v || null
     }
     if ('products' in patch) {
       const ids = (patch.products || []).filter(pid => CATALOGUE.find(p => p.id === pid))
-      if (ids.length) next.products = ids; else delete next.products
+      /* an empty list is a real state (owner emptied the page) and must
+         be representable — only base-equal lists clear the override */
+      next.products = JSON.stringify(ids) !== JSON.stringify(base.products || []) ? ids : null
     }
-    store.set('collections.' + id, Object.keys(next).length ? next : null)
+    const allNull = Object.values(next).every(v => v === null)
+    store.set('collections.' + id, allNull ? null : next)
     return collections.get(id)
   },
 }

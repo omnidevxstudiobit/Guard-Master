@@ -715,12 +715,20 @@ function productDetail (id) {
   const snap = JSON.stringify(work)
   const collSaved = GM.collections.list().filter(c => (c.products || []).includes(id)).map(c => c.id)
   let collWork = [...collSaved]
+  const pairOrder = [...work.pairs]   // original display order, for position-stable re-checks
   const dirty = () => JSON.stringify(work) !== snap || JSON.stringify(collWork) !== JSON.stringify(collSaved)
   const syncBar = () => { const b = $('#pdBar'); if (b) b.hidden = !dirty() }
   const pool = () => [...new Set([...base.gallery, ...GM.media.list()])].filter(s => !work.gallery.includes(s))
   const GROUP_LABEL = { clearview: 'Clear View system', razor: 'Razor wire', access: 'Accessories & fixings' }
 
   function paint () {
+    // staging inputs (add-value / add-tag / add-path) aren't part of
+    // `work` — carry their in-flight text across structural repaints
+    const keep = {
+      gPath: $('#gPath')?.value || '',
+      tagNew: $('#tagNew')?.value || '',
+      vnew: Array.from(view.querySelectorAll('[data-vnew]')).map(i => i.value),
+    }
     view.innerHTML = `
       <div class="savebar" id="pdBar" hidden>
         Unsaved changes
@@ -846,6 +854,9 @@ function productDetail (id) {
           </div>
         </aside>
       </div>`
+    if (keep.gPath && $('#gPath')) $('#gPath').value = keep.gPath
+    if (keep.tagNew && $('#tagNew')) $('#tagNew').value = keep.tagNew
+    view.querySelectorAll('[data-vnew]').forEach((i, n) => { if (keep.vnew[n]) i.value = keep.vnew[n] })
     syncBar()
   }
 
@@ -870,13 +881,26 @@ function productDetail (id) {
     if (e.target.id === 'pdGroup') { work.g = e.target.value; syncBar(); return }
     const coll = e.target.closest('[data-coll]')
     if (coll) {
-      collWork = coll.checked ? [...collWork, coll.dataset.coll] : collWork.filter(c => c !== coll.dataset.coll)
+      /* uncheck-then-recheck must restore the member to its ORIGINAL
+         position so it compares equal to the starting state — else the
+         savebar sticks and Save writes a no-op reorder */
+      const want = new Set(collWork)
+      coll.checked ? want.add(coll.dataset.coll) : want.delete(coll.dataset.coll)
+      collWork = [
+        ...collSaved.filter(c => want.has(c)),
+        ...GM.collections.list().map(c => c.id).filter(c => want.has(c) && !collSaved.includes(c)),
+      ]
       paint()
       return
     }
     const pr = e.target.closest('[data-pair]')
     if (pr) {
-      work.pairs = pr.checked ? [...work.pairs, pr.dataset.pair] : work.pairs.filter(p2 => p2 !== pr.dataset.pair)
+      const want = new Set(work.pairs)
+      pr.checked ? want.add(pr.dataset.pair) : want.delete(pr.dataset.pair)
+      work.pairs = [
+        ...pairOrder.filter(p2 => want.has(p2)),
+        ...CATALOGUE.map(x => x.id).filter(x => want.has(x) && !pairOrder.includes(x)),
+      ]
       syncBar()
     }
   })
@@ -893,6 +917,11 @@ function productDetail (id) {
     const t = e.target
     if (t.closest('#pdDiscard')) { render(); return }
     if (t.closest('#pdSave')) {
+      // an emptied price field must not silently revert a price override
+      if (!(Number(work.from) > 0)) {
+        toast('the price needs a number above zero before saving', true)
+        return
+      }
       guard(() => {
         GM.products.update(id, work)
         GM.collections.list().forEach(c => {
@@ -937,7 +966,16 @@ function productDetail (id) {
       return
     }
     const vdel = t.closest('[data-vdel]')
-    if (vdel) { work.options[+vdel.dataset.oi2].v.splice(+vdel.dataset.vi, 1); paint(); return }
+    if (vdel) {
+      const o = work.options[+vdel.dataset.oi2]
+      const vi = +vdel.dataset.vi
+      o.v.splice(vi, 1)
+      // note captions are index-aligned with values — splice together or
+      // the storefront mislabels security grades (adversarial finding)
+      if (Array.isArray(o.note)) o.note.splice(vi, 1)
+      paint()
+      return
+    }
     if (t.closest('#tagAdd')) {
       const v = $('#tagNew').value.trim()
       if (v) { work.tags.push(v); paint() }
