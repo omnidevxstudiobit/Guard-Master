@@ -1521,6 +1521,111 @@ body.scrolling .marq-t, body.scrolling .logo-row .rt, body.scrolling .promo-band
 body.scrolling .blob, body.scrolling .hero-ticker span, body.scrolling .arc-dash,
 body.scrolling .arc-ship, body.scrolling .city--home::after{animation-play-state:paused}
 
+/* ══ liquid glass layer ═════════════════════════════════════════ */
+
+/* water-drop logo badge — glossy pill housing mark + wordmark */
+.logo{
+  padding:5px 14px 5px 5px; border-radius:999px;
+  background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(255,255,255,.6));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 4px 12px rgba(20,18,26,.07);
+}
+
+/* liquid nav pill — slides behind the links */
+.nav-links{position:relative}
+.nl-pill{
+  position:absolute; top:0; bottom:0; left:0; z-index:0; border-radius:999px;
+  background:linear-gradient(150deg, rgba(255,255,255,.95), rgba(255,255,255,.7));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 3px 10px rgba(20,18,26,.07);
+  opacity:0; transition:transform .5s var(--ease), width .5s var(--ease), opacity .3s var(--ease-soft);
+  pointer-events:none;
+}
+.nav-links a{position:relative; z-index:1}
+.nav-links:has(.nl-pill) a:hover,
+.nav-links:has(.nl-pill) a[aria-current]{background:transparent}
+
+/* frosted mobile drawer — static overlay, so its blur costs nothing
+   during scroll (the page is locked while it's open) */
+.burger{display:none}
+@media(max-width:940px){.burger{display:grid}}
+.drawer{
+  position:fixed; inset:0; z-index:300;
+  display:grid; place-content:center;
+  background:
+    radial-gradient(600px 420px at 18% 8%, rgba(201,215,243,.6) 0%, transparent 60%),
+    radial-gradient(600px 420px at 85% 92%, rgba(224,216,246,.6) 0%, transparent 60%),
+    rgba(246,247,251,.72);
+  backdrop-filter:blur(22px) saturate(1.5); -webkit-backdrop-filter:blur(22px) saturate(1.5);
+  opacity:0; visibility:hidden; transition:opacity .4s var(--ease), visibility .4s;
+}
+.drawer.open{opacity:1; visibility:visible}
+.drawer-x{position:absolute; top:20px; right:20px; font-size:16px}
+.drawer-links{display:flex; flex-direction:column; gap:8px; text-align:center}
+.drawer-links a{
+  font-size:clamp(26px,7vw,34px); font-weight:800; letter-spacing:-.035em;
+  text-decoration:none; color:var(--ink); padding:8px 26px; border-radius:999px;
+  opacity:0; transform:translateY(14px);
+  transition:opacity .45s var(--ease), transform .45s var(--ease), background .3s var(--ease-soft);
+}
+.drawer.open .drawer-links a{opacity:1; transform:none}
+.drawer.open .drawer-links a:nth-child(2){transition-delay:.04s}
+.drawer.open .drawer-links a:nth-child(3){transition-delay:.08s}
+.drawer.open .drawer-links a:nth-child(4){transition-delay:.12s}
+.drawer.open .drawer-links a:nth-child(5){transition-delay:.16s}
+.drawer.open .drawer-links a:nth-child(6){transition-delay:.2s}
+.drawer-links a:hover{background:rgba(255,255,255,.7)}
+.drawer-links a.dq{color:var(--gm-red)}
+
+/* one-shot click ripple */
+.chip{position:relative; overflow:hidden}
+.icon-btn{overflow:hidden}
+.ripple{
+  position:absolute; border-radius:50%; pointer-events:none; z-index:3;
+  background:radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,.2) 55%, transparent 70%);
+  transform:scale(0); animation:rip .6s ease-out forwards;
+}
+@keyframes rip{to{transform:scale(1); opacity:0}}
+
+/* water-drop toast */
+.toast{
+  position:fixed; right:18px; bottom:18px; z-index:350;
+  display:flex; align-items:center; gap:10px;
+  padding:13px 20px; border-radius:999px; text-decoration:none;
+  font-size:14px; font-weight:600; color:var(--ink);
+  background:linear-gradient(150deg, rgba(255,255,255,.95), rgba(255,255,255,.78));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 14px 34px rgba(20,18,26,.16);
+  transform:translateY(150%); transition:transform .5s var(--ease);
+}
+.toast.show{transform:none}
+.toast i{width:9px; height:9px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 4px rgba(34,197,94,.18); flex:none}
+@media(max-width:880px){.toast{bottom:calc(18px + 74px)}}   /* clear the mobile buy bar */
+
+/* droplet radios (checkout fulfilment picks) */
+.pick input{
+  appearance:none; -webkit-appearance:none; width:19px; height:19px; border-radius:50%;
+  border:2px solid var(--hair-2); position:relative; transition:border-color .3s var(--ease-soft);
+}
+.pick input::after{
+  content:""; position:absolute; inset:3px; border-radius:50%;
+  background:var(--ink); transform:scale(0); transition:transform .4s var(--ease-collapse);
+}
+.pick input:checked{border-color:var(--ink)}
+.pick input:checked::after{transform:scale(1)}
+
+/* accordion content drifts in on open */
+.faq details[open] > p{animation:acc-in .4s var(--ease-soft)}
+@keyframes acc-in{from{opacity:0; transform:translateY(-4px)}}
+
+/* specular divider on the footer baseline */
+.foot-b{position:relative}
+.foot-b::before{
+  content:""; position:absolute; top:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent);
+}
+
+/* droplet morph on the why cards */
+.why-grid .card{transition:border-radius .8s var(--ease), transform .5s var(--ease)}
+.why-grid .card:hover{border-radius:34px 48px 30px 52px / 46px 30px 50px 32px}
+
 /* ── fence footer — the band the fence rises inside ───────────── */
 .fence-foot{padding-bottom:44vh}
 .fence-band{

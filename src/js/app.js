@@ -81,6 +81,7 @@ export function initCart () {
     }
     cartStore.add(item, qty)
     paint()
+    toast(`${item.t} added`)
   }
   window.refreshCart = paint
 
@@ -91,6 +92,95 @@ export function initCart () {
   initPromoBar() // dismissible announcement, per the brief
   initAnchors()  // in-page anchors must go through Lenis, or it fights the jump
   initFenceFooter() // the fence rises from the floor at the end of the page
+  initNavPill()  // liquid pill slides to the hovered/active nav link
+  initDrawer()   // frosted mobile menu — the links were unreachable on phones
+  initRipple()   // one-shot water ripple on primary controls
+}
+
+/* ── liquid nav pill — slides to the hovered link, rests on the
+      current page. Transform-only, hover-capable devices. ────────── */
+export function initNavPill () {
+  const links = document.querySelector('.nav-links')
+  if (!links || !matchMedia('(hover:hover)').matches) return
+  const pill = document.createElement('span')
+  pill.className = 'nl-pill'
+  links.prepend(pill)
+  const move = (a) => {
+    pill.style.width = a.offsetWidth + 'px'
+    pill.style.transform = `translateX(${a.offsetLeft}px)`
+    pill.style.opacity = '1'
+  }
+  const current = links.querySelector('a[aria-current]')
+  const rest = () => { current ? move(current) : (pill.style.opacity = '0') }
+  links.querySelectorAll('a').forEach(a => {
+    a.addEventListener('mouseenter', () => move(a))
+    a.addEventListener('focus', () => move(a))
+  })
+  links.addEventListener('mouseleave', rest)
+  requestAnimationFrame(rest)
+}
+
+/* ── frosted mobile drawer — built from the page's own nav links ── */
+export function initDrawer () {
+  const nav = document.querySelector('.nav-in')
+  const links = nav?.querySelector('.nav-links')
+  if (!nav || !links) return
+  const burger = document.createElement('button')
+  burger.className = 'icon-btn burger'
+  burger.type = 'button'
+  burger.setAttribute('aria-label', 'Open menu')
+  burger.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>'
+  nav.insertBefore(burger, nav.querySelector('.cart'))
+
+  const drawer = document.createElement('div')
+  drawer.className = 'drawer'
+  drawer.innerHTML = `
+    <button class="icon-btn drawer-x" type="button" aria-label="Close menu">✕</button>
+    <nav class="drawer-links">
+      ${Array.from(links.querySelectorAll('a')).map(a => a.outerHTML).join('')}
+      <a href="/estimate/" class="dq">Get a quote</a>
+      <a href="/cart/">Cart</a>
+    </nav>`
+  document.body.appendChild(drawer)
+  const open = () => { drawer.classList.add('open'); document.body.style.overflow = 'hidden' }
+  const close = () => { drawer.classList.remove('open'); document.body.style.overflow = '' }
+  burger.addEventListener('click', open)
+  drawer.addEventListener('click', (e) => {
+    if (e.target.closest('a') || e.target.closest('.drawer-x')) close()
+  })
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') close() })
+}
+
+/* ── one-shot ripple on primary controls — transform/opacity only ── */
+export function initRipple () {
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.btn--go, .btn--quote, .chip, .icon-btn')
+    if (!b) return
+    const r = b.getBoundingClientRect()
+    const d = Math.max(r.width, r.height) * 2.2
+    const s = document.createElement('span')
+    s.className = 'ripple'
+    s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`
+    b.appendChild(s)
+    setTimeout(() => s.remove(), 650)
+  })
+}
+
+/* ── water-drop toast — slides in when something lands in the cart ── */
+let toastTimer = null
+export function toast (msg) {
+  let t = document.getElementById('gmToast')
+  if (!t) {
+    t = document.createElement('a')
+    t.id = 'gmToast'
+    t.className = 'toast'
+    t.href = '/cart/'
+    document.body.appendChild(t)
+  }
+  t.innerHTML = `<i></i>${msg} — view cart`
+  t.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600)
 }
 
 /* ── fence footer — a viewport-pinned fence rises out of the floor
