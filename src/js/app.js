@@ -191,6 +191,9 @@ export function toast (msg) {
 export function initFenceFooter () {
   const band = document.getElementById('fenceBand')
   if (!band) return
+  // live on <body>: the kinetic-scroll skew transforms <main>, and a
+  // transformed ancestor would capture this fixed band
+  document.body.appendChild(band)
   const MIN = 0                          // fully below the floor until the reveal begins
   let travel = 0
   const measure = () => {

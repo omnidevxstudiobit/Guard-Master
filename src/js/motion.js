@@ -59,6 +59,12 @@ export function initSmoothScroll () {
       idleTimer = null
     }, 160)
   })
+
+  /* NOTE: velocity-based page skew ("kinetic glass scroll") was built
+     and measured here — transforming <main> promotes a full-page-height
+     layer and dropped the scroll benchmark from 30fps to 3fps in
+     software rendering. Removed by measurement. If ever revisited, it
+     must target small in-viewport elements, never the page wrapper. */
   return lenis
 }
 
