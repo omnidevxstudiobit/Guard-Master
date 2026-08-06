@@ -1,16 +1,23 @@
-/* /admin/ — the console in the site's own liquid-glass language:
-   aurora pastel ground, gradient-glass panels with specular rims,
-   droplet accents, mono eyebrows. Deliberately NO backdrop-filter —
-   admin has no body.scrolling gate, and the storefront's glass cards
-   are gradient-built anyway. Class names are the console's API; the
-   admin.js sections depend on every one of them. */
+/* /admin/ — the console in the site's liquid-glass language, themed
+   MAGENTA so the back end reads instantly distinct from the pastel
+   storefront. Semantic colors stay semantic (green = live/fulfilled,
+   red = danger/cancelled, Google colors in the SEO preview).
+   Deliberately NO backdrop-filter — admin has no body.scrolling gate,
+   and the storefront's glass cards are gradient-built anyway. Class
+   names are the console's API; admin.js depends on every one. */
+
+:root{
+  --m:#d61f96;                     /* magenta accent */
+  --m-deep:#a3126f;                /* pressed / text-on-tint */
+  --m-soft:rgba(214,31,150,.14);   /* rings, tints */
+}
 
 body{
   background:
-    radial-gradient(900px 620px at 12% -4%, rgba(201,215,243,.75) 0%, transparent 62%),
-    radial-gradient(820px 560px at 96% 12%, rgba(224,216,246,.7) 0%, transparent 60%),
-    radial-gradient(760px 560px at 50% 108%, rgba(214,232,238,.6) 0%, transparent 58%),
-    #f4f5fa;
+    radial-gradient(900px 620px at 12% -4%, rgba(244,203,229,.78) 0%, transparent 62%),
+    radial-gradient(820px 560px at 96% 12%, rgba(247,214,238,.72) 0%, transparent 60%),
+    radial-gradient(760px 560px at 50% 108%, rgba(250,224,240,.6) 0%, transparent 58%),
+    #faf3f8;
   min-height:100vh;
 }
 
@@ -22,7 +29,7 @@ body{
   position:sticky; top:0; height:100vh; overflow:auto; padding:20px 14px 26px;
   background:linear-gradient(168deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.55) 60%, rgba(255,255,255,.72) 100%);
   border-right:1px solid rgba(255,255,255,.75);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 8px 0 34px rgba(52,48,90,.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 8px 0 34px rgba(92,18,64,.06);
 }
 @media(max-width:860px){.adm-side{position:static; height:auto}}
 
@@ -58,12 +65,12 @@ body{
   transform:translateX(2px);
 }
 .adm-nav a.on{
-  background:var(--ink); color:#fff; transform:none;
-  box-shadow:0 8px 20px rgba(20,18,26,.24), inset 0 1px 0 rgba(255,255,255,.14);
+  background:var(--m); color:#fff; transform:none;
+  box-shadow:0 8px 20px rgba(214,31,150,.35), inset 0 1px 0 rgba(255,255,255,.2);
 }
 .adm-nav .pin{
   font-family:var(--mono); font-size:9px; letter-spacing:.06em; padding:3px 8px;
-  border-radius:99px; background:rgba(250,204,21,.9); color:var(--ink);
+  border-radius:99px; background:var(--m); color:#fff;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
 }
 
@@ -79,7 +86,7 @@ body{
   position:relative;
   background:linear-gradient(160deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.66) 100%);
   border:1px solid rgba(255,255,255,.8); border-radius:22px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 14px 38px rgba(52,48,90,.09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 14px 38px rgba(92,18,64,.09);
   padding:22px; margin-bottom:16px;
   transition:border-radius .8s var(--ease);
 }
@@ -116,19 +123,22 @@ body{
   border:1px solid rgba(255,255,255,.85); border-radius:12px;
   padding:9px 13px; min-width:0;
   background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(255,255,255,.68));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 2px 6px rgba(52,48,90,.05);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 2px 6px rgba(92,18,64,.05);
   transition:box-shadow .3s var(--ease-soft), border-color .3s var(--ease-soft);
 }
 .adm-f textarea{min-height:96px; resize:vertical}
 .adm-f input:focus, .adm-f select:focus, .adm-f textarea:focus,
 .adm-tbl input:focus, .adm-tbl select:focus, .adm-card input:focus{
-  outline:none; border-color:rgba(118,44,229,.4);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 0 0 4px rgba(118,44,229,.14);
+  outline:none; border-color:rgba(214,31,150,.45);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 0 0 4px var(--m-soft);
 }
 .adm-note{font-size:12.5px; color:var(--muted); line-height:1.65; margin:10px 0 0}
 .adm-note b{color:var(--ink)}
 
-/* buttons: .btn comes from app.css; console variants */
+/* buttons: .btn comes from app.css; console variants. The storefront's
+   primary button goes magenta inside the console */
+.adm-main .btn--go, .adm-gate .btn--go{background:var(--m); border-color:transparent; color:#fff}
+.adm-main .btn--go:hover, .adm-gate .btn--go:hover{background:var(--m-deep)}
 .btn--sm{padding:8px 16px; font-size:12.5px}
 .btn--danger{color:#b3261e; border-color:rgba(179,38,30,.28)}
 .btn--danger:hover{background:rgba(179,38,30,.07)}
@@ -138,18 +148,18 @@ body{
   font-family:var(--mono); font-size:9px; letter-spacing:.12em; text-transform:uppercase;
   padding:4px 10px; border-radius:99px; box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
 }
-.pill-st.placed{background:rgba(118,44,229,.13); color:#5a2bb0}
+.pill-st.placed{background:rgba(214,31,150,.13); color:var(--m-deep)}
 .pill-st.fulfilled,.pill-st.collected,.pill-st.live{background:rgba(34,197,94,.16); color:#15803d}
 .pill-st.cancelled{background:rgba(179,38,30,.12); color:#b3261e}
 .pill-st.hidden{background:rgba(20,18,26,.09); color:var(--muted)}
-.pill-st.draft{background:rgba(250,204,21,.5); color:var(--ink)}
+.pill-st.draft{background:rgba(214,31,150,.16); color:var(--m-deep)}
 
 /* ── photo pools — glass thumbnails, ink ring on the pick ─────── */
 .adm-pool{display:grid; grid-template-columns:repeat(auto-fill,minmax(124px,1fr)); gap:10px}
 .adm-pool button{
   padding:0; border:2px solid rgba(255,255,255,.85); border-radius:16px; overflow:hidden;
   cursor:pointer; background:none; aspect-ratio:4/3; position:relative;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 6px 16px rgba(52,48,90,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 6px 16px rgba(92,18,64,.1);
   transition:transform .35s var(--ease), border-color .3s var(--ease-soft);
 }
 .adm-pool button:hover{transform:translateY(-3px)}
@@ -158,7 +168,7 @@ body{
 .adm-pool button.on::after{
   content:"✓"; position:absolute; right:7px; top:7px; width:22px; height:22px;
   display:grid; place-items:center; border-radius:50%;
-  background:var(--y); color:var(--ink); font-size:12px; font-weight:800;
+  background:var(--m); color:#fff; font-size:12px; font-weight:800;
   box-shadow:0 3px 8px rgba(20,18,26,.25);
 }
 
@@ -179,16 +189,16 @@ body{
 .adm-gate{
   position:fixed; inset:0; z-index:500; display:grid; place-items:center;
   background:
-    radial-gradient(760px 520px at 14% 8%, rgba(201,215,243,.8) 0%, transparent 60%),
-    radial-gradient(760px 520px at 88% 92%, rgba(224,216,246,.8) 0%, transparent 60%),
-    #f4f5fa;
+    radial-gradient(760px 520px at 14% 8%, rgba(244,203,229,.82) 0%, transparent 60%),
+    radial-gradient(760px 520px at 88% 92%, rgba(247,214,238,.82) 0%, transparent 60%),
+    #faf3f8;
 }
 .adm-gate form{
   width:min(380px, calc(100vw - 36px)); padding:34px 30px; text-align:center;
   border-radius:28px;
   background:linear-gradient(160deg, rgba(255,255,255,.95), rgba(255,255,255,.72));
   border:1px solid rgba(255,255,255,.85);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 30px 70px rgba(52,48,90,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 30px 70px rgba(92,18,64,.18);
 }
 .adm-gate h1{margin:10px 0 6px; font-size:23px; font-weight:800; letter-spacing:-.035em}
 .adm-gate p{font-size:13px; color:var(--muted); line-height:1.65; margin:0 0 18px}
@@ -241,8 +251,8 @@ body{
 }
 .savebar .btn{color:#fff; border-color:rgba(255,255,255,.25); background:none}
 .savebar .btn:hover{background:rgba(255,255,255,.1)}
-.savebar .btn.sv{background:var(--y); color:var(--ink); border-color:transparent; font-weight:700}
-.savebar .btn.sv:hover{background:#ffe14a}
+.savebar .btn.sv{background:var(--m); color:#fff; border-color:transparent; font-weight:700}
+.savebar .btn.sv:hover{background:var(--m-deep)}
 .savebar[hidden]{display:none}
 
 /* media grid — first image large, like Shopify's media card */
@@ -251,7 +261,7 @@ body{
 .med{
   position:relative; border-radius:14px; overflow:hidden; aspect-ratio:1;
   border:1px solid rgba(255,255,255,.85);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 5px 14px rgba(52,48,90,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 5px 14px rgba(92,18,64,.1);
   background:#fff;
 }
 .med:first-child{grid-column:span 2; grid-row:span 2}
