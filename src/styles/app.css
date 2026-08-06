@@ -1034,8 +1034,12 @@ body[data-bgfollow]{
 
 /* hero: a layered glass panel floating on soft pastel light */
 .hero-glass{position:relative; padding:44px 0 22px}
-/* pre-blurred as radial gradients — filter:blur() this size pegs the compositor */
-.blob{position:absolute; border-radius:50%; pointer-events:none; z-index:0}
+/* pre-blurred as radial gradients — filter:blur() this size pegs the
+   compositor. Bisected: even so, two huge soft layers cost ~16fps while
+   scrolling, so they fade out in motion and return at rest. */
+.blob{position:absolute; border-radius:50%; pointer-events:none; z-index:0;
+  transition:opacity .3s var(--ease-soft), visibility 0s .3s}
+body.scrolling .blob{opacity:0; visibility:hidden}
 .blob--b{width:780px; height:780px; left:-240px; top:-240px;
   background:radial-gradient(circle closest-side, rgba(122,160,235,.5), rgba(122,160,235,.2) 55%, transparent 100%)}
 .blob--p{width:820px; height:820px; right:-280px; bottom:-280px;
@@ -1554,10 +1558,13 @@ body.scrolling .arc-ship, body.scrolling .city--home::after{animation-play-state
     radial-gradient(600px 420px at 18% 8%, rgba(201,215,243,.6) 0%, transparent 60%),
     radial-gradient(600px 420px at 85% 92%, rgba(224,216,246,.6) 0%, transparent 60%),
     rgba(246,247,251,.72);
-  backdrop-filter:blur(22px) saturate(1.5); -webkit-backdrop-filter:blur(22px) saturate(1.5);
   opacity:0; visibility:hidden; transition:opacity .4s var(--ease), visibility .4s;
 }
-.drawer.open{opacity:1; visibility:visible}
+/* the blur exists only while open — hidden, it still billed ~5fps */
+.drawer.open{
+  opacity:1; visibility:visible;
+  backdrop-filter:blur(22px) saturate(1.5); -webkit-backdrop-filter:blur(22px) saturate(1.5);
+}
 .drawer-x{position:absolute; top:20px; right:20px; font-size:16px}
 .drawer-links{display:flex; flex-direction:column; gap:8px; text-align:center}
 .drawer-links a{
